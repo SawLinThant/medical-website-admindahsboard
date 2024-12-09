@@ -31,7 +31,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ApolloProviderWrapper>
-          <AccountProvider>{children}</AccountProvider>
+          <AccountProvider>
+            {children}
+            </AccountProvider>
         </ApolloProviderWrapper>
       </body>
     </html>
