@@ -1,9 +1,9 @@
 
-const NavBar : React.FC = () => {
+const SideBar : React.FC = () => {
     return(
-        <header className="w-full min-h-[5rem] p-4 border-b">
+        <header className="w-[20vw] h-screen max-h-screen p-4 border-r">
             <div className="w-full flex flex-row"></div>
         </header>
     )
 }
-export default NavBar;
+export default SideBar;
