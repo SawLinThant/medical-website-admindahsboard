@@ -9,8 +9,8 @@ const Layout: LayoutWithChildren = ({ children }) => {
     <div className="w-screen flex flex-row">
       <AppSidebar/>
       {/* <SideBar /> */}
-      <main className="w-full flex items-center justify-center">
-        <div className="w-4/5 max-w-[1300px] flex flex-col min-h-32 border">
+      <main className="w-full flex items-start justify-center p-8">
+        <div className="w-full flex flex-col min-h-32">
           {children}
         </div>
       </main>

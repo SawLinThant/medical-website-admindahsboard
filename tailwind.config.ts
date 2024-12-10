@@ -60,7 +60,9 @@ export default {
   				'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
   				border: 'hsl(var(--sidebar-border))',
   				ring: 'hsl(var(--sidebar-ring))'
-  			}
+  			},
+			headercolor: "#1d1e18",
+			inputlabel: "#796f6f"
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
