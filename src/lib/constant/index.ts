@@ -1,13 +1,13 @@
 "use client"
 
-import { SquareTerminal } from "lucide-react";
+import { ChartLine, FileSpreadsheet, LayoutList, MessageSquareDot, SquareTerminal } from "lucide-react";
 import { title } from "process";
 
 export const SIDEBAR_ROUTES = [
     {
       title: "Product Management",
       url: "#",
-      icon: SquareTerminal,
+      icon: LayoutList,
       isActive: false,
       items: [
         {
@@ -39,7 +39,7 @@ export const SIDEBAR_ROUTES = [
     {
         title: "Order Management",
         url: "#",
-        icon: SquareTerminal,
+        icon: FileSpreadsheet,
         isActive: false,
         items: [
           {
@@ -51,7 +51,7 @@ export const SIDEBAR_ROUTES = [
       {
         title: "Noticfication",
         url: "#",
-        icon: SquareTerminal,
+        icon: MessageSquareDot,
         isActive: false,
         items: [
           {
@@ -63,7 +63,7 @@ export const SIDEBAR_ROUTES = [
       {
         title: "Analytic and Reports",
         url: "#",
-        icon: SquareTerminal,
+        icon: ChartLine,
         isActive: false,
         items: [
           {

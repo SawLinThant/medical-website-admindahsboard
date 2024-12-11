@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Check, ChevronsUpDown } from "lucide-react"
+import { Check, ChevronDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
   Command,
@@ -45,7 +45,7 @@ const Combobox =({options}:ComboboxDemoProps) => {
           {value
             ? options.find((option) => option.value === value)?.label
             : "Select option..."}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronDown color="#796f6f" size={20} />
         </Button>
       </PopoverTrigger>
       <PopoverContent

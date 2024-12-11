@@ -4,12 +4,12 @@ import { Label } from "@/components/ui/label";
 interface InputProps {
     label:string
     name: string
-   // register: any
+    register?: any
     type: string
     placeHolder: string
 }
 
-const CustomInput : React.FC<InputProps> = ({label,name,type,placeHolder}:InputProps) => {
+const CustomInput : React.FC<InputProps> = ({label,name,type,placeHolder,register}:InputProps) => {
 
     return (
       <div className="w-full h-full flex flex-col gap-2">
@@ -18,6 +18,9 @@ const CustomInput : React.FC<InputProps> = ({label,name,type,placeHolder}:InputP
         name={name}
         type={type}
         placeholder={placeHolder}
+        {...register(name,{
+          required: `${name} is required`
+        })}
         />
       </div>
     );

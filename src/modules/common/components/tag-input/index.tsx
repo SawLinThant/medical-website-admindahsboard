@@ -77,9 +77,9 @@ const InputTag = ({ options }: InputTagProps) => {
               placeholder={`${selectedTags.length < 1? "Select Product Tag (s)":""}`}
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              className="w-full pr-4 border-none outline-none bg-transparent p-1"
+              className="w-full text-sm text-inputlabel pr-6 border-none outline-none bg-transparent p-1"
             />
-            <ChevronDown className="absolute right-0 top-1"/>
+            <ChevronDown size={15} color="#796f6f" className="absolute right-2 top-2"/>
           </div>
         </div>
       </PopoverTrigger>
