@@ -2,8 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { options } from "@/lib/constant";
-import useGetTags from "@/lib/hooks/useGetQuery";
+import {
+  CREATE_PRODUCT,
+  CREATE_PRODUCT_TAG,
+} from "@/lib/apolloClient/mutation/productMutation";
+import { useUploadToS3 } from "@/lib/hooks/useFileUpload";
+import { useGetCategories, useGetTags } from "@/lib/hooks/useGetQuery";
 import AmountInput from "@/modules/common/components/amount-input";
 import { BackButton } from "@/modules/common/components/button";
 import CustomInput from "@/modules/common/components/custom-input";
@@ -11,36 +15,86 @@ import CustomTextArea from "@/modules/common/components/custom-textarea";
 import Combobox from "@/modules/common/components/dropdown";
 import FileuploadField from "@/modules/common/components/fileupload-field";
 import InputTag from "@/modules/common/components/tag-input";
-import { X } from "lucide-react";
+import { useMutation } from "@apollo/client";
+import { Loader, X } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
 const ProductForm: React.FC = () => {
   const [file, setFile] = useState<File[]>([]);
-  const { handleSubmit: handleCreateSubmit, register: createRegister } =
-    useForm();
+  const [selectedTags, setSelectedTags] = useState<any[]>([]);
+  const [category, setCategory] = useState<string>("");
+  const [createLoading, setCreateLoading] = useState<boolean>(false);
+  const { uploadToS3 } = useUploadToS3();
+  const { tags, loadingTags } = useGetTags();
+  const { categories, loadingCategories } = useGetCategories();
+  const { handleSubmit, register } = useForm();
 
-  // const {tags,loading} = useGetTags();
-  // console.log(tags)
+  const [createProduct] = useMutation(CREATE_PRODUCT);
+  const [createProductTag] = useMutation(CREATE_PRODUCT_TAG);
 
   const handleFileUpload = (files: FileList) => {
-    const newFiles = Array.from(files);
-    setFile((prev) => [...prev, ...newFiles]);
+    setFile((prev) => [...prev, ...Array.from(files)]);
   };
 
-  const handleCreate = handleCreateSubmit(async (data) => {
+  const handleRemoveTag = (id:number) => {
+    setSelectedTags((prev) => prev.filter((tag,index) => index !== id))
+  }
+
+  const handleImageUpload = async (product_id: string) => {
+    const uploadedUrls: string[] = [];
+    for (const image of file) {
+      const url = await uploadToS3(image);
+      if (url) {
+        uploadedUrls.push(url);
+      }
+    }
+    console.log("Uploaded image URLs:", uploadedUrls);
+  };
+
+  const handleProductTagCreation = async (product_id: string) => {
+    for (const tag_id of selectedTags) {
+      await createProductTag({ variables: { product_id, tag_id } });
+    }
+  };
+
+  const onSubmit = handleSubmit(async (data) => {
+    if (!file.length) return console.log("Please upload at least one image");
+    if (!category) return console.log("Please select a category");
+    if (!selectedTags.length) return console.log("Please choose at least one tag");
+
     try {
-      console.log(data.name);
-      console.log(data.description);
-      console.log(data.price);
-      console.log(data.bulk_price);
+      // Create product
+      const productResponse = await createProduct({
+        variables: {
+          name: data.name,
+          price: data.price,
+          bulk_price: data.bulk_price,
+          quantity: 1,
+          description: data.description,
+          shop_id: "da70c6d4-b7a0-4aa0-8ac9-08d1c5da08de",
+          category_id: category,
+        },
+      });
+
+      const product_id = productResponse.data?.insert_products_one?.id;
+
+      if (product_id) {
+        // Upload images and create product tags
+        await Promise.all([
+        //  handleImageUpload(product_id),
+          handleProductTagCreation(product_id),
+        ]);
+      }
     } catch (error) {
-      console.log("Error creating product:", error);
-      throw new Error("error creating product");
+      console.error("Error creating product:", error);
     } finally {
+      setCreateLoading(false);
     }
   });
+
+  console.log(selectedTags)
 
   return (
     <section className="w-full flex flex-col gap-4">
@@ -57,7 +111,7 @@ const ProductForm: React.FC = () => {
           </h1>
         </div>
       </div>
-      <form onSubmit={handleCreate}>
+      <form onSubmit={onSubmit}>
         <div className="w-full grid lg:grid-cols-2 lg:gap-x-12 md:grid-cols-1 md:gap-y-8 min-h-32">
           <div className="w-[30rem] h-full flex flex-col gap-8">
             <div className="w-full min-h-20 flex flex-col gap-2">
@@ -71,14 +125,14 @@ const ProductForm: React.FC = () => {
                     label="Product Name"
                     placeHolder="Enter product name"
                     type="text"
-                    register={createRegister}
+                    register={register}
                   />
                 </div>
                 <CustomTextArea
                   placeHolder="Enter Porduct Description Here"
                   label="Product Description"
                   name="description"
-                  register={createRegister}
+                  register={register}
                 />
               </div>
             </div>
@@ -89,11 +143,11 @@ const ProductForm: React.FC = () => {
               <div className="w-full min-h-20 border border-gray-300 rounded-md flex flex-col gap-6 p-8">
                 <div className="w-full flex flex-col gap-2">
                   <Label className="text-inputlabel">Product Category</Label>
-                  <Combobox options={options} />
+                  <Combobox setCategory={setCategory} options={categories} />
                 </div>
                 <div className="w-full flex flex-col gap-2">
                   <Label className="text-inputlabel">Tags</Label>
-                  <InputTag options={options} />
+                  <InputTag removeTag={handleRemoveTag} setTag={setSelectedTags} options={tags} />
                 </div>
               </div>
             </div>
@@ -118,7 +172,9 @@ const ProductForm: React.FC = () => {
                       className="w-full h-full object-cover rounded-md border"
                       alt={`Uploaded image ${index + 1}`}
                     />
-                    <div className="absolute top-1 right-2"><X size={30} color="black"/></div>
+                    <div className="absolute top-1 right-2">
+                      <X size={30} color="black" />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -128,13 +184,13 @@ const ProductForm: React.FC = () => {
               <div className="w-full min-h-20 border border-gray-300 rounded-md flex items-center justify-center gap-6 p-8">
                 <div className="w-full grid grid-cols-2 gap-4">
                   <AmountInput
-                    register={createRegister}
+                    register={register}
                     label="Price"
                     name="price"
                     placeHolder="000.00"
                   />
                   <AmountInput
-                    register={createRegister}
+                    register={register}
                     label="Bulk Price"
                     name="bulk_price"
                     placeHolder="000.00"
@@ -154,9 +210,14 @@ const ProductForm: React.FC = () => {
                 </Button>
                 <Button
                   type="submit"
-                  className="rounded-md text-white bg-inputlabel min-w-[7rem]"
+                  disabled={createLoading}
+                  className="rounded-md flex items-center justify-center text-white bg-inputlabel min-w-[7rem]"
                 >
-                  Add Product
+                  {createLoading ? (
+                    <Loader className="animate-spin" size={25} />
+                  ) : (
+                    "Add Product"
+                  )}
                 </Button>
               </div>
             </div>

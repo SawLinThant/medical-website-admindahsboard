@@ -1,28 +1,52 @@
 import { gql } from "@apollo/client";
 
-export const CREATE_CARD = gql`
+export const CREATE_PRODUCT = gql`
   mutation createProduct(
     $name: String
-    $category: String
-    $image_url: String
-    $price: integer
-    $bulk_price: integer
-    $quantity: integer
+    $price: Int
+    $bulk_price: Int
+    $quantity: Int
     $description: String
-    $tag: String
+    $shop_id: uuid
+    $category_id: uuid
   ) {
-    insert_cards_one(
+    insert_products_one(
       object: {
-        card_number: $card_number
-        card_password: $card_password
+        name: $name
+        price: $price
+        bulk_price: $bulk_price
+        quantity: $quantity
+        description: $description
+        shop_id: $shop_id
+        category_id: $category_id
       }
     ) {
-      card_number
-      card_password
-      created_at
-      updated_at
-      disabled
-      balance
+      id
+      name
+      category_id
+      price
+      bulk_price
+      quantity
+      description
     }
   }
 `;
+
+export const CREATE_PRODUCT_TAG = gql`
+  mutation createProductTag(
+   $product_id: uuid
+   $tag_id: uuid
+  ) {
+    insert_product_tags_one(
+      object: {
+        product_id: $product_id
+        tag_id: $tag_id
+      }
+    ) {
+      id
+      product_id
+      tag_id
+    }
+  }
+`;
+
