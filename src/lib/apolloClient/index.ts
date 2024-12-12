@@ -27,8 +27,7 @@ const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
-      "x-hasura-admin-secret":
-            "Secret@2024Medical",
+    
      // ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   };
