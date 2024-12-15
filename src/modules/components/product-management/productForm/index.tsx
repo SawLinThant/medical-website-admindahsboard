@@ -2,7 +2,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { ToastAction } from "@/components/ui/toast";
+import { useToast } from "@/hooks/use-toast";
 import {
+  CREATE_IMAGE,
   CREATE_PRODUCT,
   CREATE_PRODUCT_TAG,
 } from "@/lib/apolloClient/mutation/productMutation";
@@ -19,41 +22,60 @@ import InputTag from "@/modules/common/components/tag-input";
 import { useMutation } from "@apollo/client";
 import { Loader, X } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 const ProductForm: React.FC = () => {
+  const [formKey, setFormKey] = useState(0);
   const [file, setFile] = useState<File[]>([]);
   const [selectedTags, setSelectedTags] = useState<any[]>([]);
-  const [selectedDate,setSelectedDate] = useState<Date>();
+  const [selectedDate, setSelectedDate] = useState<Date>();
   const [category, setCategory] = useState<string>("");
   const [createLoading, setCreateLoading] = useState<boolean>(false);
   const { uploadToS3 } = useUploadToS3();
   const { tags, loadingTags } = useGetTags();
   const { categories, loadingCategories } = useGetCategories();
-  const { handleSubmit, register } = useForm();
+  const { handleSubmit, register, resetField, reset } = useForm();
+  const { toast } = useToast()
 
   const [createProduct] = useMutation(CREATE_PRODUCT);
   const [createProductTag] = useMutation(CREATE_PRODUCT_TAG);
+  const [createImage] = useMutation(CREATE_IMAGE)
 
   const handleFileUpload = (files: FileList) => {
     setFile((prev) => [...prev, ...Array.from(files)]);
   };
 
-  const handleRemoveTag = (id:number) => {
-    setSelectedTags((prev) => prev.filter((tag,index) => index !== id))
+  const handleRemoveTag = (id: number) => {
+    setSelectedTags((prev) => prev.filter((tag, index) => index !== id))
   }
 
-  const handleRemoveImage = (id:number) => {
-      setFile((prev) => prev.filter((image,index) => index !==id))
+  const handleRemoveImage = (id: number) => {
+    setFile((prev) => prev.filter((image, index) => index !== id))
   }
 
-  const handleImageUpload = async () => {
+  const handleResetForm = () => {
+     reset(); 
+     setFile([]); 
+     file.forEach((image) => URL.revokeObjectURL(URL.createObjectURL(image)));
+    // setSelectedTags([]); 
+    // setSelectedDate(undefined); 
+    // setCategory(""); 
+    setFormKey((prevKey) => prevKey + 1);
+  }
+
+  const handleImageUpload = async (id: string) => {
     const uploadedUrls: string[] = [];
     for (const image of file) {
       const url = await uploadToS3(image);
       if (url) {
         uploadedUrls.push(url);
+        await createImage({
+          variables: {
+            product_id: id,
+            image_url: url
+          }
+        })
       }
     }
     console.log("Uploaded image URLs:", uploadedUrls);
@@ -66,10 +88,22 @@ const ProductForm: React.FC = () => {
   };
 
   const onSubmit = handleSubmit(async (data) => {
-    if (!file.length) return console.log("Please upload at least one image");
-    if (!category) return console.log("Please select a category");
-    if (!selectedDate) return console.log("Please select scheduled date");
-    if (!selectedTags.length) return console.log("Please choose at least one tag");
+    if (!file.length) return toast({
+      title: "Invalid Data",
+      description: "Please choose at least one photo.",
+    })
+    if (!category) return toast({
+      title: "Invalid Data",
+      description: "Please choose category.",
+    })
+    if (!selectedDate) return toast({
+      title: "Invalid Data",
+      description: "Please choose a date.",
+    })
+    if (selectedTags.length < 1) return toast({
+      title: "Invalid Data",
+      description: "Please choose at least one tag.",
+    })
 
     try {
       setCreateLoading(true)
@@ -90,18 +124,27 @@ const ProductForm: React.FC = () => {
 
       if (product_id) {
         await Promise.all([
-          handleImageUpload(),
+          handleImageUpload(product_id),
           handleProductTagCreation(product_id),
         ]);
       }
+      toast({
+        description: "Product created",
+      })
     } catch (error) {
-      console.error("Error creating product:", error);
+      console.log("Error creating product:", error)
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: "There was a problem with your request.",
+        action: <ToastAction altText="Try again">Try again</ToastAction>,
+      })
+      //console.error("Error creating product:", error);
     } finally {
+      handleResetForm();
       setCreateLoading(false);
     }
   });
-
-  console.log(new Date(selectedDate || Date.now()).toISOString())
 
   return (
     <section className="w-full flex flex-col gap-4">
@@ -118,7 +161,7 @@ const ProductForm: React.FC = () => {
           </h1>
         </div>
       </div>
-      <form onSubmit={onSubmit}>
+      <form key={formKey} onSubmit={onSubmit}>
         <div className="w-full grid lg:grid-cols-2 lg:gap-x-12 md:grid-cols-1 md:gap-y-8 min-h-32">
           <div className="w-[30rem] h-full flex flex-col gap-8">
             <div className="w-full min-h-20 flex flex-col gap-2">
@@ -207,12 +250,12 @@ const ProductForm: React.FC = () => {
             </div>
             <div className="w-full min-h-20 flex flex-row justify-between">
               <div>
-                <Button className="bg-transparent border border-gray-300 rounded-md text-red-500 min-w-[5rem]">
+                <Button type="button" onClick={handleResetForm} className="bg-transparent border border-gray-300 rounded-md text-red-500 min-w-[5rem]">
                   Discard
                 </Button>
               </div>
               <div className="flex flex-row gap-3">
-                <ScheduleButton loading={createLoading} setSelectedDate={setSelectedDate}/>
+                <ScheduleButton loading={createLoading} setSelectedDate={setSelectedDate} />
                 <Button
                   type="submit"
                   disabled={createLoading}

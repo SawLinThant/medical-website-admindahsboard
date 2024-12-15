@@ -54,3 +54,21 @@ export const CREATE_PRODUCT_TAG = gql`
   }
 `;
 
+export const CREATE_IMAGE = gql`
+  mutation createImage(
+   $product_id: uuid
+   $image_url: String
+  ) {
+    insert_images_one(
+      object: {
+        product_id: $product_id
+        image_url: $image_url
+      }
+    ) {
+      id
+      product_id
+      image_url
+    }
+  }
+`;
+
