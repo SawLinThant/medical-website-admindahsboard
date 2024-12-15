@@ -18,34 +18,36 @@ import {
 } from "@/components/ui/popover";
 import clsx from "clsx";
 import { Input } from "@/components/ui/input";
+import { InputTagOptionType } from "@/lib/config";
 
-type OptionType = {
-  value: string;
-  label: string;
-};
+
 
 interface InputTagProps {
-  options: OptionType[];
+  options: InputTagOptionType[];
+  setTag: (option:any) => void
+  removeTag: (id:number) => void
 }
 
-const InputTag = ({ options }: InputTagProps) => {
+const InputTag = ({ options,setTag,removeTag }: InputTagProps) => {
   const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("");
-  const [selectedTags, setSelectedTags] = React.useState<OptionType[]>([]);
-  const [searchValue, setSearchValue] = React.useState("");
+  const [id, setid] = React.useState("");
+  const [selectedTags, setSelectedTags] = React.useState<InputTagOptionType[]>([]);
+  const [searchid, setSearchid] = React.useState("");
   const InputRef = React.useRef<HTMLDivElement | null>(null);
 
-  const handleAddTag = (option: OptionType) => {
-    if (!selectedTags.some((tag) => tag.value === option.value)) {
+  const handleAddTag = (option: InputTagOptionType) => {
+    if (!selectedTags.some((tag) => tag.id === option.id)) {
       setSelectedTags((prev) => [...prev, option]);
+      setTag((prev:any[]) => [...prev, option.id])
     }
-    setSearchValue("");
+    setSearchid("");
     setOpen(false);
   };
 
-  const handleRemoveTag = (value: string) => {
-    setSelectedTags((prev) => prev.filter((tag) => tag.value !== value));
+  const handleRemoveTag = (id: string) => {
+    setSelectedTags((prev) => prev.filter((tag) => tag.id !== id));
   };
+
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -55,16 +57,17 @@ const InputTag = ({ options }: InputTagProps) => {
           className="flex items-center flex-wrap gap-2 border rounded px-2 py-1 focus-within:ring-2 focus-within:ring-blue-500"
           onClick={() => setOpen(true)}
         >
-          {selectedTags.map((tag) => (
+          {selectedTags.map((tag,index) => (
             <div
-              key={tag.value}
+              key={tag.id}
               className="flex items-center gap-1 bg-gray-200 px-2 py-1 rounded text-sm"
             >
-              <span>{tag.label}</span>
+              <span>{tag.name}</span>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleRemoveTag(tag.value);
+                  handleRemoveTag(tag.id);
+                  removeTag(index)
                 }}
                 className="text-gray-500 hover:text-gray-700"
               >
@@ -75,9 +78,9 @@ const InputTag = ({ options }: InputTagProps) => {
           <div className="relative flex-1">
             <input
               placeholder={`${selectedTags.length < 1? "Select Product Tag (s)":""}`}
-              value={searchValue}
-              onChange={(e) => setSearchValue(e.target.value)}
-              className="w-full text-sm text-inputlabel pr-6 border-none outline-none bg-transparent p-1"
+              id={searchid}
+              onChange={(e) => setSearchid(e.target.id)}
+              className="w-full text-sm text-inputname pr-6 border-none outline-none bg-transparent p-1"
             />
             <ChevronDown size={15} color="#796f6f" className="absolute right-2 top-2"/>
           </div>
@@ -98,10 +101,10 @@ const InputTag = ({ options }: InputTagProps) => {
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
-                  key={option.value}
-                  value={option.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue);
+                  key={option.id}
+                  id={option.id}
+                  onSelect={(currentid) => {
+                    setid(currentid === id ? "" : currentid);
                     setOpen(false);
                     handleAddTag(option);
                   }}
@@ -109,10 +112,10 @@ const InputTag = ({ options }: InputTagProps) => {
                   <Check
                     className={clsx(
                       "mr-2 h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
+                      id === option.id ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {option.label}
+                  {option.name}
                 </CommandItem>
               ))}
             </CommandGroup>

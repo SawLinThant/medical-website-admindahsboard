@@ -14,9 +14,9 @@ const BackButton : React.FC = () => {
     <div className="w-full h-full">
       <Button
         onClick={handleBack}
-        className="w-full h-full p-2 flex flex-row items-center justify-center rounded-md bg-gray-50 border border-gray-400"
+        className="w-full hover:bg-gray-300 h-full p-2 flex flex-row items-center justify-center rounded-md bg-gray-50 border border-gray-400"
       >
-        <ArrowLeft color="gray" size={30}/>
+        <ArrowLeft className="text-black" size={30}/>
       </Button>
     </div>
   );

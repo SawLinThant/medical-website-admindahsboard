@@ -19,17 +19,18 @@ import {
 import clsx from "clsx"
 
 type optionType = {
-    value: string
-    label: string
+    id: string
+    name: string
 }
 
 interface ComboboxDemoProps {
    options: optionType[]
+   setCategory: (id:string) => void
 }
 
-const Combobox =({options}:ComboboxDemoProps) => {
+const Combobox =({options,setCategory}:ComboboxDemoProps) => {
   const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("");
+  const [id, setid] = React.useState("");
   const buttonRef = React.useRef<HTMLButtonElement | null>(null);
 
   return (
@@ -40,10 +41,10 @@ const Combobox =({options}:ComboboxDemoProps) => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between text-inputlabel"
+          className="w-full justify-between text-inputname"
         >
-          {value
-            ? options.find((option) => option.value === value)?.label
+          {id
+            ? options.find((option) => option.id === id)?.name
             : "Select option..."}
           <ChevronDown color="#796f6f" size={20} />
         </Button>
@@ -60,20 +61,21 @@ const Combobox =({options}:ComboboxDemoProps) => {
             <CommandGroup>
               {options.map((option) => (
                 <CommandItem
-                  key={option.value}
-                  value={option.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
+                  key={option.id}
+                  id={option.id}
+                  onSelect={() => {
+                    setid(option.id)
                     setOpen(false)
+                    setCategory(option.id)
                   }}
                 >
                   <Check
                     className={clsx(
                       "mr-2 h-4 w-4",
-                      value === option.value ? "opacity-100" : "opacity-0"
+                      id === option.id ? "opacity-100" : "opacity-0"
                     )}
                   />
-                  {option.label}
+                  {option.name}
                 </CommandItem>
               ))}
             </CommandGroup>

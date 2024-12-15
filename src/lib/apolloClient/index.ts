@@ -3,7 +3,7 @@ import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
 
 const httpLink = new HttpLink({
-  uri: "http://159.89.161.11:8000/v1/graphql", //add hasura cloud url
+  uri: "https://uat.medical.axra.app/v1/graphql", //add hasura cloud url
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -27,9 +27,7 @@ const authLink = setContext((_, { headers }) => {
   return {
     headers: {
       ...headers,
-      "x-hasura-admin-secret":
-            "Secret@2024Medical",
-     // ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
   };
 });

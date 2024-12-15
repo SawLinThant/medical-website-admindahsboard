@@ -5,16 +5,19 @@ import { LayoutWithChildren } from "@/types/utils";
 
 const Layout: LayoutWithChildren = ({ children }) => {
   return (
-    <SidebarProvider>
-    <div className="w-screen flex flex-row">
-      <AppSidebar/>
-      {/* <SideBar /> */}
-      <main className="w-full flex items-start justify-center p-4">
-        <div className="w-full flex flex-col items-center min-h-32">
-          {children}
+    <SidebarProvider className="">
+      <div className="w-screen md:flex lg:flex flex-row sm:hidden">
+        <AppSidebar />
+        {/* <SideBar /> */}
+        <div className="w-full h-screen lg:hidden md:hidden flex items-center justify-center">
+          <h2>Sorry! this feature is not avaiable for mobile devices</h2>
         </div>
-      </main>
-    </div>
+        <main className="w-full lg:flex md:flex hidden items-start justify-center p-4">
+          <div className="w-full flex flex-col items-center min-h-32">
+            {children}
+          </div>
+        </main>
+      </div>
     </SidebarProvider>
   );
 };

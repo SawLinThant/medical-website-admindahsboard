@@ -21,8 +21,8 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <div className="w-full min-h-32 p-4 flex items-center justify-center">
-          <div className="w-full h-full rounded border flex items-center justify-center border-gray-500">
-            <h1 className="font-extrabold">Medical</h1>
+          <div className="w-full h-full bg-inputlabel rounded border flex items-center justify-center border-gray-500">
+            <h1 className="font-extrabold text-white">Medical</h1>
           </div>
         </div>
       </SidebarHeader>
