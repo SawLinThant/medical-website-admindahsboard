@@ -1,6 +1,5 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/modules/common/components/shadcn-sidebar/app-sidebar";
-import SideBar from "@/modules/common/components/sidebar";
 import { LayoutWithChildren } from "@/types/utils";
 
 const Layout: LayoutWithChildren = ({ children }) => {

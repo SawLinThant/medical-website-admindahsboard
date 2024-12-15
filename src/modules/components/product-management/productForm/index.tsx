@@ -9,6 +9,7 @@ import {
   CREATE_PRODUCT,
   CREATE_PRODUCT_TAG,
 } from "@/lib/apolloClient/mutation/productMutation";
+import { InputTagOptionType } from "@/lib/config";
 import { useUploadToS3 } from "@/lib/hooks/useFileUpload";
 import { useGetCategories, useGetTags } from "@/lib/hooks/useGetQuery";
 import AmountInput from "@/modules/common/components/amount-input";
@@ -22,20 +23,20 @@ import InputTag from "@/modules/common/components/tag-input";
 import { useMutation } from "@apollo/client";
 import { Loader, X } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import { useForm } from "react-hook-form";
 
 const ProductForm: React.FC = () => {
   const [formKey, setFormKey] = useState(0);
   const [file, setFile] = useState<File[]>([]);
-  const [selectedTags, setSelectedTags] = useState<any[]>([]);
+  const [selectedTags, setSelectedTags] = useState<InputTagOptionType[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [category, setCategory] = useState<string>("");
   const [createLoading, setCreateLoading] = useState<boolean>(false);
   const { uploadToS3 } = useUploadToS3();
-  const { tags, loadingTags } = useGetTags();
-  const { categories, loadingCategories } = useGetCategories();
-  const { handleSubmit, register, resetField, reset } = useForm();
+  const { tags } = useGetTags();
+  const { categories } = useGetCategories();
+  const { handleSubmit, register, reset } = useForm();
   const { toast } = useToast()
 
   const [createProduct] = useMutation(CREATE_PRODUCT);
