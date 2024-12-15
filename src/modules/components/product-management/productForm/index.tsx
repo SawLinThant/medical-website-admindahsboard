@@ -10,6 +10,7 @@ import { useUploadToS3 } from "@/lib/hooks/useFileUpload";
 import { useGetCategories, useGetTags } from "@/lib/hooks/useGetQuery";
 import AmountInput from "@/modules/common/components/amount-input";
 import { BackButton } from "@/modules/common/components/button";
+import { ScheduleButton } from "@/modules/common/components/button/schedule-button";
 import CustomInput from "@/modules/common/components/custom-input";
 import CustomTextArea from "@/modules/common/components/custom-textarea";
 import Combobox from "@/modules/common/components/dropdown";
@@ -24,6 +25,7 @@ import { useForm } from "react-hook-form";
 const ProductForm: React.FC = () => {
   const [file, setFile] = useState<File[]>([]);
   const [selectedTags, setSelectedTags] = useState<any[]>([]);
+  const [selectedDate,setSelectedDate] = useState<Date>();
   const [category, setCategory] = useState<string>("");
   const [createLoading, setCreateLoading] = useState<boolean>(false);
   const { uploadToS3 } = useUploadToS3();
@@ -66,6 +68,7 @@ const ProductForm: React.FC = () => {
   const onSubmit = handleSubmit(async (data) => {
     if (!file.length) return console.log("Please upload at least one image");
     if (!category) return console.log("Please select a category");
+    if (!selectedDate) return console.log("Please select scheduled date");
     if (!selectedTags.length) return console.log("Please choose at least one tag");
 
     try {
@@ -77,6 +80,7 @@ const ProductForm: React.FC = () => {
           bulk_price: data.bulk_price,
           quantity: 1,
           description: data.description,
+          created_at: new Date(selectedDate || Date.now()).toISOString(),
           shop_id: "da70c6d4-b7a0-4aa0-8ac9-08d1c5da08de",
           category_id: category,
         },
@@ -96,6 +100,8 @@ const ProductForm: React.FC = () => {
       setCreateLoading(false);
     }
   });
+
+  console.log(new Date(selectedDate || Date.now()).toISOString())
 
   return (
     <section className="w-full flex flex-col gap-4">
@@ -206,9 +212,7 @@ const ProductForm: React.FC = () => {
                 </Button>
               </div>
               <div className="flex flex-row gap-3">
-                <Button className="bg-slate-200 text-inputlabel rounded-md min-w-[7rem] hover:text-white">
-                  Shcedule
-                </Button>
+                <ScheduleButton loading={createLoading} setSelectedDate={setSelectedDate}/>
                 <Button
                   type="submit"
                   disabled={createLoading}

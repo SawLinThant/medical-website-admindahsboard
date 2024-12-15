@@ -9,6 +9,7 @@ export const CREATE_PRODUCT = gql`
     $description: String
     $shop_id: uuid
     $category_id: uuid
+    $created_at: timestamptz
   ) {
     insert_products_one(
       object: {
@@ -19,6 +20,7 @@ export const CREATE_PRODUCT = gql`
         description: $description
         shop_id: $shop_id
         category_id: $category_id
+        created_at: $created_at
       }
     ) {
       id
@@ -28,9 +30,11 @@ export const CREATE_PRODUCT = gql`
       bulk_price
       quantity
       description
+      created_at
     }
   }
 `;
+
 
 export const CREATE_PRODUCT_TAG = gql`
   mutation createProductTag(
