@@ -23,7 +23,7 @@ export const useUploadToS3 = (): UseUploadToS3Return => {
     setError(undefined);
 
     try {
-      const folder = "users";
+      const folder = "products";
       let contentType = image.type;
       if (contentType.startsWith("image")) {
         contentType = "image";

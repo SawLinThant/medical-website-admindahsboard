@@ -42,7 +42,11 @@ const ProductForm: React.FC = () => {
     setSelectedTags((prev) => prev.filter((tag,index) => index !== id))
   }
 
-  const handleImageUpload = async (product_id: string) => {
+  const handleRemoveImage = (id:number) => {
+      setFile((prev) => prev.filter((image,index) => index !==id))
+  }
+
+  const handleImageUpload = async () => {
     const uploadedUrls: string[] = [];
     for (const image of file) {
       const url = await uploadToS3(image);
@@ -65,7 +69,7 @@ const ProductForm: React.FC = () => {
     if (!selectedTags.length) return console.log("Please choose at least one tag");
 
     try {
-      // Create product
+      setCreateLoading(true)
       const productResponse = await createProduct({
         variables: {
           name: data.name,
@@ -81,9 +85,8 @@ const ProductForm: React.FC = () => {
       const product_id = productResponse.data?.insert_products_one?.id;
 
       if (product_id) {
-        // Upload images and create product tags
         await Promise.all([
-        //  handleImageUpload(product_id),
+          handleImageUpload(),
           handleProductTagCreation(product_id),
         ]);
       }
@@ -93,8 +96,6 @@ const ProductForm: React.FC = () => {
       setCreateLoading(false);
     }
   });
-
-  console.log(selectedTags)
 
   return (
     <section className="w-full flex flex-col gap-4">
@@ -172,7 +173,7 @@ const ProductForm: React.FC = () => {
                       className="w-full h-full object-cover rounded-md border"
                       alt={`Uploaded image ${index + 1}`}
                     />
-                    <div className="absolute top-1 right-2">
+                    <div onClick={() => handleRemoveImage(index)} className="absolute top-1 right-2 hover:cursor-pointer">
                       <X size={30} color="black" />
                     </div>
                   </div>
