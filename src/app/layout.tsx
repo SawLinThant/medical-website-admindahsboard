@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import ApolloProviderWrapper from "@/lib/apolloClient/apolloWrapper";
 import { AccountProvider } from "@/lib/context/account-context";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -31,7 +32,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ApolloProviderWrapper>
-          <AccountProvider>{children}</AccountProvider>
+          <AccountProvider>
+            {children}
+            <div className="fixed inset-0 flex items-start justify-center pointer-events-none">
+              <Toaster />
+            </div>
+          </AccountProvider>
         </ApolloProviderWrapper>
       </body>
     </html>
