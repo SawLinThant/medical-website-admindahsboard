@@ -22,22 +22,21 @@ import InputTag from "@/modules/common/components/tag-input";
 import { useMutation } from "@apollo/client";
 import { Loader, X } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
 const ProductForm: React.FC = () => {
   const [formKey, setFormKey] = useState(0);
   const [file, setFile] = useState<File[]>([]);
-  const [selectedTags, setSelectedTags] = useState<any[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [category, setCategory] = useState<string>("");
   const [createLoading, setCreateLoading] = useState<boolean>(false);
   const { uploadToS3 } = useUploadToS3();
-  const { tags, loadingTags } = useGetTags();
-  const { categories, loadingCategories } = useGetCategories();
-  const { handleSubmit, register, resetField, reset } = useForm();
-  const { toast } = useToast()
-
+  const { tags} = useGetTags();
+  const { categories } = useGetCategories();
+  const { handleSubmit, register, reset } = useForm();
+  const { toast } = useToast();
   const [createProduct] = useMutation(CREATE_PRODUCT);
   const [createProductTag] = useMutation(CREATE_PRODUCT_TAG);
   const [createImage] = useMutation(CREATE_IMAGE)
@@ -145,6 +144,8 @@ const ProductForm: React.FC = () => {
       setCreateLoading(false);
     }
   });
+
+  console.log(selectedTags)
 
   return (
     <section className="w-full flex flex-col gap-4">

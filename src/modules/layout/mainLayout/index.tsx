@@ -1,6 +1,5 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/modules/common/components/shadcn-sidebar/app-sidebar";
-import SideBar from "@/modules/common/components/sidebar";
 import { LayoutWithChildren } from "@/types/utils";
 
 const Layout: LayoutWithChildren = ({ children }) => {
@@ -8,7 +7,6 @@ const Layout: LayoutWithChildren = ({ children }) => {
     <SidebarProvider className="">
       <div className="w-screen md:flex lg:flex flex-row sm:hidden">
         <AppSidebar />
-        {/* <SideBar /> */}
         <div className="w-full h-screen lg:hidden md:hidden flex items-center justify-center">
           <h2>Sorry! this feature is not avaiable for mobile devices</h2>
         </div>
