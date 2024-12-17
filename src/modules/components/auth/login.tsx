@@ -16,7 +16,7 @@ const LoginForm = () => {
       console.log("login success");
       const token = data.userLogin.token;
       localStorage.setItem("token", token);
-      router.push("/product-management/product/create-product");
+      router.push("/product-management/product/product-list");
     },
     onError: () => {
       toast({

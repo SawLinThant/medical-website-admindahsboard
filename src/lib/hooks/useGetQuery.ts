@@ -1,8 +1,8 @@
 import { useQuery } from "@apollo/client";
 import { GET_TAGS } from "../apolloClient/query/tagQuery";
 import { GET_CATEGORY } from "../apolloClient/query/categoryQuery";
-import { GET_FILTERED_PRODUCTS } from "../apolloClient/query/productQuery";
-import { useState } from "react";
+import { GET_FILTERED_PRODUCTS, GET_PRODUCTS } from "../apolloClient/query/productQuery";
+import { useMemo, useState } from "react";
 
 export const useGetTags = () => {
   const { data, loading: loadingTags, error } = useQuery(GET_TAGS);
@@ -16,23 +16,62 @@ export const useGetCategories = () => {
   return { categories, loadingCategories, error };
 };
 
-export const useGetProducts = () => {
-  const [nameSearch, setNameSearch] = useState<string>("");
-  const shouldFilter = nameSearch === "" ? false : true;
+export const useGetAllProducts = () => {
   const {
     data,
-    loading:loadingProduct,
-    error: fetchProductError,
-  } = useQuery(GET_FILTERED_PRODUCTS, {
-    variables: {
-        variables: {
-            where: nameSearch
-              ? { name: { _eq: nameSearch } }
-              : {}, 
-          },
-    },
-  });
-  const products = data?.products || [];
+    loading:loadingTotalProduct,
+    error: fetchTotalProductError,
+  } = useQuery(GET_PRODUCTS);
+  const totalProducts = data?.products || [];
+  const productCount = totalProducts.length;
+  return {totalProducts,loadingTotalProduct,fetchTotalProductError,productCount}
+};
 
-  return {products,loadingProduct,fetchProductError}
+export const useGetProducts = () => {
+  const [filters, setFilters] = useState<{
+    name?: string;
+    category?: string;
+  }>({});
+  const [page, setPage] = useState<number>(1);
+  const [take, setTake] = useState<number>(10);
+
+  const skip = useMemo(() => (page - 1) * take, [page, take]);
+
+  const where = useMemo(() => {
+    const conditions: any = {};
+
+    if (filters.name) {
+      conditions.name = { _ilike: `%${filters.name}%` };
+    }
+    if (filters.category) {
+      conditions.category = { id: { _eq: filters.category } };
+    }
+
+    return Object.keys(conditions).length > 0 ? conditions : undefined;
+  }, [filters]);
+
+  const { data, loading, error } = useQuery(GET_FILTERED_PRODUCTS, {
+    variables: {
+      where,
+      offset: skip,
+      limit: take,
+    },
+    fetchPolicy: "network-only",
+  });
+
+  const products = data?.products || [];
+  const totalCount = data?.products_aggregate?.aggregate?.count || 1;
+
+  return {
+    products,
+    loading,
+    error,
+    filters,
+    setFilters, 
+    page,
+    setPage,
+    take,
+    setTake,
+    totalCount,
+  };
 };

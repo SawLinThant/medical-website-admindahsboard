@@ -1,37 +1,59 @@
-import * as React from "react"
+import * as React from "react";
 
 import {
   Select,
   SelectContent,
   SelectGroup,
+  SelectItem,
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 
 interface SelectItemType {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface SelectDropdownProps {
-    options: SelectItemType[],
-    label: string
+  options: SelectItemType[];
+  label: string;
+  setOption: (option: string) => void;
 }
 
-export function SelectDropdown({options,label}:SelectDropdownProps) {
+export function SelectDropdown({
+  options,
+  label,
+  setOption,
+}: SelectDropdownProps) {
   return (
-    <Select>
-      <SelectTrigger className="w-[150px] border border-gray-400">
-        <SelectValue placeholder={label} />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-            {options.map((option) => (
-                <SelectLabel key={option.id}>{option.name}</SelectLabel>
-            ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
-  )
+    <Select
+    onValueChange={(value) => {
+      setOption(value); 
+    }}
+  >
+    <SelectTrigger className="w-[150px] border-gray-600">
+      <SelectValue placeholder={label} />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectGroup>
+        <SelectLabel>{label}</SelectLabel>
+        <SelectItem
+            key={1}
+            value={"all"}
+          >
+            All
+          </SelectItem>
+        {options.map((option, index) => (
+          <SelectItem
+            key={index}
+            value={option.id}
+          >
+            {option.name}
+          </SelectItem>
+        ))}
+      </SelectGroup>
+    </SelectContent>
+  </Select>
+  );
 }
