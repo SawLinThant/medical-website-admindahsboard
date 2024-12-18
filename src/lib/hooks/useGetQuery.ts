@@ -3,6 +3,7 @@ import { GET_TAGS } from "../apolloClient/query/tagQuery";
 import { GET_CATEGORY } from "../apolloClient/query/categoryQuery";
 import { GET_FILTERED_PRODUCTS, GET_PRODUCTS } from "../apolloClient/query/productQuery";
 import { useMemo, useState } from "react";
+import { GET_PRICE_RANGE } from "../apolloClient/query/priceRangeQuery";
 
 export const useGetTags = () => {
   const { data, loading: loadingTags, error } = useQuery(GET_TAGS);
@@ -31,6 +32,7 @@ export const useGetProducts = () => {
   const [filters, setFilters] = useState<{
     name?: string;
     category?: string;
+    priceRange?: { start_price: number; end_price: number };
   }>({});
   const [page, setPage] = useState<number>(1);
   const [take, setTake] = useState<number>(10);
@@ -46,6 +48,13 @@ export const useGetProducts = () => {
     if (filters.category) {
       conditions.category = { id: { _eq: filters.category } };
     }
+    if (filters.priceRange) {
+      conditions.price = {
+        _gte: filters.priceRange.start_price,
+        _lte: filters.priceRange.end_price,
+      };
+    }
+
 
     return Object.keys(conditions).length > 0 ? conditions : undefined;
   }, [filters]);
@@ -74,4 +83,10 @@ export const useGetProducts = () => {
     setTake,
     totalCount,
   };
+};
+
+export const useGetRanges = () => {
+  const { data, loading: loadingPriceRange, error } = useQuery(GET_PRICE_RANGE);
+  const priceRanges = data?.price_ranges || [];
+  return { priceRanges , loadingPriceRange, error };
 };

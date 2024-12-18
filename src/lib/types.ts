@@ -14,3 +14,9 @@ export type ProductImageype = {
    product_id: string
    product: ProductType
 }
+
+export type PriceRangeType = {
+   id: string;
+   start_price: number;
+   end_price: number;
+}

@@ -16,7 +16,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import clsx from "clsx";
-import { InputTagOptionType } from "@/lib/config";
+import { InputTagOptionType } from "@/lib/types";
 
 
 

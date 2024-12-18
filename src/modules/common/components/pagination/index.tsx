@@ -36,8 +36,6 @@ import { cn } from "@/lib/utils";
         onPageChange(currentPage + 1);
       }
     };
-    console.log("current page",currentPage)
-    console.log("total Pages",totalPages)
   
     const renderPageNumbers = () => {
       const pages = [];
