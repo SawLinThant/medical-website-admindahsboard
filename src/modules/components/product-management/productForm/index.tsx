@@ -57,9 +57,6 @@ const ProductForm: React.FC = () => {
      reset(); 
      setFile([]); 
      file.forEach((image) => URL.revokeObjectURL(URL.createObjectURL(image)));
-    // setSelectedTags([]); 
-    // setSelectedDate(undefined); 
-    // setCategory(""); 
     setFormKey((prevKey) => prevKey + 1);
   }
 
@@ -135,10 +132,9 @@ const ProductForm: React.FC = () => {
       toast({
         variant: "destructive",
         title: "Uh oh! Something went wrong.",
-        description: "There was a problem with your request.",
+        description: "There was a problem while creating product.",
         action: <ToastAction altText="Try again">Try again</ToastAction>,
       })
-      //console.error("Error creating product:", error);
     } finally {
       handleResetForm();
       setCreateLoading(false);

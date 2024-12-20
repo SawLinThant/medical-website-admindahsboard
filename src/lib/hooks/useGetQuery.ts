@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client";
 import { GET_TAGS } from "../apolloClient/query/tagQuery";
-import { GET_CATEGORY } from "../apolloClient/query/categoryQuery";
+import { GET_CATEGORY, GET_SHOP_CATEGORY } from "../apolloClient/query/categoryQuery";
 import { GET_FILTERED_PRODUCTS, GET_PRODUCTS } from "../apolloClient/query/productQuery";
 import { useMemo, useState } from "react";
 import { GET_PRICE_RANGE } from "../apolloClient/query/priceRangeQuery";
@@ -89,4 +89,16 @@ export const useGetRanges = () => {
   const { data, loading: loadingPriceRange, error } = useQuery(GET_PRICE_RANGE);
   const priceRanges = data?.price_ranges || [];
   return { priceRanges , loadingPriceRange, error };
+};
+
+
+interface ShopCategoryResponse{
+  id: string;
+  name: string
+}
+
+export const useGetShopCategories = () => {
+  const { data, loading: loadingShopCategories, error } = useQuery<{ shop_categories: ShopCategoryResponse[] }>(GET_SHOP_CATEGORY);
+  const shopCategories = data?.shop_categories || [];
+  return { shopCategories, loadingShopCategories, error };
 };
