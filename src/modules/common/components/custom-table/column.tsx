@@ -8,6 +8,7 @@ import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export type Payment = {
   id: string;
@@ -55,13 +56,13 @@ export const productcolumns: ColumnDef<ProductCategory>[] = [
     accessorKey: "images",
     header: "Product Detail",
     cell: ({ row }) => {
-        const image_url = row.original.images[0].image_url
+        const image_url = row.original.images[0]?row.original.images[0].image_url : null
         return <div className="flex flex-row gap-6">
             <div className="p-2 rounded-md bg-slate-400">
-            <Image width={70} height={60} className="max-h-[70px] h-[70px] object-cover" src={image_url} alt="product"/>
+            <Image width={70} height={60} className="max-h-[70px] h-[70px] object-cover" src={image_url?image_url:"/images/image_placeholder.jpg"} alt="product"/>
             </div>
             
-            <div className="h-[70px] flex flex-row items-center"><span>{row.original.images[0].product.name}</span></div>
+            <div className="h-[70px] flex flex-row items-center"><span>{row.original.images[0]?row.original.images[0].product.name:"deleted product"}</span></div>
         </div>;
       },
   },
@@ -97,8 +98,9 @@ export const productcolumns: ColumnDef<ProductCategory>[] = [
         <div className="text-center">Action</div>
       ),
     cell: ({ row }) => {
+      const router = useRouter();
       return <div className="flex items-center justify-center">
-        <Button className="bg-inputlabel/85 text-white rounded-md">Edit</Button>
+        <Button onClick={() => router.push(`/product-management/product/product-detail/${row.getValue("id")}`)} className="bg-inputlabel/85 text-white rounded-md">Edit</Button>
       </div>;
     },
   },

@@ -8,6 +8,7 @@ interface InputProps<T extends FieldValues> {
   register?: UseFormRegister<T>; 
   type: string; 
   placeHolder: string; 
+  [key:string]: any
 }
 
 const CustomInput = <T extends Record<string, T>>({
@@ -16,6 +17,7 @@ const CustomInput = <T extends Record<string, T>>({
   type,
   placeHolder,
   register,
+  ...props
 }: InputProps<T>) => {
   return (
     <div className="w-full h-full flex flex-col gap-2">
@@ -29,6 +31,7 @@ const CustomInput = <T extends Record<string, T>>({
         {...(register
           ? register(name, { required: `${String(name)} is required` })
           : {})}
+          {...(type !== "file" ? props : {})}
       />
     </div>
   );

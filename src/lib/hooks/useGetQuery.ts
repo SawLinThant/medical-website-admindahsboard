@@ -1,9 +1,11 @@
 import { useQuery } from "@apollo/client";
-import { GET_TAGS } from "../apolloClient/query/tagQuery";
+import { GET_TAGS, GET_TAGS_BY_PRODUCT_ID } from "../apolloClient/query/tagQuery";
 import { GET_CATEGORY, GET_SHOP_CATEGORY } from "../apolloClient/query/categoryQuery";
-import { GET_FILTERED_PRODUCTS, GET_PRODUCTS } from "../apolloClient/query/productQuery";
+import { GET_FILTERED_PRODUCTS, GET_PRODUCTS, GET_PRODUCTS_BY_ID } from "../apolloClient/query/productQuery";
 import { useMemo, useState } from "react";
 import { GET_PRICE_RANGE } from "../apolloClient/query/priceRangeQuery";
+import { GET_IMAGES_BY_PRODUCT_ID } from "../apolloClient/query/productImageQuery";
+import { InputTagOptionType } from "../types";
 
 export const useGetTags = () => {
   const { data, loading: loadingTags, error } = useQuery(GET_TAGS);
@@ -101,4 +103,111 @@ export const useGetShopCategories = () => {
   const { data, loading: loadingShopCategories, error } = useQuery<{ shop_categories: ShopCategoryResponse[] }>(GET_SHOP_CATEGORY);
   const shopCategories = data?.shop_categories || [];
   return { shopCategories, loadingShopCategories, error };
+};
+
+interface Category {
+  id: string
+  name: string
+}
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  bulk_price?: number;
+  quantity: number;
+  description?: string;
+  category_id: string;
+  category: Category
+}
+
+interface GetProductsByIdResponse {
+  products: Product[];
+}
+
+interface UseGetProductByIdReturn {
+  product: Product | null;
+  loadingProduct: boolean;
+  error: Error | undefined;
+  refetchProduct: any
+}
+
+export const useGetProductById = (id: string): UseGetProductByIdReturn => {
+  const { data, loading: loadingProduct, error, refetch: refetchProduct } = useQuery<GetProductsByIdResponse>(
+    GET_PRODUCTS_BY_ID,
+    {
+      variables: { id },
+      skip: !id,
+    }
+  );
+
+  const product = data?.products?.[0] || null;
+
+  return { product, loadingProduct, error, refetchProduct };
+};
+
+interface Tag {
+  id: string;
+  tag_id: string;
+  tag: {
+    id: string
+    name: string
+  }
+}
+
+interface GetTagsByProductIdResponse {
+  product_tags: Tag[];
+}
+
+interface UseGetTagsByProductIdReturn {
+  tagsById: InputTagOptionType[];
+  loadingTags: boolean;
+  error: Error | undefined;
+}
+
+export const useGetTagsByProductId = (productId: string): UseGetTagsByProductIdReturn => {
+  const { data, loading: loadingTags, error } = useQuery<GetTagsByProductIdResponse>(
+    GET_TAGS_BY_PRODUCT_ID,
+    {
+      variables: { product_id: productId },
+      skip: !productId,
+    }
+  );
+
+  const tagsById: InputTagOptionType[] = data?.product_tags.map(tag => ({
+    id: tag.tag.id,
+    name: tag.tag.name,
+  })) || [];
+
+  return { tagsById, loadingTags, error };
+};
+
+interface Image {
+  id: string;
+  image_url: string;
+}
+
+interface GetImagesByProductIdResponse {
+  images: Image[];
+}
+
+interface UseGetImagesByProductIdReturn {
+  images: Image[];
+  loadingImages: boolean;
+  error: Error | undefined;
+  refetchImage: any
+}
+
+export const useGetImagesByProductId = (productId: string): UseGetImagesByProductIdReturn => {
+  const { data, loading: loadingImages, error, refetch: refetchImage } = useQuery<GetImagesByProductIdResponse>(
+    GET_IMAGES_BY_PRODUCT_ID,
+    {
+      variables: { product_id: productId },
+      skip: !productId, 
+    }
+  );
+
+  const images = data?.images || [];
+
+  return { images, loadingImages, error, refetchImage };
 };

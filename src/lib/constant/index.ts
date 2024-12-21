@@ -11,7 +11,7 @@ export const SIDEBAR_ROUTES = [
       items: [
         {
           title: "Product", 
-          url: "product",
+          url: "/product-management/product/product-list",
         },
         {
           title: "Category", 

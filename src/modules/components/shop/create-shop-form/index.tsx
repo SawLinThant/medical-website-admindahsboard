@@ -214,6 +214,7 @@ const ShopForm: React.FC = () => {
                 <div className="w-full flex flex-col gap-2">
                   <Label className="text-inputlabel">Shop Category</Label>
                   <Combobox
+                    label="Select Category"
                     setCategory={setShopCategory}
                     options={shopCategories}
                   />

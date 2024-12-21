@@ -1,33 +1,34 @@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { FilePlus2 } from "lucide-react";
-import { useState } from "react";
-import { FieldValues, Path, UseFormRegister } from "react-hook-form";
+import { FieldValues, Path } from "react-hook-form";
 
-interface InputProps<T extends FieldValues> {
+interface TextAreaProps<T extends FieldValues> {
   label: string;
   name: Path<T>;
-  register?: UseFormRegister<T>;
+  value: string | number;
   placeHolder: string;
-  [key: string]: any;
+  onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onFileUpload?: (text: string) => void; // Callback for file upload
+  [key: string]: any; // Additional props
 }
 
-const CustomTextArea = <T extends FieldValues>({
+const CustomUpdateTextArea = <T extends FieldValues>({
   label,
   name,
+  value,
   placeHolder,
-  register,
+  onChange,
+  onFileUpload,
   ...props
-}: InputProps<T>) => {
-  const [textAreaValue, setTextAreaValue] = useState("");
-
+}: TextAreaProps<T>) => {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
         const text = reader.result as string;
-        setTextAreaValue(text); 
+        if (onFileUpload) onFileUpload(text); // Pass uploaded text to parent
       };
       reader.readAsText(file);
     }
@@ -39,7 +40,7 @@ const CustomTextArea = <T extends FieldValues>({
         <Label htmlFor={name} className="text-inputlabel">
           {label}
         </Label>
-        <label className="no-underline text-inputlabel text-sm cursor-pointer">
+        {/* <label className="no-underline text-inputlabel text-sm cursor-pointer">
           <div className="text-inputlabel text-sm flex items-center gap-1">
             <FilePlus2 size={20} color="#796f6f" /> Upload text file
           </div>
@@ -49,23 +50,20 @@ const CustomTextArea = <T extends FieldValues>({
             className="hidden"
             onChange={handleFileUpload}
           />
-        </label>
+        </label> */}
       </div>
 
       <Textarea
-        {...(register
-          ? register(name, { required: `${String(name)} is required` })
-          : {})}
         id={name}
         className="min-h-36"
         name={name}
         placeholder={placeHolder}
-        value={textAreaValue}
-        onChange={(e) => setTextAreaValue(e.target.value)}
+        value={value} // Controlled by parent
+        onChange={onChange} // Controlled by parent
         {...props}
       />
     </div>
   );
 };
 
-export default CustomTextArea;
+export default CustomUpdateTextArea;
