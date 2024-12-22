@@ -82,3 +82,51 @@ export const CREATE_SHOP_IMAGES = gql`
     }
   }
 `;
+
+export const UPDATE_SHOP_BY_ID = gql`
+  mutation updateShopById(
+    $id: uuid!
+    $name: String
+    $logo: String
+    $description: String
+    $address: String
+    $phone: String
+    $category_id: uuid
+    $remark: String
+    $shop_admin_name: String
+  ) {
+    update_shops_by_pk(
+      pk_columns: { id: $id }
+      _set: {
+        name: $name
+        logo: $logo
+        description: $description
+        address: $address
+        phone: $phone
+        category_id: $category_id
+        remark: $remark
+        shop_admin_name: $shop_admin_name
+      }
+    ) {
+      id
+      name
+      logo
+      description
+      address
+      phone
+      category_id
+      remark
+      shop_admin_name
+    }
+  }
+`;
+
+export const DELETE_SHOP_IMAGE = gql`
+  mutation deleteImage($id: uuid!) {
+    delete_shop_images_by_pk(id: $id) {
+      id
+      shop_id
+      image_url
+    }
+  }
+`;

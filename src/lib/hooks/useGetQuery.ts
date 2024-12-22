@@ -6,6 +6,9 @@ import { useMemo, useState } from "react";
 import { GET_PRICE_RANGE } from "../apolloClient/query/priceRangeQuery";
 import { GET_IMAGES_BY_PRODUCT_ID } from "../apolloClient/query/productImageQuery";
 import { InputTagOptionType } from "../types";
+import { GET_SHOP_BY_ID } from "../apolloClient/query/shopQuery";
+import { GET_USER_BY_SHOP_ID } from "../apolloClient/query/userQuery";
+import { GET_IMAGES_BY_SHOP_ID } from "../apolloClient/query/shopImageQuery";
 
 export const useGetTags = () => {
   const { data, loading: loadingTags, error } = useQuery(GET_TAGS);
@@ -193,6 +196,10 @@ interface GetImagesByProductIdResponse {
   images: Image[];
 }
 
+interface GetShopImagesByShoptIdResponse {
+  shop_images: Image[];
+}
+
 interface UseGetImagesByProductIdReturn {
   images: Image[];
   loadingImages: boolean;
@@ -212,4 +219,92 @@ export const useGetImagesByProductId = (productId: string): UseGetImagesByProduc
   const images = data?.images || [];
 
   return { images, loadingImages, error, refetchImage };
+};
+
+export const useGetImagesByShopId = (shopId: string): UseGetImagesByProductIdReturn => {
+  const { data, loading: loadingImages, error, refetch: refetchImage } = useQuery<GetShopImagesByShoptIdResponse>(
+    GET_IMAGES_BY_SHOP_ID,
+    {
+      variables: { shop_id: shopId },
+      skip: !shopId, 
+    }
+  );
+
+  const images = data?.shop_images || [];
+
+  return { images, loadingImages, error, refetchImage };
+};
+
+interface Shop {
+  id: string;
+  name: string;
+  logo: string;
+  description: string;
+  address: string;
+  phone: string;
+  category_id: string;
+  remark: string;
+  shop_admin_name: string;
+  shop_category: {
+    id: string
+    name: string
+  }
+}
+
+interface GetShopByIdResponse {
+  shops_by_pk: Shop | null;
+}
+
+interface UseGetShopByIdReturn {
+  shop: Shop | null;
+  loadingShop: boolean;
+  errorShop: Error | undefined;
+  refetchShop: any;
+}
+
+export const useGetShopById = (id: string): UseGetShopByIdReturn => {
+  const { data, loading: loadingShop, error: errorShop, refetch: refetchShop } = useQuery<GetShopByIdResponse>(
+    GET_SHOP_BY_ID,
+    {
+      variables: { id },
+      skip: !id,
+    }
+  );
+
+  const shop = data?.shops_by_pk || null;
+
+  return { shop, loadingShop, errorShop, refetchShop };
+};
+
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  phone: string;
+  role: string;
+}
+
+interface GetUsersByShopIdResponse {
+  users: User[] | null;
+}
+
+interface UseGetUsersByShopIdReturn {
+  user: User | null;
+  loadingUser: boolean;
+  errorUser: Error | undefined;
+  refetchUser: any;
+}
+
+export const useGetUsersByShopId = (shop_id: string): UseGetUsersByShopIdReturn => {
+  const { data, loading: loadingUser, error: errorUser, refetch: refetchUser } = useQuery<GetUsersByShopIdResponse>(
+    GET_USER_BY_SHOP_ID,
+    {
+      variables: { shop_id: shop_id },
+      skip: !shop_id,
+    }
+  );
+
+  const user = data?.users?.[0] || null;
+
+  return { user, loadingUser, errorUser, refetchUser };
 };
