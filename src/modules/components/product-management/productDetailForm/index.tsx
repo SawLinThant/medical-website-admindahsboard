@@ -17,6 +17,7 @@ import {
   useGetTagsByProductId,
 } from "@/lib/hooks/useGetQuery";
 import { useDeleteImageById } from "@/lib/hooks/useMutation/product/useDeleteImageById";
+import { useDeleteProductTag } from "@/lib/hooks/useMutation/product/useDeleteProductTag";
 import { useUpdateProduct } from "@/lib/hooks/useMutation/product/useUpdateProduct";
 import { InputTagOptionType } from "@/lib/types";
 import AmountUpdateInput from "@/modules/common/components/amount-update-input";
@@ -61,6 +62,7 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
   const { toast } = useToast();
   const { updateProduct } = useUpdateProduct();
   const [createProductTag] = useMutation(CREATE_PRODUCT_TAG);
+  const {deleteProductTag} = useDeleteProductTag()
   const [createImage] = useMutation(CREATE_IMAGE);
 
   const { product, refetchProduct } = useGetProductById(id);
@@ -81,13 +83,20 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
   const { images, refetchImage } = useGetImagesByProductId(id);
   const { deleteImageById, loadingDeleteImage } = useDeleteImageById();
 
-  const { tagsById } = useGetTagsByProductId(id);
-  const [selectedTags, setSelectedTags] = useState<InputTagOptionType[]>(
-    () => tagsById || []
-  );
+  const { tagsById, loadingTags, productTagsById } = useGetTagsByProductId(id);
+  const [selectedTags, setSelectedTags] = useState<InputTagOptionType[]>([]);
   const handleTagChange = (newTags: InputTagOptionType[]) => {
     setSelectedTags(newTags);
+    
   };
+
+  useEffect(() => {
+    
+    if(tagsById){
+      setSelectedTags(tagsById)
+    }
+  },[loadingTags])
+
 
   useEffect(() => {
     if (product) setProductInfo(product);
@@ -131,9 +140,26 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
     file.forEach((image) => URL.revokeObjectURL(URL.createObjectURL(image)));
   };
 
-  const handleProductTagCreation = async (product_id: string) => {
-    for (const tag_id of selectedTags) {
-      await createProductTag({ variables: { product_id, tag_id } });
+  const handleProductTagUpdate = async (product_id: string) => {
+    if(!tagsById || !selectedTags)return
+    const tagsToAdd = selectedTags.filter(
+      (selectedTags) => !tagsById.some((tagById) => tagById.id === selectedTags.id)
+    )
+    const tagsToDelete = tagsById.filter(
+      (tagById) => !selectedTags.some((selectedTag) => selectedTag.id === tagById.id)
+    );
+
+    for (const tag of tagsToAdd) {
+      await createProductTag({
+        variables: {
+          product_id,
+          tag_id: tag.id,
+        },
+      });
+    }
+
+    for (const tag of tagsToDelete) {
+     await deleteProductTag(id,tag.id)
     }
   };
 
@@ -151,6 +177,7 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
         category_id: category === "" ? productInfo.category_id : category,
       });
       if (updateResponse) {
+        handleProductTagUpdate(id)
         await Promise.all([
           handleImageUpload(id)
         ])
@@ -174,7 +201,6 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
     }
   };
 
-  console.log(category);
 
   return (
     <section className="w-full flex flex-col gap-4">
@@ -247,7 +273,7 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
                     removeTag={handleRemoveTag}
                     setTag={handleTagChange}
                     options={tags}
-                    selectedTag={tagsById}
+                    selectedTag={selectedTags}
                   />
                 </div>
               </div>

@@ -54,6 +54,14 @@ export const CREATE_PRODUCT_TAG = gql`
   }
 `;
 
+export const DELETE_PRODUCT_TAG = gql`
+  mutation DeleteProductTag($product_id: uuid!, $tag_id: uuid!) {
+    delete_product_tags(where: { product_id: { _eq: $product_id }, tag_id: { _eq: $tag_id } }) {
+      affected_rows
+    }
+  }
+`;
+
 export const CREATE_IMAGE = gql`
   mutation createImage(
    $product_id: uuid

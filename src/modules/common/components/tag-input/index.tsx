@@ -35,8 +35,9 @@ const InputTag = ({ options,setTag,removeTag,selectedTag }: InputTagProps) => {
   const InputRef = React.useRef<HTMLDivElement | null>(null);
 
   const handleAddTag = (option: InputTagOptionType) => {
-    if (!selectedTags.some((tag) => tag.id === option.id)) {
-      const updatedTags = [...selectedTags, option];
+    if(selectedTag)
+    if (!selectedTag.some((tag) => tag.id === option.id)) {
+      const updatedTags = [...selectedTag, option];
       setSelectedTags(updatedTags);
       setTag(updatedTags); 
     }

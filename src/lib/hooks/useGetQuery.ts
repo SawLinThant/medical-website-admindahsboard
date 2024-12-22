@@ -160,6 +160,7 @@ interface GetTagsByProductIdResponse {
 }
 
 interface UseGetTagsByProductIdReturn {
+  productTagsById: Tag[]
   tagsById: InputTagOptionType[];
   loadingTags: boolean;
   error: Error | undefined;
@@ -174,12 +175,13 @@ export const useGetTagsByProductId = (productId: string): UseGetTagsByProductIdR
     }
   );
 
+  const productTagsById = data?.product_tags || [];
   const tagsById: InputTagOptionType[] = data?.product_tags.map(tag => ({
     id: tag.tag.id,
     name: tag.tag.name,
   })) || [];
 
-  return { tagsById, loadingTags, error };
+  return { productTagsById, tagsById, loadingTags, error };
 };
 
 interface Image {
