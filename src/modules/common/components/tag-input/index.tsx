@@ -16,17 +16,18 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import clsx from "clsx";
-import { InputTagOptionType } from "@/lib/config";
+import { InputTagOptionType } from "@/lib/types";
 
 
 
 interface InputTagProps {
   options: InputTagOptionType[];
-  setTag: (option:string[]) => void
+  setTag: (option:InputTagOptionType[]) => void
   removeTag: (id:number) => void
+  selectedTag?: InputTagOptionType[]
 }
 
-const InputTag = ({ options,setTag,removeTag }: InputTagProps) => {
+const InputTag = ({ options,setTag,removeTag,selectedTag }: InputTagProps) => {
   const [open, setOpen] = React.useState(false);
   const [id, setid] = React.useState("");
   const [selectedTags, setSelectedTags] = React.useState<InputTagOptionType[]>([]);
@@ -34,10 +35,11 @@ const InputTag = ({ options,setTag,removeTag }: InputTagProps) => {
   const InputRef = React.useRef<HTMLDivElement | null>(null);
 
   const handleAddTag = (option: InputTagOptionType) => {
-    if (!selectedTags.some((tag) => tag.id === option.id)) {
-      const updatedTags = [...selectedTags, option];
+    if(selectedTag)
+    if (!selectedTag.some((tag) => tag.id === option.id)) {
+      const updatedTags = [...selectedTag, option];
       setSelectedTags(updatedTags);
-      setTag(updatedTags.map((tag) => tag.id)); 
+      setTag(updatedTags); 
     }
     setSearchid("");
     setOpen(false);
@@ -56,7 +58,7 @@ const InputTag = ({ options,setTag,removeTag }: InputTagProps) => {
           className="flex items-center flex-wrap gap-2 border rounded px-2 py-1 focus-within:ring-2 focus-within:ring-blue-500"
           onClick={() => setOpen(true)}
         >
-          {selectedTags.map((tag,index) => (
+          {selectedTag && selectedTag.map((tag,index) => (
             <div
               key={tag.id}
               className="flex items-center gap-1 bg-gray-200 px-2 py-1 rounded text-sm"

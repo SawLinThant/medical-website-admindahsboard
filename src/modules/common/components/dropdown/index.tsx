@@ -26,9 +26,10 @@ type optionType = {
 interface ComboboxDemoProps {
    options: optionType[]
    setCategory: (id:string) => void
+   label: string
 }
 
-const Combobox =({options,setCategory}:ComboboxDemoProps) => {
+const Combobox =({options,setCategory,label}:ComboboxDemoProps) => {
   const [open, setOpen] = React.useState(false)
   const [id, setid] = React.useState("");
   const buttonRef = React.useRef<HTMLButtonElement | null>(null);
@@ -45,7 +46,7 @@ const Combobox =({options,setCategory}:ComboboxDemoProps) => {
         >
           {id
             ? options.find((option) => option.id === id)?.name
-            : "Select option..."}
+            :label}
           <ChevronDown color="#796f6f" size={20} />
         </Button>
       </PopoverTrigger>

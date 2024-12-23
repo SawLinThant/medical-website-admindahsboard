@@ -8,3 +8,12 @@ export const GET_CATEGORY= gql`
     }
   }
 `;
+
+export const GET_SHOP_CATEGORY= gql`
+  query getTags {
+    shop_categories {
+      id
+      name
+    }
+  }
+`;

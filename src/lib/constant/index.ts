@@ -11,7 +11,7 @@ export const SIDEBAR_ROUTES = [
       items: [
         {
           title: "Product", 
-          url: "product",
+          url: "/product-management/product/product-list",
         },
         {
           title: "Category", 
@@ -75,6 +75,25 @@ export const SIDEBAR_ROUTES = [
           },
         ],
       },
+  ];
+
+  export const ADMIN_SIDEBAR_ROUTES = [
+    {
+      title: "Shop Management",
+      url: "#",
+      icon: LayoutList,
+      isActive: false,
+      items: [
+        {
+          title: "Shop", 
+          url: "/shop/shop-list",
+        },
+        {
+          title: "Category", 
+          url: "products/category",
+        },
+      ],
+    },
   ];
 
   export const options = [

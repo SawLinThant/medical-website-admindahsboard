@@ -1,6 +1,8 @@
 "use client";
 import { toast } from "@/hooks/use-toast";
 import { SIGN_IN_MUTATION } from "@/lib/apolloClient/mutation/signinMutation";
+import { useAccount } from "@/lib/context/account-context";
+import { getRoleFromToken } from "@/lib/utils";
 import CustomInput from "@/modules/common/components/custom-input";
 import { useMutation } from "@apollo/client";
 import { Loader2 } from "lucide-react";
@@ -10,13 +12,27 @@ import { useForm } from "react-hook-form";
 
 const LoginForm = () => {
   const { register, handleSubmit } = useForm();
+  const {setRole, setIsLogin, setUserId} = useAccount()
   const router = useRouter();
   const [userLogin, { loading: loginLoading }] = useMutation(SIGN_IN_MUTATION, {
     onCompleted: (data) => {
       console.log("login success");
       const token = data.userLogin.token;
       localStorage.setItem("token", token);
-      router.push("/product-management/product/create-product");
+      const user = getRoleFromToken(token);
+      if(user){
+        setRole(user.role)
+        setUserId(user.id)
+        setIsLogin(true)
+      }
+      toast({
+        description: "Login Success",
+      })
+      if (user &&  user.role === "admin") {
+        router.push("/shop/shop-list");
+      } else {
+        router.push("/product-management/product/product-list");
+      }
     },
     onError: () => {
       toast({
@@ -54,7 +70,7 @@ const LoginForm = () => {
       <div className="col-span-5 px-6 py-10">
         <div className="w-full flex flex-col gap-4">
           <div className="w-full min-h-[100px] bg-inputlabel/75 border flex items-center justify-center rounded-md">
-            <h2 className="font-bold text-white">Kyanmar Thuka</h2>
+            <h2 className="font-bold text-white">Natsay</h2>
           </div>
           <div className="flex flex-col">
             <h1 className="font-semibold text-2xl">Login</h1>

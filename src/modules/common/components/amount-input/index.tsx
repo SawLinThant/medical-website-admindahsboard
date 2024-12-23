@@ -8,23 +8,27 @@ interface AmountInputProps<T extends FieldValues> {
   name: Path<T>;
   placeHolder: string;
   register?: UseFormRegister<T>;
+  [key:string]: any
 }
 
 const AmountInput = <T extends Record<string, T>>({
   label,
   name,
   placeHolder,
-  register
+  register,
+  ...props
 }:AmountInputProps<T>) => {
   return (
     <div className="w-full h-full flex flex-col gap-2">
       <Label className="text-inputlabel">{label}</Label>
       <div className="w-full relative">
         <Input
-          name={name}
           type="number"
           placeholder={placeHolder}
-          {...register?.(name)}
+          {...(register
+            ? register(name, { required: `${String(name)} is required` })
+            : {})}
+          {...props}
           className="py-2 pl-12 pr-2 rounded-lg border border-gray-300"
         />
         <div className="absolute top-2 left-3.5 ">

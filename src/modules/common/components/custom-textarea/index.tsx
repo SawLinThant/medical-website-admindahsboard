@@ -9,13 +9,15 @@ interface InputProps<T extends FieldValues> {
   name: Path<T>;
   register?: UseFormRegister<T>;
   placeHolder: string;
+  [key: string]: any;
 }
 
-const CustomTextArea = <T extends Record<string, T>>({
+const CustomTextArea = <T extends FieldValues>({
   label,
   name,
   placeHolder,
   register,
+  ...props
 }: InputProps<T>) => {
   const [textAreaValue, setTextAreaValue] = useState("");
 
@@ -25,18 +27,20 @@ const CustomTextArea = <T extends Record<string, T>>({
       const reader = new FileReader();
       reader.onload = () => {
         const text = reader.result as string;
-        setTextAreaValue(text);
+        setTextAreaValue(text); 
       };
       reader.readAsText(file);
     }
   };
+
   return (
     <div className="w-full h-full flex flex-col gap-2">
       <div className="w-full flex flex-row justify-between">
-        <Label className="text-inputlabel">{label}</Label>
-        {/*  */}
+        <Label htmlFor={name} className="text-inputlabel">
+          {label}
+        </Label>
         <label className="no-underline text-inputlabel text-sm cursor-pointer">
-          <div className="text-inputlabel text-sm flex items-center flex-row gap-1">
+          <div className="text-inputlabel text-sm flex items-center gap-1">
             <FilePlus2 size={20} color="#796f6f" /> Upload text file
           </div>
           <input
@@ -47,17 +51,21 @@ const CustomTextArea = <T extends Record<string, T>>({
           />
         </label>
       </div>
+
       <Textarea
         {...(register
           ? register(name, { required: `${String(name)} is required` })
           : {})}
+        id={name}
         className="min-h-36"
         name={name}
         placeholder={placeHolder}
         value={textAreaValue}
         onChange={(e) => setTextAreaValue(e.target.value)}
+        {...props}
       />
     </div>
   );
 };
+
 export default CustomTextArea;

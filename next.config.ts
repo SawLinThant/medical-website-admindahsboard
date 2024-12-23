@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  images: {
+    domains: ['axra.sgp1.digitaloceanspaces.com'],
+  },
 };
 
 export default nextConfig;

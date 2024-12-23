@@ -54,6 +54,14 @@ export const CREATE_PRODUCT_TAG = gql`
   }
 `;
 
+export const DELETE_PRODUCT_TAG = gql`
+  mutation DeleteProductTag($product_id: uuid!, $tag_id: uuid!) {
+    delete_product_tags(where: { product_id: { _eq: $product_id }, tag_id: { _eq: $tag_id } }) {
+      affected_rows
+    }
+  }
+`;
+
 export const CREATE_IMAGE = gql`
   mutation createImage(
    $product_id: uuid
@@ -72,3 +80,56 @@ export const CREATE_IMAGE = gql`
   }
 `;
 
+export const DELETE_IMAGE = gql`
+  mutation deleteImage($id: uuid!) {
+    delete_images_by_pk(id: $id) {
+      id
+      product_id
+      image_url
+    }
+  }
+`;
+
+export const UPDATE_PRODUCT = gql`
+  mutation updateProduct(
+    $id: uuid!
+    $name: String
+    $price: Int
+    $bulk_price: Int
+    $quantity: Int
+    $description: String
+    $category_id: uuid
+    $updated_at: timestamptz
+  ) {
+    update_products_by_pk(
+      pk_columns: { id: $id }
+      _set: {
+        name: $name
+        price: $price
+        bulk_price: $bulk_price
+        quantity: $quantity
+        description: $description
+        category_id: $category_id
+        updated_at: $updated_at
+      }
+    ) {
+      id
+      name
+      category_id
+      price
+      bulk_price
+      quantity
+      description
+      updated_at
+    }
+  }
+`;
+
+export const DELETE_PRODUCT_BY_ID = gql`
+  mutation deleteProduct($id: uuid!) {
+    delete_products_by_pk(id: $id) {
+      id
+      name
+    }
+  }
+`;
