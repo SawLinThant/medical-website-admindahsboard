@@ -115,7 +115,7 @@ export const productcolumns: ColumnDef<ProductCategory>[] = [
         <div className="text-center">Action</div>
       ),
     cell: ({ row }) => {
-      return <ActionButton id={row.getValue("id")} />;
+      return <ActionButton route="/product-management/product/product-detail/" id={row.getValue("id")} />;
     },
   },
   {
@@ -201,7 +201,7 @@ export const shopcolumns: ColumnDef<Shop>[] = [
         <div className="text-center">Action</div>
       ),
     cell: ({ row }) => {
-      return <ActionButton id={row.getValue("id")} />;
+      return <ActionButton route="/shop/shop-detail/" id={row.getValue("id")} />;
     },
   },
   {

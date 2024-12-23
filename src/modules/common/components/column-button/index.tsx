@@ -1,11 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 
-const ActionButton = ({ id }: { id: string }) => {
+interface ActionButtonProps {
+    id: string
+    route: string
+}
+
+const ActionButton = ({id,route}:ActionButtonProps) => {
   const router = useRouter();
 
   const handleEdit = () => {
-    router.push(`/shop/shop-detail/${id}`);
+    router.push(`${route}/${id}`);
   };
 
   return (
