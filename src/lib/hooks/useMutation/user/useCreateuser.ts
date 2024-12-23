@@ -1,10 +1,10 @@
 
 import { REGISTER_USER_MUTATION } from "@/lib/apolloClient/mutation/signupMutation";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 
 interface CreateUserVariables {
     username: string;
-    email: string;
+    email: string; 
     password: string;
     role: string;
     phone: string;

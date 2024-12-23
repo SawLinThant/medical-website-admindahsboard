@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DollarSign } from "lucide-react";
-import { FieldValues, Path, UseFormRegister } from "react-hook-form";
+import { FieldValues, Path } from "react-hook-form";
 
 interface AmountInputProps<T extends FieldValues> {
   label: string;

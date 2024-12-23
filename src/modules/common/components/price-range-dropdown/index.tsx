@@ -10,7 +10,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PriceRangeType } from "@/lib/types";
-import { json } from "stream/consumers";
 
 
 interface SelectDropdownProps {

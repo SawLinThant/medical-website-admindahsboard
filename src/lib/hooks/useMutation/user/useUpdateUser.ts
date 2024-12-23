@@ -7,17 +7,17 @@ interface UpdateUserByShopIdVariables {
     email?: string;
     phone?: string;
     role?: string;
-    updated_at: String
+    updated_at: string
   }
 
   interface User {
-    id: String
-    username: String
-    email: String
-    password: String
-    phone: String
-    role: String
-    updated_at: String
+    id: string
+    username: string
+    email: string
+    password: string
+    phone: string
+    role: string
+    updated_at: string
   }
   
   interface UpdateUserByShopIdResponse {

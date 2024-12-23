@@ -5,10 +5,11 @@
       "warn",
       {
         "vars": "all",
-        "varsIgnorePattern": "^_", // Ignore variables starting with _
+        "varsIgnorePattern": "^_", 
         "args": "after-used",
         "ignoreRestSiblings": true
       }
-    ]
+    ],
+    "@typescript-eslint/no-explicit-any": "off" 
   }
 }

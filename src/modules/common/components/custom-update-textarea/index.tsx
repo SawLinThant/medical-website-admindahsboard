@@ -1,6 +1,5 @@
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { FilePlus2 } from "lucide-react";
 import { FieldValues, Path } from "react-hook-form";
 
 interface TextAreaProps<T extends FieldValues> {
@@ -22,17 +21,6 @@ const CustomUpdateTextArea = <T extends FieldValues>({
   onFileUpload,
   ...props
 }: TextAreaProps<T>) => {
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const text = reader.result as string;
-        if (onFileUpload) onFileUpload(text); // Pass uploaded text to parent
-      };
-      reader.readAsText(file);
-    }
-  };
 
   return (
     <div className="w-full h-full flex flex-col gap-2">

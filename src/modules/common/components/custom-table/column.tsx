@@ -9,6 +9,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import ActionButton from "../column-button";
 
 export type Payment = {
   id: string;
@@ -114,16 +115,13 @@ export const productcolumns: ColumnDef<ProductCategory>[] = [
         <div className="text-center">Action</div>
       ),
     cell: ({ row }) => {
-      const router = useRouter();
-      return <div className="flex items-center justify-center">
-        <Button onClick={() => router.push(`/product-management/product/product-detail/${row.getValue("id")}`)} className="bg-inputlabel/85 text-white rounded-md">Edit</Button>
-      </div>;
+      return <ActionButton id={row.getValue("id")} />;
     },
   },
   {
     id: "actions",
     enableHiding: false,
-    cell: ({ row }) => {
+    cell: () => {
  
       return (
         <DropdownMenu>
@@ -203,10 +201,7 @@ export const shopcolumns: ColumnDef<Shop>[] = [
         <div className="text-center">Action</div>
       ),
     cell: ({ row }) => {
-      const router = useRouter();
-      return <div className="flex items-center justify-center">
-        <Button onClick={() => router.push(`/shop/shop-detail/${row.getValue("id")}`)} className="bg-inputlabel/85 text-white rounded-md">Edit</Button>
-      </div>;
+      return <ActionButton id={row.getValue("id")} />;
     },
   },
   {

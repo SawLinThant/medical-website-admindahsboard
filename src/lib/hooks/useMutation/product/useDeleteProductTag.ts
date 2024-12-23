@@ -19,6 +19,7 @@ export const useDeleteProductTag = (): UseDeleteProductTagReturn => {
          },
       });
     } catch (err) {
+      console.log(err)
     }
   };
 

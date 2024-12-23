@@ -16,11 +16,6 @@ import { GET_USER_BY_ID } from "@/lib/apolloClient/query/userQuery";
 import { useQuery } from "@apollo/client";
 import { useGetShopById } from "@/lib/hooks/useGetQuery";
 
-const DUMMY_USER = {
-  name: "Axra",
-  email: "axra@example.com",
-  avatar: "/avatars/shadcn.jpg",
-};
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
   const {role} = useAccount();
@@ -32,7 +27,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
           }
       })
   const user = userInfo? userInfo.users?.[0] : [];
-   const { shop, refetchShop } = useGetShopById(user.shop_id);
+   const { shop } = useGetShopById(user.shop_id);
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>

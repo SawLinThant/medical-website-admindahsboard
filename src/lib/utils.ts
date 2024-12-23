@@ -20,7 +20,7 @@ export function getRoleFromToken (token:string){
       const email = decodedToken.email;
       return {role, id, email};
   }catch(error){
-      console.log("error decoding token");
+      console.log("error decoding token:",error);
       return null
   }
   
@@ -31,7 +31,7 @@ export function getDataToken (token:string){
       const decodedToken = jwtDecode(token)
       return decodedToken;
   }catch(error){
-      console.log("error decoding token");
+      console.log("error decoding token:",error);
       return null
   }
   

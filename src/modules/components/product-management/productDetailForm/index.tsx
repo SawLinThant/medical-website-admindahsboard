@@ -88,7 +88,7 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
   const { images, refetchImage } = useGetImagesByProductId(id);
   const { deleteImageById, loadingDeleteImage } = useDeleteImageById();
 
-  const { tagsById, loadingTags, productTagsById } = useGetTagsByProductId(id);
+  const { tagsById, loadingTags } = useGetTagsByProductId(id);
   const [selectedTags, setSelectedTags] = useState<InputTagOptionType[]>([]);
   const handleTagChange = (newTags: InputTagOptionType[]) => {
     setSelectedTags(newTags);
@@ -98,7 +98,7 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
     if (tagsById) {
       setSelectedTags(tagsById);
     }
-  }, [loadingTags]);
+  }, [loadingTags ]);
 
   useEffect(() => {
     if (product) setProductInfo(product);
