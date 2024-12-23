@@ -14,7 +14,6 @@ const CreateProduct : React.FC = () => {
         }
     })
     const user = userInfo? userInfo.users?.[0] : [];
-    console.log("userInfo:",user)
     return(
         <div className="">
             <ProductForm shop_id={user.shop_id}/>

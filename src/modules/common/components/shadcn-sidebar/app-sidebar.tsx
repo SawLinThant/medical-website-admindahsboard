@@ -12,6 +12,9 @@ import { ADMIN_SIDEBAR_ROUTES, SIDEBAR_ROUTES } from "@/lib/constant";
 import { SearchForm } from "./search-form";
 import { NavUser } from "./nav-user";
 import { useAccount } from "@/lib/context/account-context";
+import { GET_USER_BY_ID } from "@/lib/apolloClient/query/userQuery";
+import { useQuery } from "@apollo/client";
+import { useGetShopById } from "@/lib/hooks/useGetQuery";
 
 const DUMMY_USER = {
   name: "Axra",
@@ -21,7 +24,15 @@ const DUMMY_USER = {
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
   const {role} = useAccount();
-  const Routes = role === "admin"? ADMIN_SIDEBAR_ROUTES:SIDEBAR_ROUTES
+  const Routes = role === "admin"? ADMIN_SIDEBAR_ROUTES:SIDEBAR_ROUTES;
+  const {userId} = useAccount();
+      const {data:userInfo} = useQuery(GET_USER_BY_ID,{
+          variables:{
+              id: userId
+          }
+      })
+  const user = userInfo? userInfo.users?.[0] : [];
+   const { shop, refetchShop } = useGetShopById(user.shop_id);
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -36,7 +47,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
         <SidebarContents items={Routes} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={DUMMY_USER} />
+        <NavUser logo={shop?.logo || ""} email={user.email || ""} username={user.username || ""}/>
       </SidebarFooter>
     </Sidebar>
   );

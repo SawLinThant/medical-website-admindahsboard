@@ -7,8 +7,9 @@ import { GET_PRICE_RANGE } from "../apolloClient/query/priceRangeQuery";
 import { GET_IMAGES_BY_PRODUCT_ID } from "../apolloClient/query/productImageQuery";
 import { InputTagOptionType } from "../types";
 import { GET_FILTERED_SHOPS, GET_SHOP_BY_ID } from "../apolloClient/query/shopQuery";
-import { GET_USER_BY_SHOP_ID } from "../apolloClient/query/userQuery";
+import { GET_USER_BY_ID, GET_USER_BY_SHOP_ID } from "../apolloClient/query/userQuery";
 import { GET_IMAGES_BY_SHOP_ID } from "../apolloClient/query/shopImageQuery";
+import { useAccount } from "../context/account-context";
 
 export const useGetTags = () => {
   const { data, loading: loadingTags, error } = useQuery(GET_TAGS);
@@ -35,6 +36,7 @@ export const useGetAllProducts = () => {
 
 export const useGetProducts = () => {
   const [filters, setFilters] = useState<{
+    shop_id?: string;
     name?: string;
     category?: string;
     priceRange?: { start_price: number; end_price: number };
@@ -46,7 +48,9 @@ export const useGetProducts = () => {
 
   const where = useMemo(() => {
     const conditions: any = {};
-
+    if(filters.shop_id){
+      conditions.shop_id =  {_eq: filters.shop_id};
+    }
     if (filters.name) {
       conditions.name = { _ilike: `%${filters.name}%` };
     }

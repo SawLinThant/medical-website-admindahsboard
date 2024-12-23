@@ -17,9 +17,11 @@ import {
   useGetTagsByProductId,
 } from "@/lib/hooks/useGetQuery";
 import { useDeleteImageById } from "@/lib/hooks/useMutation/product/useDeleteImageById";
+import { useDeleteProductById } from "@/lib/hooks/useMutation/product/useDeleteProduct";
 import { useDeleteProductTag } from "@/lib/hooks/useMutation/product/useDeleteProductTag";
 import { useUpdateProduct } from "@/lib/hooks/useMutation/product/useUpdateProduct";
 import { InputTagOptionType } from "@/lib/types";
+import { CustomAlertDialog } from "@/modules/common/components/alert-dialog";
 import AmountUpdateInput from "@/modules/common/components/amount-update-input";
 import { BackButton } from "@/modules/common/components/button";
 import CustomUpdateInput from "@/modules/common/components/custom-update-input";
@@ -30,6 +32,7 @@ import InputTag from "@/modules/common/components/tag-input";
 import { useMutation } from "@apollo/client";
 import { Loader, X } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 type ProductDetailFormProps = {
@@ -62,8 +65,10 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
   const { toast } = useToast();
   const { updateProduct } = useUpdateProduct();
   const [createProductTag] = useMutation(CREATE_PRODUCT_TAG);
-  const {deleteProductTag} = useDeleteProductTag()
+  const { deleteProductTag } = useDeleteProductTag();
   const [createImage] = useMutation(CREATE_IMAGE);
+  const {deleteProductById,loadingDeleteProduct} = useDeleteProductById();
+  const router = useRouter();
 
   const { product, refetchProduct } = useGetProductById(id);
   const [productInfo, setProductInfo] = useState<ProductInfo>({
@@ -87,20 +92,24 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
   const [selectedTags, setSelectedTags] = useState<InputTagOptionType[]>([]);
   const handleTagChange = (newTags: InputTagOptionType[]) => {
     setSelectedTags(newTags);
-    
   };
 
   useEffect(() => {
-    
-    if(tagsById){
-      setSelectedTags(tagsById)
+    if (tagsById) {
+      setSelectedTags(tagsById);
     }
-  },[loadingTags])
-
+  }, [loadingTags]);
 
   useEffect(() => {
     if (product) setProductInfo(product);
   }, [product]);
+
+  const handleDeleteProduct = async() => {
+    const deleteResponse = await deleteProductById(productInfo.id);
+    if(deleteResponse){
+       router.push("/product-management/product/product-list")
+    }
+  }
 
   const handleFileUpload = (files: FileList) => {
     setFile((prev) => [...prev, ...Array.from(files)]);
@@ -114,9 +123,9 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
     setFile((prev) => prev.filter((image, index) => index !== id));
   };
 
-  const handleDeleteImage = async(id: string) => {
-    const deleteResponse =await deleteImageById(id);
-    if(deleteResponse)refetchImage();
+  const handleDeleteImage = async (id: string) => {
+    const deleteResponse = await deleteImageById(id);
+    if (deleteResponse) refetchImage();
   };
 
   const handleImageUpload = async (id: string) => {
@@ -141,12 +150,14 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
   };
 
   const handleProductTagUpdate = async (product_id: string) => {
-    if(!tagsById || !selectedTags)return
+    if (!tagsById || !selectedTags) return;
     const tagsToAdd = selectedTags.filter(
-      (selectedTags) => !tagsById.some((tagById) => tagById.id === selectedTags.id)
-    )
+      (selectedTags) =>
+        !tagsById.some((tagById) => tagById.id === selectedTags.id)
+    );
     const tagsToDelete = tagsById.filter(
-      (tagById) => !selectedTags.some((selectedTag) => selectedTag.id === tagById.id)
+      (tagById) =>
+        !selectedTags.some((selectedTag) => selectedTag.id === tagById.id)
     );
 
     for (const tag of tagsToAdd) {
@@ -159,7 +170,7 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
     }
 
     for (const tag of tagsToDelete) {
-     await deleteProductTag(id,tag.id)
+      await deleteProductTag(id, tag.id);
     }
   };
 
@@ -177,12 +188,10 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
         category_id: category === "" ? productInfo.category_id : category,
       });
       if (updateResponse) {
-        handleProductTagUpdate(id)
-        await Promise.all([
-          handleImageUpload(id)
-        ])
-        handleResetImage()
-        refetchProduct()
+        handleProductTagUpdate(id);
+        await Promise.all([handleImageUpload(id)]);
+        handleResetImage();
+        refetchProduct();
         refetchImage();
         toast({
           description: "Product updated",
@@ -201,7 +210,6 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
     }
   };
 
-
   return (
     <section className="w-full flex flex-col gap-4">
       <div className="w-full min-h-20 flex flex-row items-center gap-2">
@@ -212,9 +220,7 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
           <div className="text-sm text-muted-foreground">
             Back to product list
           </div>
-          <h1 className="text-headercolor font-bold text-xl">
-            Add New Product
-          </h1>
+          <h1 className="text-headercolor font-bold text-xl">Product Detail</h1>
         </div>
       </div>
       <form>
@@ -370,20 +376,19 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
             </div>
             <div className="w-full min-h-20 flex flex-row justify-between">
               <div>
-                {/* <Button
-                  type="button"
-                  className="bg-transparent border border-gray-300 rounded-md text-red-500 min-w-[5rem]"
-                >
-                  Discard
-                </Button> */}
               </div>
               <div className="flex flex-row gap-3">
-                <Button
-                  type="button"
-                  className="bg-transparent border border-gray-300 rounded-md text-red-500 min-w-[5rem]"
-                >
-                  Delete
-                </Button>
+                <div className="min-w-[7rem]">
+                  <CustomAlertDialog
+                    label="Delete"
+                    heading="Are you sure you want to delete this product?"
+                    caption="This action will permanently delete this product from the shop"
+                    actionDescription="Deleting the product"
+                    action={handleDeleteProduct}
+                    actionLoading={loadingDeleteProduct}
+                  />
+                </div>
+
                 <Button
                   type="button"
                   onClick={handleUpdate}

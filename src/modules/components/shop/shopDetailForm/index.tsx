@@ -10,9 +10,11 @@ import {
   useGetShopCategories,
   useGetUsersByShopId,
 } from "@/lib/hooks/useGetQuery";
+import { useDeleteShopById } from "@/lib/hooks/useMutation/product/useDeleteShop";
 import { useDeleteShopImageById } from "@/lib/hooks/useMutation/shop/useDeleteImageById";
 import { useUpdateShopById } from "@/lib/hooks/useMutation/shop/useUpdateShop";
 import { useUpdateUserByShopId } from "@/lib/hooks/useMutation/user/useUpdateUser";
+import { CustomAlertDialog } from "@/modules/common/components/alert-dialog";
 import BackButton from "@/modules/common/components/button/backButton";
 import CustomUpdateInput from "@/modules/common/components/custom-update-input";
 import CustomUpdateTextArea from "@/modules/common/components/custom-update-textarea";
@@ -21,6 +23,7 @@ import FileuploadField from "@/modules/common/components/fileupload-field";
 import { useMutation } from "@apollo/client";
 import { Loader, X } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -78,6 +81,8 @@ const ShopDetailForm: React.FC<ShopDetailFormPops> = ({
   const { updateUserByShopId } = useUpdateUserByShopId();
   const { images, refetchImage } = useGetImagesByShopId(id);
   const { deleteImageById, loadingDeleteImage } = useDeleteShopImageById();
+  const { deleteShopById, loadingDeleteShop } = useDeleteShopById();
+  const router = useRouter();
 
   const [shopInfo, setShopInfo] = useState<Shop>({
     id: "",
@@ -114,19 +119,16 @@ const ShopDetailForm: React.FC<ShopDetailFormPops> = ({
     }
   }, [user]);
 
-  const handeInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setShopInfo((prev) => ({
-      ...prev,
-      [value]: name,
-    }));
+  const handleDeleteShop = async () => {
+    const deleteResponse = await deleteShopById(shopInfo.id);
+    if (deleteResponse) {
+      router.push("/shop/shop-list");
+    }
   };
 
   const handleDeleteImage = async (id: string) => {
     const deleteResponse = await deleteImageById(id);
-    console.log(deleteResponse)
+    console.log(deleteResponse);
     if (deleteResponse) refetchImage();
   };
 
@@ -172,39 +174,39 @@ const ShopDetailForm: React.FC<ShopDetailFormPops> = ({
     console.log("Uploaded image URLs:", uploadedUrls);
   };
 
-  const handleDeleteBanner = async() => {
+  const handleDeleteBanner = async () => {
     const response = await updateShopById({
-        id: id,
-        name: shopInfo.name,
-        logo: "",
-        description: shopInfo.description,
-        address: shopInfo.address,
-        phone: shopInfo.phone,
-        category_id:shopCategory === ""? shopInfo.category_id: shopCategory,
-        remark: shopInfo.remark,
-        shop_admin_name: shopInfo.shop_admin_name,
-      });
-      if(response){
-        refetchShop()
-      }
-  }
+      id: id,
+      name: shopInfo.name,
+      logo: "",
+      description: shopInfo.description,
+      address: shopInfo.address,
+      phone: shopInfo.phone,
+      category_id: shopCategory === "" ? shopInfo.category_id : shopCategory,
+      remark: shopInfo.remark,
+      shop_admin_name: shopInfo.shop_admin_name,
+    });
+    if (response) {
+      refetchShop();
+    }
+  };
 
   const handleUpdate = async () => {
     try {
       setUpdateLoading(true);
       let bannerUrl = "";
-      if(bannerImage.length>0){
-        const uploadedBannerUrl = await uploadToS3(bannerImage[0])
-        if(uploadedBannerUrl)bannerUrl = uploadedBannerUrl
+      if (bannerImage.length > 0) {
+        const uploadedBannerUrl = await uploadToS3(bannerImage[0]);
+        if (uploadedBannerUrl) bannerUrl = uploadedBannerUrl;
       }
       const response = await updateShopById({
         id: id,
         name: shopInfo.name,
-        logo: bannerUrl ===""? shopInfo.logo: bannerUrl,
+        logo: bannerUrl === "" ? shopInfo.logo : bannerUrl,
         description: shopInfo.description,
         address: shopInfo.address,
         phone: shopInfo.phone,
-        category_id:shopCategory === ""? shopInfo.category_id: shopCategory,
+        category_id: shopCategory === "" ? shopInfo.category_id : shopCategory,
         remark: shopInfo.remark,
         shop_admin_name: shopInfo.shop_admin_name,
       });
@@ -398,13 +400,6 @@ const ShopDetailForm: React.FC<ShopDetailFormPops> = ({
                   }
                   type="text"
                 />
-
-                {/* <CustomUpdateInput
-                  name="password"
-                  label="Password*"
-                  placeHolder="Enter password"
-                  type="password"
-                /> */}
               </div>
             </div>
           </div>
@@ -469,7 +464,7 @@ const ShopDetailForm: React.FC<ShopDetailFormPops> = ({
                 Shop Banner Image
               </h2>
               <div className="w-full min-h-20 border border-gray-300 rounded-md flex flex-wrap items-center justify-center gap-6 p-8">
-                {(bannerImage.length < 1 && shopInfo.logo === "")  ? (
+                {bannerImage.length < 1 && shopInfo.logo === "" ? (
                   <FileuploadField
                     className="w-[10rem]"
                     onFileSelect={handleSingleFileUpload}
@@ -493,33 +488,29 @@ const ShopDetailForm: React.FC<ShopDetailFormPops> = ({
                     </div>
                   </div>
                 ))}
-                {
-                    shopInfo.logo !==""?(
-                        <div
-                        className="w-[10rem] h-[10rem] relative group"
-                      >
-                        <Image
-                          src={shopInfo.logo}
-                          width={300}
-                          height={300}
-                          className="w-full h-full object-cover rounded-md border"
-                          alt="banner logo"
-                        />
-                        <div
-                          onClick={handleDeleteBanner}
-                          className="absolute inset-0 flex items-center justify-center hover:cursor-pointer"
-                        >
-                          <div className="group-hover:opacity-100 flex opacity-0 transition-all flex-row items-center px-3 py-1 rounded bg-slate-100">
-                            {loadingUpdateShop ? (
-                              <Loader className="animate-spin" />
-                            ) : (
-                              "Remove"
-                            )}
-                          </div>
-                        </div>
+                {shopInfo.logo !== "" ? (
+                  <div className="w-[10rem] h-[10rem] relative group">
+                    <Image
+                      src={shopInfo.logo}
+                      width={300}
+                      height={300}
+                      className="w-full h-full object-cover rounded-md border"
+                      alt="banner logo"
+                    />
+                    <div
+                      onClick={handleDeleteBanner}
+                      className="absolute inset-0 flex items-center justify-center hover:cursor-pointer"
+                    >
+                      <div className="group-hover:opacity-100 flex opacity-0 transition-all flex-row items-center px-3 py-1 rounded bg-slate-100">
+                        {loadingUpdateShop ? (
+                          <Loader className="animate-spin" />
+                        ) : (
+                          "Remove"
+                        )}
                       </div>
-                    ):null
-                }
+                    </div>
+                  </div>
+                ) : null}
               </div>
             </div>
             <div className="w-full min-h-20 flex flex-col gap-2">
@@ -542,13 +533,14 @@ const ShopDetailForm: React.FC<ShopDetailFormPops> = ({
             <div className="w-full min-h-20 flex flex-row justify-between">
               <div></div>
               <div className="flex flex-row gap-3">
-                <Button
-                  type="button"
-                  //  onClick={handleResetForm}
-                  className="bg-transparent border border-gray-300 rounded-md text-red-500 min-w-[5rem]"
-                >
-                  Delete
-                </Button>
+                <CustomAlertDialog
+                  label="Delete"
+                  heading="Are you sure you want to delete this shop?"
+                  caption="This action will permanently delete this shop from the list"
+                  actionDescription="Deleting the product"
+                  action={handleDeleteShop}
+                  actionLoading={loadingDeleteShop}
+                />
                 <Button
                   type="button"
                   disabled={updateLoading}

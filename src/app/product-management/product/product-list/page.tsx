@@ -2,51 +2,73 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useGetCategories, useGetProducts, useGetRanges } from "@/lib/hooks/useGetQuery";
+import { GET_USER_BY_ID } from "@/lib/apolloClient/query/userQuery";
+import { useAccount } from "@/lib/context/account-context";
+import {
+  useGetCategories,
+  useGetProducts,
+  useGetRanges,
+} from "@/lib/hooks/useGetQuery";
 import { PriceRangeType } from "@/lib/types";
 import { DataTable } from "@/modules/common/components/custom-table";
 import { productcolumns } from "@/modules/common/components/custom-table/column";
 import { PaginationControll } from "@/modules/common/components/pagination";
 import { PriceSelectDropdown } from "@/modules/common/components/price-range-dropdown";
 import { SelectDropdown } from "@/modules/common/components/select-dropdown";
+import { useQuery } from "@apollo/client";
 import { Search, SquarePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 
 const ProductList: React.FC = () => {
-  const { products, setTake, setFilters, page, setPage, totalCount } =
+  const { products, setTake, setFilters, filters, page, setPage, totalCount } =
     useGetProducts();
   const itemPerPage = 10;
   const router = useRouter();
   const { categories } = useGetCategories();
-  const {priceRanges} = useGetRanges();
+  const { priceRanges } = useGetRanges();
   const [category, setCategory] = useState<string>("");
   const [priceRange, setPriceRange] = useState<PriceRangeType | string>("all");
-  console.log(priceRange)
   const [searchName, setSearchName] = useState<string>("");
   const totalPages = Math.ceil(totalCount / itemPerPage);
+  const { userId } = useAccount();
+  const { data: userInfo } = useQuery(GET_USER_BY_ID, {
+    variables: {
+      id: userId,
+    },
+  });
+  const user = userInfo ? userInfo.users?.[0] : [];
+  console.log(filters);
+
   useEffect(() => {
     setTake(itemPerPage);
     setFilters({
+      shop_id: user.shop_id || "",
       name: searchName,
       category: category === "all" ? undefined : category,
-      priceRange: priceRange === "all"? undefined
-            : {
-              start_price:(priceRange as PriceRangeType).start_price,
-              end_price: (priceRange as PriceRangeType).end_price
-            }
+      priceRange:
+        priceRange === "all"
+          ? undefined
+          : {
+              start_price: (priceRange as PriceRangeType).start_price,
+              end_price: (priceRange as PriceRangeType).end_price,
+            },
     });
-  }, [searchName, category, setFilters, setTake, priceRange]);
+  }, [searchName, category, setFilters, setTake, priceRange, userInfo]);
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
-  console.log(totalCount)
   return (
     <div className="w-full h-full flex flex-col gap-4 p-4">
       <h2 className="font-bold text-xl">Products</h2>
       <div className="min-h-24 w-full flex flex-row items-center justify-between">
         <div className="">
-          <Button onClick={() => router.push("/product-management/product/create-product")} className="flex items-center min-h-10 bg-inputlabel rounded-md">
+          <Button
+            onClick={() =>
+              router.push("/product-management/product/create-product")
+            }
+            className="flex items-center min-h-10 bg-inputlabel rounded-md"
+          >
             <SquarePlus color="white" />
             Add New Product
           </Button>

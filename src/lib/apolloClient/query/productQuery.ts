@@ -49,6 +49,7 @@ export const GET_FILTERED_PRODUCTS = gql`
       name
       price
       quantity
+      shop_id
       category {
         id
         name

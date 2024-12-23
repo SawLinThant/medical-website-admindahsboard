@@ -124,3 +124,12 @@ export const UPDATE_PRODUCT = gql`
     }
   }
 `;
+
+export const DELETE_PRODUCT_BY_ID = gql`
+  mutation deleteProduct($id: uuid!) {
+    delete_products_by_pk(id: $id) {
+      id
+      name
+    }
+  }
+`;

@@ -130,3 +130,12 @@ export const DELETE_SHOP_IMAGE = gql`
     }
   }
 `;
+
+export const DELETE_SHOP_BY_ID = gql`
+  mutation deleteShop($id: uuid!) {
+    delete_shops_by_pk(id: $id) {
+      id
+      name
+    }
+  }
+`;

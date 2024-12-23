@@ -85,7 +85,7 @@ export const SIDEBAR_ROUTES = [
       isActive: false,
       items: [
         {
-          title: "Shopt", 
+          title: "Shop", 
           url: "/shop/shop-list",
         },
         {
