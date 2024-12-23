@@ -1,9 +1,15 @@
 "use client"
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { getRoleFromToken } from "../utils";
 
 interface AccountContext {
+  userId:string
+  setUserId: (id:string) => void
   isLogin: boolean;
+  role: string
+  setRole:(role:string) => void
+  setIsLogin:(isLogin:boolean) => void
 }
 
 const AccountContext = createContext<AccountContext | null>(null);
@@ -14,8 +20,16 @@ interface AccountProviderProps {
 
 export const AccountProvider = ({ children }: AccountProviderProps) => {
   const [isLogin,setIsLogin] = useState<boolean>(false);
+  const [role,setRole] = useState<string>("");
+  const [userId,setUserId] = useState<string>("");
   useEffect(() => {
     const token = localStorage.getItem("token");
+    const user = getRoleFromToken(token?token:"");
+    console.log(user)
+    if(user){
+      setRole(user?user.role:"")
+      setUserId(user?user.id:"")
+    }
     setIsLogin(!!token);
   }, []);
 
@@ -23,6 +37,11 @@ export const AccountProvider = ({ children }: AccountProviderProps) => {
     <AccountContext.Provider
       value={{
         isLogin: isLogin,
+        role: role,
+        setRole: setRole,
+        setIsLogin: setIsLogin,
+        userId: userId,
+        setUserId: setUserId
       }}
     >
       {children}

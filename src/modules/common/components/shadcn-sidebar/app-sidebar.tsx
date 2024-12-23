@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Sidebar,
   SidebarContent,
@@ -6,9 +8,10 @@ import {
 } from "@/components/ui/sidebar";
 import React from "react";
 import { SidebarContents } from "./content";
-import { SIDEBAR_ROUTES } from "@/lib/constant";
+import { ADMIN_SIDEBAR_ROUTES, SIDEBAR_ROUTES } from "@/lib/constant";
 import { SearchForm } from "./search-form";
 import { NavUser } from "./nav-user";
+import { useAccount } from "@/lib/context/account-context";
 
 const DUMMY_USER = {
   name: "Axra",
@@ -17,6 +20,8 @@ const DUMMY_USER = {
 };
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
+  const {role} = useAccount();
+  const Routes = role === "admin"? ADMIN_SIDEBAR_ROUTES:SIDEBAR_ROUTES
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -28,7 +33,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
       </SidebarHeader>
       <SearchForm />
       <SidebarContent className="px-4 mt-6">
-        <SidebarContents items={SIDEBAR_ROUTES} />
+        <SidebarContents items={Routes} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={DUMMY_USER} />

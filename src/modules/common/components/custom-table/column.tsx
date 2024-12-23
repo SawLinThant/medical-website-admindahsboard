@@ -29,6 +29,22 @@ export type ProductCategory = {
   images: ProductImageype[];
 };
 
+interface Shop {
+  id: string;
+  name: string;
+  logo: string;
+  description: string;
+  address: string;
+  phone: string;
+  category_id: string;
+  remark: string;
+  shop_admin_name: string;
+  shop_category: {
+    id: string
+    name: string
+  }
+}
+
 export const productcolumns: ColumnDef<ProductCategory>[] = [
   {
     id: "select",
@@ -59,7 +75,7 @@ export const productcolumns: ColumnDef<ProductCategory>[] = [
         const image_url = row.original.images[0]?row.original.images[0].image_url : null
         return <div className="flex flex-row gap-6">
             <div className="p-2 rounded-md bg-slate-400">
-            <Image width={70} height={60} className="max-h-[70px] h-[70px] object-cover" src={image_url?image_url:"/images/image_placeholder.jpg"} alt="product"/>
+            <Image width={100} height={100} className="max-h-[70px] h-[70px] object-cover" src={image_url?image_url:"/images/image_placeholder.jpg"} alt="product"/>
             </div>
             
             <div className="h-[70px] flex flex-row items-center"><span>{row.original.images[0]?row.original.images[0].product.name:"deleted product"}</span></div>
@@ -101,6 +117,95 @@ export const productcolumns: ColumnDef<ProductCategory>[] = [
       const router = useRouter();
       return <div className="flex items-center justify-center">
         <Button onClick={() => router.push(`/product-management/product/product-detail/${row.getValue("id")}`)} className="bg-inputlabel/85 text-white rounded-md">Edit</Button>
+      </div>;
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: ({ row }) => {
+ 
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0 border border-gray-300">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>View product</DropdownMenuItem>
+            <DropdownMenuItem>Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    },
+  },
+];
+
+export const shopcolumns: ColumnDef<Shop>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: "logo",
+    header: "Product Detail",
+    cell: ({ row }) => {
+        const image_url = row.original.logo?row.original.logo : null
+        return <div className="flex flex-row gap-6">
+            <div className="p-2 rounded-md bg-slate-400">
+            <Image width={100} height={100} className="max-h-[70px] h-[70px] object-cover" src={image_url?image_url:"/images/image_placeholder.jpg"} alt="product"/>
+            </div>
+        </div>;
+      },
+  },
+  {
+    accessorKey: "name",
+    header: "Shop Name",
+  },
+  {
+    accessorKey: "category",
+    header: () => (
+        <div className="text-left">Category</div> 
+      ),
+    cell: ({ row }) => {
+      return <span className="px-3 py-2 rounded-md bg-white">{row.original.shop_category.name}</span>;
+    },
+  },
+  {
+    accessorKey: "shop_admin_name",
+    header: "Shop Admin",
+  },
+  {
+    accessorKey: "id",
+    header: () => (
+        <div className="text-center">Action</div>
+      ),
+    cell: ({ row }) => {
+      const router = useRouter();
+      return <div className="flex items-center justify-center">
+        <Button onClick={() => router.push(`/shop/shop-detail/${row.getValue("id")}`)} className="bg-inputlabel/85 text-white rounded-md">Edit</Button>
       </div>;
     },
   },

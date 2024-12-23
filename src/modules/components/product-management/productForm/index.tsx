@@ -26,7 +26,11 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
-const ProductForm: React.FC = () => {
+interface ProductFormProps {
+  shop_id: string
+}
+
+const ProductForm: React.FC<ProductFormProps> = ({shop_id}) => {
   const [formKey, setFormKey] = useState(0);
   const [file, setFile] = useState<File[]>([]);
   const [selectedTags, setSelectedTags] = useState<InputTagOptionType[]>([]);
@@ -121,7 +125,7 @@ const ProductForm: React.FC = () => {
           quantity: 1,
           description: data.description,
           created_at: new Date(selectedDate || Date.now()).toISOString(),
-          shop_id: "da70c6d4-b7a0-4aa0-8ac9-08d1c5da08de",
+          shop_id: shop_id,
           category_id: category,
         },
       });

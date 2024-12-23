@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { GET_PRICE_RANGE } from "../apolloClient/query/priceRangeQuery";
 import { GET_IMAGES_BY_PRODUCT_ID } from "../apolloClient/query/productImageQuery";
 import { InputTagOptionType } from "../types";
-import { GET_SHOP_BY_ID } from "../apolloClient/query/shopQuery";
+import { GET_FILTERED_SHOPS, GET_SHOP_BY_ID } from "../apolloClient/query/shopQuery";
 import { GET_USER_BY_SHOP_ID } from "../apolloClient/query/userQuery";
 import { GET_IMAGES_BY_SHOP_ID } from "../apolloClient/query/shopImageQuery";
 
@@ -307,4 +307,55 @@ export const useGetUsersByShopId = (shop_id: string): UseGetUsersByShopIdReturn 
   const user = data?.users?.[0] || null;
 
   return { user, loadingUser, errorUser, refetchUser };
+};
+
+type ShopFilter = {
+  name?: string;
+  shop_category?: string;
+};
+
+export const useGetShops = () => {
+  const [filters, setFilters] = useState<ShopFilter>({});
+  const [page, setPage] = useState<number>(1);
+  const [take, setTake] = useState<number>(10);
+
+  const skip = useMemo(() => (page - 1) * take, [page, take]);
+
+  const where = useMemo(() => {
+    const conditions: any = {};
+
+    if (filters.name) {
+      conditions.name = { _ilike: `%${filters.name}%` };
+    }
+    if (filters.shop_category) {
+      conditions.shop_category = { id: { _eq: filters.shop_category } };
+    }
+
+    return Object.keys(conditions).length > 0 ? conditions : undefined;
+  }, [filters]);
+
+  const { data, loading, error } = useQuery(GET_FILTERED_SHOPS, {
+    variables: {
+      where,
+      offset: skip,
+      limit: take,
+    },
+    fetchPolicy: "network-only",
+  });
+
+  const shops = data?.shops || [];
+  const totalCount = data?.shops_aggregate?.aggregate?.count || 1;
+
+  return {
+    shops,
+    loading,
+    error,
+    filters,
+    setFilters,
+    page,
+    setPage,
+    take,
+    setTake,
+    totalCount
+  };
 };

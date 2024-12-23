@@ -77,6 +77,25 @@ export const SIDEBAR_ROUTES = [
       },
   ];
 
+  export const ADMIN_SIDEBAR_ROUTES = [
+    {
+      title: "Shop Management",
+      url: "#",
+      icon: LayoutList,
+      isActive: false,
+      items: [
+        {
+          title: "Shopt", 
+          url: "/shop/shop-list",
+        },
+        {
+          title: "Category", 
+          url: "products/category",
+        },
+      ],
+    },
+  ];
+
   export const options = [
     {
       value: "next.js",

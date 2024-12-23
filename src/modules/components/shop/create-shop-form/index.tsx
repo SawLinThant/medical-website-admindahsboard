@@ -176,10 +176,10 @@ const ShopForm: React.FC = () => {
         </div>
         <div className="flex flex-col gap-2">
           <div className="text-sm text-muted-foreground">
-            Back to product list
+            Back to shop list
           </div>
           <h1 className="text-headercolor font-bold text-xl">
-            Add New Product
+            Add New Shop
           </h1>
         </div>
       </div>

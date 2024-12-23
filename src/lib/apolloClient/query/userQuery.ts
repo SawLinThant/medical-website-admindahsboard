@@ -11,3 +11,16 @@ export const GET_USER_BY_SHOP_ID = gql`
     }
   }
 `;
+
+export const GET_USER_BY_ID = gql`
+  query getUsersByShopId($id: uuid!) {
+    users(where: { id: { _eq: $id } }) {
+      id
+      username
+      email
+      phone
+      role
+      shop_id
+    }
+  }
+`;

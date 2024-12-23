@@ -29,10 +29,40 @@ export const GET_SHOP_BY_ID = gql`
       category_id
       remark
       shop_admin_name
-      shop_category{
+      shop_category {
         id
         name
       }
     }
+  }
+`;
+
+export const GET_FILTERED_SHOPS = gql`
+  query getShops($where: shops_bool_exp, $offset: Int, $limit: Int) {
+    shops(
+      where: $where
+      order_by: { created_at: desc }
+      offset: $offset
+      limit: $limit
+    ) {
+      id
+      name
+      logo
+      description
+      address
+      phone
+      category_id
+      remark
+      shop_admin_name
+      shop_category {
+        id
+        name
+      }
+    }
+      shops_aggregate(where: $where) {
+        aggregate {
+          count
+        }
+      }
   }
 `;

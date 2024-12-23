@@ -1,54 +1,44 @@
-"use client";
 
+"use client"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useGetCategories, useGetProducts, useGetRanges } from "@/lib/hooks/useGetQuery";
-import { PriceRangeType } from "@/lib/types";
+import { useGetShopCategories, useGetShops } from "@/lib/hooks/useGetQuery";
 import { DataTable } from "@/modules/common/components/custom-table";
-import { productcolumns } from "@/modules/common/components/custom-table/column";
+import { shopcolumns } from "@/modules/common/components/custom-table/column";
 import { PaginationControll } from "@/modules/common/components/pagination";
-import { PriceSelectDropdown } from "@/modules/common/components/price-range-dropdown";
 import { SelectDropdown } from "@/modules/common/components/select-dropdown";
 import { Search, SquarePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-const ProductList: React.FC = () => {
-  const { products, setTake, setFilters, page, setPage, totalCount } =
-    useGetProducts();
+const ShopList: React.FC = () => {
+  const { shops, setTake, setFilters, page, setPage, totalCount } =
+    useGetShops();
   const itemPerPage = 10;
   const router = useRouter();
-  const { categories } = useGetCategories();
-  const {priceRanges} = useGetRanges();
+  const { shopCategories } = useGetShopCategories();
   const [category, setCategory] = useState<string>("");
-  const [priceRange, setPriceRange] = useState<PriceRangeType | string>("all");
-  console.log(priceRange)
   const [searchName, setSearchName] = useState<string>("");
   const totalPages = Math.ceil(totalCount / itemPerPage);
   useEffect(() => {
     setTake(itemPerPage);
     setFilters({
       name: searchName,
-      category: category === "all" ? undefined : category,
-      priceRange: priceRange === "all"? undefined
-            : {
-              start_price:(priceRange as PriceRangeType).start_price,
-              end_price: (priceRange as PriceRangeType).end_price
-            }
+      shop_category: category === "all" ? undefined : category,
     });
-  }, [searchName, category, setFilters, setTake, priceRange]);
+  }, [searchName, category, setFilters, setTake]);
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
   console.log(totalCount)
   return (
     <div className="w-full h-full flex flex-col gap-4 p-4">
-      <h2 className="font-bold text-xl">Products</h2>
+      <h2 className="font-bold text-xl">Shops</h2>
       <div className="min-h-24 w-full flex flex-row items-center justify-between">
         <div className="">
-          <Button onClick={() => router.push("/product-management/product/create-product")} className="flex items-center min-h-10 bg-inputlabel rounded-md">
+          <Button onClick={() => router.push("/shop/shop-create")} className="flex items-center min-h-10 bg-inputlabel rounded-md">
             <SquarePlus color="white" />
-            Add New Product
+            Create Shop
           </Button>
         </div>
         <div className="flex flex-row items-center gap-4">
@@ -65,17 +55,12 @@ const ProductList: React.FC = () => {
           </div>
           <SelectDropdown
             setOption={setCategory}
-            options={categories}
+            options={shopCategories}
             label="Sort By"
-          />
-          <PriceSelectDropdown
-            setOption={setPriceRange}
-            options={priceRanges}
-            label="Price Range"
           />
         </div>
       </div>
-      <DataTable data={products} columns={productcolumns} />
+      <DataTable data={shops} columns={shopcolumns} />
       <PaginationControll
         totalPages={totalPages}
         currentPage={page}
@@ -84,5 +69,4 @@ const ProductList: React.FC = () => {
     </div>
   );
 };
-
-export default ProductList;
+export default ShopList;
