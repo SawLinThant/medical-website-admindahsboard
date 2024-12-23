@@ -1,28 +1,37 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { FieldValues, Path, UseFormRegister } from "react-hook-form";
 
-interface InputProps {
-    label:string
-    name: string
-    register?: any
-    type: string
-    placeHolder: string
+interface InputProps<T extends FieldValues> {
+  label: string;
+  name: Path<T>; 
+  register?: UseFormRegister<T>; 
+  type: string; 
+  placeHolder: string; 
 }
 
-const CustomInput : React.FC<InputProps> = ({label,name,type,placeHolder,register}:InputProps) => {
-
-    return (
-      <div className="w-full h-full flex flex-col gap-2">
-        <Label className="text-inputlabel">{label}</Label>
-        <Input
-        name={name}
+const CustomInput = <T extends Record<string, T>>({
+  label,
+  name,
+  type,
+  placeHolder,
+  register,
+}: InputProps<T>) => {
+  return (
+    <div className="w-full h-full flex flex-col gap-2">
+      <Label htmlFor={String(name)} className="text-inputlabel">
+        {label}
+      </Label>
+      <Input
+        id={String(name)} 
         type={type}
         placeholder={placeHolder}
-        {...register(name,{
-          required: `${name} is required`
-        })}
-        />
-      </div>
-    );
-  };
-  export default CustomInput;
+        {...(register
+          ? register(name, { required: `${String(name)} is required` })
+          : {})}
+      />
+    </div>
+  );
+};
+
+export default CustomInput;

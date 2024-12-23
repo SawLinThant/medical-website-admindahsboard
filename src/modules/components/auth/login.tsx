@@ -29,7 +29,7 @@ const LoginForm = () => {
     try {
       await userLogin({
         variables: {
-          username: data.email,
+          email: data.email,
           password: data.password,
         },
       });

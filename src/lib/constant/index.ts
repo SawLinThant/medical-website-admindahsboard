@@ -1,7 +1,6 @@
 "use client"
 
 import { ChartLine, FileSpreadsheet, LayoutList, MessageSquareDot, SquareTerminal } from "lucide-react";
-import { title } from "process";
 
 export const SIDEBAR_ROUTES = [
     {

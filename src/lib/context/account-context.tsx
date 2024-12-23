@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 interface AccountContext {
   isLogin: boolean;
@@ -13,8 +13,11 @@ interface AccountProviderProps {
 }
 
 export const AccountProvider = ({ children }: AccountProviderProps) => {
-  const token = localStorage.getItem("token");
-  const [isLogin, setIsLogin] = useState<boolean>(token ? true : false);
+  const [isLogin,setIsLogin] = useState<boolean>(false);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLogin(!!token);
+  }, []);
 
   return (
     <AccountContext.Provider

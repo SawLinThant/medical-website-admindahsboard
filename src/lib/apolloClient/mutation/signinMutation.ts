@@ -1,8 +1,8 @@
-import { gql, useMutation } from "@apollo/client";
+import { gql } from "@apollo/client";
 
 export const SIGN_IN_MUTATION = gql`
-  mutation userLogin($username: String!, $password: String!) {
-    userLogin(username: $username, password: $password) {
+  mutation userLogin($email: String!, $password: String!) {
+    userLogin(email: $email, password: $password) {
       token
       message
     }

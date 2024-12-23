@@ -1,8 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronDown, ChevronsUpDown, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Check, ChevronDown, X } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -17,14 +16,13 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import clsx from "clsx";
-import { Input } from "@/components/ui/input";
 import { InputTagOptionType } from "@/lib/config";
 
 
 
 interface InputTagProps {
   options: InputTagOptionType[];
-  setTag: (option:any) => void
+  setTag: (option:string[]) => void
   removeTag: (id:number) => void
 }
 
@@ -37,8 +35,9 @@ const InputTag = ({ options,setTag,removeTag }: InputTagProps) => {
 
   const handleAddTag = (option: InputTagOptionType) => {
     if (!selectedTags.some((tag) => tag.id === option.id)) {
-      setSelectedTags((prev) => [...prev, option]);
-      setTag((prev:any[]) => [...prev, option.id])
+      const updatedTags = [...selectedTags, option];
+      setSelectedTags(updatedTags);
+      setTag(updatedTags.map((tag) => tag.id)); 
     }
     setSearchid("");
     setOpen(false);

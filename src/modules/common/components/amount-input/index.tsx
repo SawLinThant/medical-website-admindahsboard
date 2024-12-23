@@ -1,20 +1,21 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DollarSign } from "lucide-react";
+import { FieldValues, Path, UseFormRegister } from "react-hook-form";
 
-interface AmountInputProps {
+interface AmountInputProps<T extends FieldValues> {
   label: string;
-  name: string;
+  name: Path<T>;
   placeHolder: string;
-  register?: any;
+  register?: UseFormRegister<T>;
 }
 
-const AmountInput: React.FC<AmountInputProps> = ({
+const AmountInput = <T extends Record<string, T>>({
   label,
   name,
   placeHolder,
   register
-}) => {
+}:AmountInputProps<T>) => {
   return (
     <div className="w-full h-full flex flex-col gap-2">
       <Label className="text-inputlabel">{label}</Label>
@@ -23,9 +24,7 @@ const AmountInput: React.FC<AmountInputProps> = ({
           name={name}
           type="number"
           placeholder={placeHolder}
-          {...register(name,{
-            required: `${name} is required`
-          })}
+          {...register?.(name)}
           className="py-2 pl-12 pr-2 rounded-lg border border-gray-300"
         />
         <div className="absolute top-2 left-3.5 ">
