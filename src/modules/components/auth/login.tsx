@@ -57,20 +57,20 @@ const LoginForm = () => {
     }
   });
   return (
-    <div className="lg:w-[1000px] lg:max-w-[900px] md:w-[83vw] lg:min-h-[60vh] md:min-h-[60vh] w-full grid lg:grid-cols-12 md:grid-cols-12 grid-cols-1 border border-gray-500">
-      <div className="col-span-7 border-r">
+    <div className="lg:w-[900px] lg:max-w-[1400px] md:w-[83vw] lg:min-h-[60vh] md:min-h-[60vh] w-full grid lg:grid-cols-12 md:grid-cols-12 grid-cols-1 border border-gray-500">
+      <div className="col-span-7 border-r w-full h-full relative">
         <Image
           alt="login"
-          height={1200}
-          width={900}
-          src="/images/login.jpg"
-          className="w-full h-full object-cover bg-cover"
+          layout="fill"
+          src="/images/login-bg.jpg"
+          className="object-cover"
         />
       </div>
       <div className="col-span-5 px-6 py-10">
         <div className="w-full flex flex-col gap-4">
-          <div className="w-full min-h-[100px] bg-inputlabel/75 border flex items-center justify-center rounded-md">
-            <h2 className="font-bold text-white">Natsay</h2>
+          <div className="w-full relative min-h-[100px] flex items-center justify-center rounded-md">
+            <Image className="object-contain" width={50} height={25} src="/images/logo.png" alt="logo"/>
+            {/* <h2 className="font-bold text-white">Natsay</h2> */}
           </div>
           <div className="flex flex-col">
             <h1 className="font-semibold text-2xl">Login</h1>

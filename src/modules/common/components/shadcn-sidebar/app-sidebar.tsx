@@ -15,6 +15,7 @@ import { useAccount } from "@/lib/context/account-context";
 import { GET_USER_BY_ID } from "@/lib/apolloClient/query/userQuery";
 import { useQuery } from "@apollo/client";
 import { useGetShopById } from "@/lib/hooks/useGetQuery";
+import Image from "next/image";
 
 
 const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
@@ -32,8 +33,8 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <div className="w-full min-h-32 p-4 flex items-center justify-center">
-          <div className="w-full h-full bg-inputlabel rounded border flex items-center justify-center border-gray-500">
-            <h1 className="font-extrabold text-white">Medical</h1>
+          <div className="w-full h-full rounded flex items-center justify-center">
+             <Image className="object-contain" width={50} height={25} src="/images/logo.png" alt="logo"/>
           </div>
         </div>
       </SidebarHeader>
