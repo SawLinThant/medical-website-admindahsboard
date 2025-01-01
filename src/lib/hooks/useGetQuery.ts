@@ -5,10 +5,11 @@ import { GET_FILTERED_PRODUCTS, GET_PRODUCTS, GET_PRODUCTS_BY_ID } from "../apol
 import { useMemo, useState } from "react";
 import { GET_PRICE_RANGE } from "../apolloClient/query/priceRangeQuery";
 import { GET_IMAGES_BY_PRODUCT_ID } from "../apolloClient/query/productImageQuery";
-import { InputTagOptionType } from "../types";
+import { InputTagOptionType, Order, OrderItem, ShopOrders } from "../types";
 import { GET_FILTERED_SHOPS, GET_SHOP_BY_ID } from "../apolloClient/query/shopQuery";
 import { GET_USER_BY_SHOP_ID } from "../apolloClient/query/userQuery";
 import { GET_IMAGES_BY_SHOP_ID } from "../apolloClient/query/shopImageQuery";
+import { GET_ORDER_BY_ID, GET_ORDER_ITEMS_BY_ORDER_ID, GET_SHOP_ORDERS } from "../apolloClient/query/orderQuery";
 
 export const useGetTags = () => {
   const { data, loading: loadingTags, error } = useQuery(GET_TAGS);
@@ -362,3 +363,115 @@ export const useGetShops = () => {
     totalCount
   };
 };
+
+export const useGetShopOrders = () => {
+  const [filters, setFilters] = useState<{
+    shop_id?: string;
+    order_id?: string;
+    order_status?: string;
+    payment?: string;
+    username?: string;
+    created_date?: { start_date: string; end_date: string };
+  }>({});
+  const [page, setPage] = useState<number>(1);
+  const [take, setTake] = useState<number>(10);
+
+  const skip = useMemo(() => (page - 1) * take, [page, take]);
+
+  const where = useMemo(() => {
+    const conditions: any = {};
+    if (filters.shop_id) {
+      conditions.shop_id = { _eq: filters.shop_id };
+    }
+    if (filters.order_id) {
+      conditions.order_id = { _eq: filters.order_id };
+    }
+    if (filters.order_status) {
+      conditions.order_status = { _eq: filters.order_status };
+    }
+    if (filters.payment) {
+      conditions.payment = { _eq: filters.payment };
+    }
+    if (filters.username) {
+      conditions.username = { _ilike: `%${filters.username}%` };
+    }
+    if (filters.created_date) {
+      conditions.created_date = {
+        _gte: filters.created_date.start_date,
+        _lte: filters.created_date.end_date,
+      };
+    }
+
+    return Object.keys(conditions).length > 0 ? conditions : undefined;
+  }, [filters]);
+
+  const { data, loading, error } = useQuery(GET_SHOP_ORDERS, {
+    variables: {
+      where,
+      offset: skip,
+      limit: take,
+    },
+    fetchPolicy: "network-only",
+  });
+
+  const shopOrders: ShopOrders[] = data?.shop_orders || [];
+  const totalCount = data?.shop_orders_aggregate?.aggregate?.count || 1;
+
+  return {
+    shopOrders,
+    loading,
+    error,
+    filters,
+    setFilters,
+    page,
+    setPage,
+    take,
+    setTake,
+    totalCount,
+  };
+};
+
+
+interface GetOrderssByIdResponse {
+  orders: Order[]
+}
+
+interface UseGetOrderByIdReturn {
+  order: Order | undefined
+  loadingOrder: boolean;
+  error: Error | undefined;
+}
+
+export const useGetOrderById = (orderId: string): UseGetOrderByIdReturn => {
+  const { data, loading: loadingOrder, error } = useQuery<GetOrderssByIdResponse>(GET_ORDER_BY_ID,
+    {
+      variables:{id: orderId},
+      skip: !orderId
+    }
+  )
+  const order = data? data.orders?.[0] : undefined;
+
+  return {order,loadingOrder,error}
+}
+
+interface GetOrderItemsByIdResponse {
+  order_items: OrderItem[]
+}
+
+interface UseGetOrderItemByOrderIdReturn {
+  orderItems: OrderItem[] | undefined
+  loadingOrder: boolean;
+  error: Error | undefined;
+}
+
+export const useGetOrderItemByOrderId = (orderId: string): UseGetOrderItemByOrderIdReturn => {
+  const { data, loading: loadingOrder, error } = useQuery<GetOrderItemsByIdResponse>(GET_ORDER_ITEMS_BY_ORDER_ID,
+    {
+      variables:{order_id: orderId},
+      skip: !orderId
+    }
+  )
+  const orderItems = data? data.order_items : undefined;
+
+  return {orderItems,loadingOrder,error}
+}

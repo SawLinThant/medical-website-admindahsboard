@@ -43,7 +43,7 @@ export const SIDEBAR_ROUTES = [
         items: [
           {
             title: "Orders", 
-            url: "orders",
+            url: "/order/list",
           },
         ],
       },
@@ -116,5 +116,28 @@ export const SIDEBAR_ROUTES = [
     {
       value: "astro",
       label: "Astro",
+    },
+  ]
+
+  export const STATUS = [
+    {
+      id: "1",
+      name: "Pending",
+      value: "Pending"
+    },
+    {
+      id: "2",
+      name: "Completed",
+      value: "Completed"
+    },
+    {
+      id: "3",
+      name: "Delivering",
+      value: "Delivering"
+    },
+    {
+      id: "4",
+      name: "Cancelled",
+      value: "Cancelled"
     },
   ]

@@ -38,7 +38,6 @@ const ProductList: React.FC = () => {
     },
   });
   const user = userInfo ? userInfo.users?.[0] : [];
-  console.log(filters);
 
   useEffect(() => {
     setTake(itemPerPage);
