@@ -90,3 +90,8 @@ export interface Order {
    shop_total_price: number
    payment: string;
  }
+
+ export interface Tax {
+   id: string
+   value: number
+ }

@@ -5,11 +5,12 @@ import { GET_FILTERED_PRODUCTS, GET_PRODUCTS, GET_PRODUCTS_BY_ID } from "../apol
 import { useMemo, useState } from "react";
 import { GET_PRICE_RANGE } from "../apolloClient/query/priceRangeQuery";
 import { GET_IMAGES_BY_PRODUCT_ID } from "../apolloClient/query/productImageQuery";
-import { InputTagOptionType, Order, OrderItem, ShopOrders } from "../types";
+import { InputTagOptionType, Order, OrderItem, ShopOrders, Tax } from "../types";
 import { GET_FILTERED_SHOPS, GET_SHOP_BY_ID } from "../apolloClient/query/shopQuery";
 import { GET_USER_BY_SHOP_ID } from "../apolloClient/query/userQuery";
 import { GET_IMAGES_BY_SHOP_ID } from "../apolloClient/query/shopImageQuery";
 import { GET_ORDER_BY_ID, GET_ORDER_ITEMS_BY_ORDER_ID, GET_SHOP_ORDERS } from "../apolloClient/query/orderQuery";
+import { GET_TAXES } from "../apolloClient/query/taxQuery";
 
 export const useGetTags = () => {
   const { data, loading: loadingTags, error } = useQuery(GET_TAGS);
@@ -440,10 +441,11 @@ interface UseGetOrderByIdReturn {
   order: Order | undefined
   loadingOrder: boolean;
   error: Error | undefined;
+  refetchOrder: any
 }
 
 export const useGetOrderById = (orderId: string): UseGetOrderByIdReturn => {
-  const { data, loading: loadingOrder, error } = useQuery<GetOrderssByIdResponse>(GET_ORDER_BY_ID,
+  const { data, loading: loadingOrder, error, refetch:refetchOrder } = useQuery<GetOrderssByIdResponse>(GET_ORDER_BY_ID,
     {
       variables:{id: orderId},
       skip: !orderId
@@ -451,7 +453,7 @@ export const useGetOrderById = (orderId: string): UseGetOrderByIdReturn => {
   )
   const order = data? data.orders?.[0] : undefined;
 
-  return {order,loadingOrder,error}
+  return {order,loadingOrder,error,refetchOrder}
 }
 
 interface GetOrderItemsByIdResponse {
@@ -474,4 +476,21 @@ export const useGetOrderItemByOrderId = (orderId: string): UseGetOrderItemByOrde
   const orderItems = data? data.order_items : undefined;
 
   return {orderItems,loadingOrder,error}
+}
+
+interface GetTaxResponse {
+  taxes: Tax[]
+}
+
+interface UseGetTaxReturn {
+  tax: Tax | undefined
+  loadingTax: boolean;
+  error: Error | undefined;
+}
+
+export const useGetTax = ():UseGetTaxReturn => {
+  const { data, loading: loadingTax, error } = useQuery<GetTaxResponse>(GET_TAXES)
+  const tax = data? data.taxes[0] : undefined;
+
+  return {tax,loadingTax,error}
 }

@@ -10,6 +10,7 @@ import {
   useGetOrderById,
   useGetOrderItemByOrderId,
   useGetShopOrders,
+  useGetTax,
 } from "@/lib/hooks/useGetQuery";
 import { useUpdateOrderItemsStatus } from "@/lib/hooks/useMutation/order/useUpdateOrderStatus";
 import { BackButton } from "@/modules/common/components/button";
@@ -27,10 +28,15 @@ const OrderDetail: React.FC = () => {
   const { orderId } = useParams() as { orderId: string };
   const { shopOrders, setFilters } = useGetShopOrders();
   const [orderStatus, setOrderStatus] = useState<string>("");
-  const { order } = useGetOrderById(orderId);
+  const { order, refetchOrder } = useGetOrderById(orderId);
   const { toast } = useToast();
   const { orderItems } = useGetOrderItemByOrderId(orderId);
-  const {updateOrderItemsStatus} = useUpdateOrderItemsStatus();
+  const { updateOrderItemsStatus } = useUpdateOrderItemsStatus();
+  const { tax } = useGetTax();
+  const deliveryFees = 0;
+  const calculatedTax = tax? tax.value/100 : 0;
+  const subTotal = shopOrders && shopOrders.length > 0? shopOrders?.[0].shop_total_price:0;
+  const totalPrice = deliveryFees + subTotal + (subTotal*calculatedTax)
   const { data: userInfo } = useQuery(GET_USER_BY_ID, {
     variables: {
       id: userId,
@@ -48,30 +54,53 @@ const OrderDetail: React.FC = () => {
     if (order) {
       setOrderStatus(shopOrders[0].order_status);
     }
-  }, [setOrderStatus]);
+  }, [setOrderStatus, refetchOrder]);
 
-  const handleUpdateOrder = async(value:string) => {
-   setOrderStatus(value);
-   try{
-    const response = await updateOrderItemsStatus({
-      order_id: orderId,
-      shop_id: user.shop_id || "",
-      status: value
-     })
-     if(response){
-      toast({
-        description: "Order Updated",
+  const handleUpdateOrder = async (value: string) => {
+    setOrderStatus(value);
+    try {
+      const response = await updateOrderItemsStatus({
+        order_id: orderId,
+        shop_id: user.shop_id || "",
+        status: value,
       });
-     }
-   }catch{
-     setOrderStatus(shopOrders[0].order_status || "")
-     toast({
-      variant:"destructive",
-      description:"Unable to update order status"
-     })
-   }
-  
-  }
+      if (response) {
+        refetchOrder();
+        toast({
+          description: "Order Updated",
+        });
+      }
+    } catch {
+      setOrderStatus(shopOrders[0].order_status || "");
+      toast({
+        variant: "destructive",
+        description: "Unable to update order status",
+      });
+    }
+  };
+
+  const handleCancelOrder = async () => {
+    setOrderStatus("Cancelled");
+    try {
+      const response = await updateOrderItemsStatus({
+        order_id: orderId,
+        shop_id: user.shop_id || "",
+        status: "Cancelled",
+      });
+      if (response) {
+        refetchOrder();
+        toast({
+          description: "Order Updated",
+        });
+      }
+    } catch {
+      setOrderStatus(shopOrders[0].order_status || "");
+      toast({
+        variant: "destructive",
+        description: "Unable to update order status",
+      });
+    }
+  };
 
   return (
     <section className="w-full flex flex-col gap-4">
@@ -111,16 +140,16 @@ const OrderDetail: React.FC = () => {
               <div className="flex flex-row gap-2 items-center">
                 <span className="text-sm font-semibold">Delivery</span>
               </div>
-              <span className="text-sm">MMK 1,200</span>
+              <span className="text-sm">MMK {deliveryFees.toLocaleString()}</span>
             </div>
             <div className="w-full flex flex-row items-center justify-between">
               <div className="flex flex-row gap-2 items-center">
                 <span className="text-sm font-semibold">Tax</span>
                 <span className="text-sm text-muted-foreground">
-                  PDV 20% (included)
+                  PDV {tax?.value || 0}% (included)
                 </span>
               </div>
-              <span className="text-sm">MMK 1,200</span>
+              <span className="text-sm">MMK {(calculatedTax*subTotal).toLocaleString()}</span>
             </div>
             <Separator className="my-5" />
             <div className="w-full flex flex-row items-center justify-between">
@@ -129,11 +158,15 @@ const OrderDetail: React.FC = () => {
                   Total Paid By Customer
                 </span>
               </div>
-              <span className="text-sm">MMK 1,200</span>
+              <span className="text-sm">MMK {totalPrice.toLocaleString()}</span>
             </div>
           </div>
           <div className="flex flex-row items-center gap-6">
-            <Button variant="outline" className="text-yellow-600">
+            <Button
+              onClick={handleCancelOrder}
+              variant="outline"
+              className="text-yellow-600"
+            >
               Cancel Order
             </Button>
             <div className="w-[15rem]">

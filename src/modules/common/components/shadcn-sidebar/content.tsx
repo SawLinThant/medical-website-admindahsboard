@@ -68,7 +68,7 @@ export function SidebarContents({
                       <SidebarMenuSubButton asChild>
                         <a
                           href={subItem.url}
-                          className={clsx("h-9 w-full", {
+                          className={clsx("min-h-9 w-full", {
                             "bg-white border rounded-md":
                               pathname.includes(subItem.url),
                           })}
