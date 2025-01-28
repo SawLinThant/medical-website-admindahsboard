@@ -125,13 +125,17 @@ const ShopForm: React.FC = () => {
     try {
       setCreateLoading(true);
       const logoUrl = await uploadToS3(bannerImage[0]);
+      if(logoUrl){
+        console.log("shopphone:",data.shop_phone)
+      }
+      
       if (logoUrl) {
         const shopResponse = await createShop({
           name: data.shop_name,
           logo: logoUrl,
           description: data.description,
           address: data.address,
-          phone: data.shop_address,
+          phone: data.shop_phone,
           created_at: new Date(selectedDate || Date.now()).toISOString(),
           category_id: shopCategory,
           remark: data.remark,
@@ -164,7 +168,7 @@ const ShopForm: React.FC = () => {
         action: <ToastAction altText="Try again">Try again</ToastAction>,
       });
     } finally {
-      handleResetForm();
+      //handleResetForm();
       setCreateLoading(false);
     }
   });
@@ -229,7 +233,7 @@ const ShopForm: React.FC = () => {
                 <CustomInput
                   name="address"
                   label="Shop Address *"
-                  placeHolder="Enter shop name"
+                  placeHolder="Enter shop address"
                   type="text"
                   register={register}
                 />
@@ -389,7 +393,7 @@ const ShopForm: React.FC = () => {
                   {createLoading ? (
                     <Loader className="animate-spin" size={25} />
                   ) : (
-                    "Add Product"
+                    "Add Shop"
                   )}
                 </Button>
               </div>

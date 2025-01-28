@@ -8,6 +8,9 @@ interface UpdateProductVariables {
     bulk_price?: number;
     quantity?: number;
     description?: string;
+    dosage?: string;
+    usage?: string;
+    storage?: string;
     category_id?: string;
     updated_at?: string;
   }

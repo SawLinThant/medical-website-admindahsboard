@@ -7,6 +7,9 @@ export const CREATE_PRODUCT = gql`
     $bulk_price: Int
     $quantity: Int
     $description: String
+    $dosage: String
+    $usage: String
+    $storage: String
     $shop_id: uuid
     $category_id: uuid
     $created_at: timestamptz
@@ -18,6 +21,9 @@ export const CREATE_PRODUCT = gql`
         bulk_price: $bulk_price
         quantity: $quantity
         description: $description
+        dosage: $dosage
+        usage: $usage
+        storage: $storage
         shop_id: $shop_id
         category_id: $category_id
         created_at: $created_at
@@ -35,17 +41,10 @@ export const CREATE_PRODUCT = gql`
   }
 `;
 
-
 export const CREATE_PRODUCT_TAG = gql`
-  mutation createProductTag(
-   $product_id: uuid
-   $tag_id: uuid
-  ) {
+  mutation createProductTag($product_id: uuid, $tag_id: uuid) {
     insert_product_tags_one(
-      object: {
-        product_id: $product_id
-        tag_id: $tag_id
-      }
+      object: { product_id: $product_id, tag_id: $tag_id }
     ) {
       id
       product_id
@@ -56,22 +55,18 @@ export const CREATE_PRODUCT_TAG = gql`
 
 export const DELETE_PRODUCT_TAG = gql`
   mutation DeleteProductTag($product_id: uuid!, $tag_id: uuid!) {
-    delete_product_tags(where: { product_id: { _eq: $product_id }, tag_id: { _eq: $tag_id } }) {
+    delete_product_tags(
+      where: { product_id: { _eq: $product_id }, tag_id: { _eq: $tag_id } }
+    ) {
       affected_rows
     }
   }
 `;
 
 export const CREATE_IMAGE = gql`
-  mutation createImage(
-   $product_id: uuid
-   $image_url: String
-  ) {
+  mutation createImage($product_id: uuid, $image_url: String) {
     insert_images_one(
-      object: {
-        product_id: $product_id
-        image_url: $image_url
-      }
+      object: { product_id: $product_id, image_url: $image_url }
     ) {
       id
       product_id
@@ -98,6 +93,9 @@ export const UPDATE_PRODUCT = gql`
     $bulk_price: Int
     $quantity: Int
     $description: String
+    $dosage: String
+    $usage: String
+    $storage: String
     $category_id: uuid
     $updated_at: timestamptz
   ) {
@@ -109,6 +107,9 @@ export const UPDATE_PRODUCT = gql`
         bulk_price: $bulk_price
         quantity: $quantity
         description: $description
+        dosage: $dosage
+        usage: $usage
+        storage: $storage
         category_id: $category_id
         updated_at: $updated_at
       }

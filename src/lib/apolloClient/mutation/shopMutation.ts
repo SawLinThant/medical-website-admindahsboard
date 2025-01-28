@@ -18,7 +18,7 @@ export const CREATE_SHOP = gql`
         logo: $logo
         description: $description
         address: $address
-        phone: $address
+        phone: $phone
         category_id: $category_id
         created_at: $created_at
         remark: remark

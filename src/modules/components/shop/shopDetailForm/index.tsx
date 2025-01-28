@@ -241,6 +241,7 @@ const ShopDetailForm: React.FC<ShopDetailFormPops> = ({
       setUpdateLoading(false);
     }
   };
+
   return (
     <section className="w-full flex flex-col gap-4">
       <div className="w-full min-h-20 flex flex-row items-center gap-2">

@@ -46,6 +46,9 @@ interface ProductInfo {
   bulk_price?: number;
   quantity: number;
   description?: string;
+  dosage?: string;
+  usage?: string;
+  storage?: string;
   category_id: string;
   category: {
     id: string;
@@ -67,7 +70,7 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
   const [createProductTag] = useMutation(CREATE_PRODUCT_TAG);
   const { deleteProductTag } = useDeleteProductTag();
   const [createImage] = useMutation(CREATE_IMAGE);
-  const {deleteProductById,loadingDeleteProduct} = useDeleteProductById();
+  const { deleteProductById, loadingDeleteProduct } = useDeleteProductById();
   const router = useRouter();
 
   const { product, refetchProduct } = useGetProductById(id);
@@ -78,6 +81,9 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
     bulk_price: 0,
     quantity: 0,
     description: "",
+    dosage: "",
+    usage: "",
+    storage: "",
     category_id: "",
     category: {
       id: "",
@@ -98,18 +104,18 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
     if (tagsById) {
       setSelectedTags(tagsById);
     }
-  }, [loadingTags ]);
+  }, [loadingTags]);
 
   useEffect(() => {
     if (product) setProductInfo(product);
   }, [product]);
 
-  const handleDeleteProduct = async() => {
+  const handleDeleteProduct = async () => {
     const deleteResponse = await deleteProductById(productInfo.id);
-    if(deleteResponse){
-       router.push("/product-management/product/product-list")
+    if (deleteResponse) {
+      router.push("/product-management/product/product-list");
     }
-  }
+  };
 
   const handleFileUpload = (files: FileList) => {
     setFile((prev) => [...prev, ...Array.from(files)]);
@@ -184,6 +190,9 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
         bulk_price: productInfo.bulk_price,
         quantity: 1,
         description: productInfo.description,
+        dosage: productInfo.dosage,
+        usage: productInfo.usage,
+        storage: productInfo.storage,
         updated_at: new Date(Date.now()).toISOString(),
         category_id: category === "" ? productInfo.category_id : category,
       });
@@ -258,6 +267,51 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
                     }))
                   }
                 />
+                <div className="w-full">
+                  <CustomUpdateInput
+                    name="dosage"
+                    label="Dosage"
+                    placeHolder={productInfo.dosage || ""}
+                    type="text"
+                    value={productInfo.dosage || ""}
+                    onChange={(e) =>
+                      setProductInfo((prev) => ({
+                        ...prev,
+                        [e.target.name]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="w-full">
+                  <CustomUpdateInput
+                    name="usage"
+                    label="Usage"
+                    placeHolder={productInfo.usage || ""}
+                    type="text"
+                    value={productInfo.usage || ""}
+                    onChange={(e) =>
+                      setProductInfo((prev) => ({
+                        ...prev,
+                        [e.target.name]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="w-full">
+                  <CustomUpdateInput
+                    name="storage"
+                    label="Storage"
+                    placeHolder={productInfo.storage || ""}
+                    type="text"
+                    value={productInfo.storage || ""}
+                    onChange={(e) =>
+                      setProductInfo((prev) => ({
+                        ...prev,
+                        [e.target.name]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
               </div>
             </div>
             <div className="w-full min-h-20 flex flex-col gap-2">
@@ -375,8 +429,7 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
               </div>
             </div>
             <div className="w-full min-h-20 flex flex-row justify-between">
-              <div>
-              </div>
+              <div></div>
               <div className="flex flex-row gap-3">
                 <div className="min-w-[7rem]">
                   <CustomAlertDialog

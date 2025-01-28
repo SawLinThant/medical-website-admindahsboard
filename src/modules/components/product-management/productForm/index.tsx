@@ -46,6 +46,8 @@ const ProductForm: React.FC<ProductFormProps> = ({shop_id}) => {
   const [createProductTag] = useMutation(CREATE_PRODUCT_TAG);
   const [createImage] = useMutation(CREATE_IMAGE);
 
+  console.log("shop_id:",shop_id)
+
   const handleFileUpload = (files: FileList) => {
     setFile((prev) => [...prev, ...Array.from(files)]);
   };
@@ -124,6 +126,9 @@ const ProductForm: React.FC<ProductFormProps> = ({shop_id}) => {
           bulk_price: data.bulk_price,
           quantity: 1,
           description: data.description,
+          dosage:  data.dosage,
+          usage:  data.usage,
+           storage:  data.storage,
           created_at: new Date(selectedDate || Date.now()).toISOString(),
           shop_id: shop_id,
           category_id: category,
@@ -150,7 +155,7 @@ const ProductForm: React.FC<ProductFormProps> = ({shop_id}) => {
         action: <ToastAction altText="Try again">Try again</ToastAction>,
       });
     } finally {
-      handleResetForm();
+     // handleResetForm();
       setCreateLoading(false);
     }
   });
@@ -195,7 +200,35 @@ const ProductForm: React.FC<ProductFormProps> = ({shop_id}) => {
                   name="description"
                   register={register}
                 />
+                <div className="w-full">
+                  <CustomInput
+                    name="dosage"
+                    label="Dosage"
+                    placeHolder="Enter Dosage"
+                    type="text"
+                    register={register}
+                  />
+                </div>
+                <div className="w-full">
+                  <CustomInput
+                    name="usage"
+                    label="Usage"
+                    placeHolder="Enter Usage"
+                    type="text"
+                    register={register}
+                  />
+                </div>
+                <div className="w-full">
+                  <CustomInput
+                    name="storage"
+                    label="Storage"
+                    placeHolder="Enter Storage"
+                    type="text"
+                    register={register}
+                  />
+                </div>
               </div>
+             
             </div>
             <div className="w-full min-h-20 flex flex-col gap-2">
               <h2 className="font-bold text-lg text-headercolor">

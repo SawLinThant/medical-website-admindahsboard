@@ -33,6 +33,9 @@ export const GET_PRODUCTS_BY_ID = gql`
       bulk_price
       quantity
       description
+      dosage
+      usage
+      storage
       category_id
       category{
         id
