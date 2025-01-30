@@ -1,15 +1,15 @@
 {
-  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/login/page": "app/login/page.js",
   "/page": "app/page.js",
   "/product-management/product/product-detail/[productId]/page": "app/product-management/product/product-detail/[productId]/page.js",
   "/home/page": "app/home/page.js",
+  "/shop/shop-detail/[shopId]/page": "app/shop/shop-detail/[shopId]/page.js",
   "/order/detail/[orderId]/page": "app/order/detail/[orderId]/page.js",
+  "/order/list/page": "app/order/list/page.js",
   "/product-management/product/create-product/page": "app/product-management/product/create-product/page.js",
   "/product-management/product/product-list/page": "app/product-management/product/product-list/page.js",
-  "/shop/shop-detail/[shopId]/page": "app/shop/shop-detail/[shopId]/page.js",
   "/shop/shop-create/page": "app/shop/shop-create/page.js",
-  "/shop/shop-list/page": "app/shop/shop-list/page.js",
-  "/order/list/page": "app/order/list/page.js"
+  "/shop/shop-list/page": "app/shop/shop-list/page.js"
 }
