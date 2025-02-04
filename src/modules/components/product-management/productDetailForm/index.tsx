@@ -39,7 +39,7 @@ type ProductDetailFormProps = {
   id: string;
 };
 
-interface ProductInfo {
+export interface ProductInfo {
   id: string;
   name: string;
   price: number;

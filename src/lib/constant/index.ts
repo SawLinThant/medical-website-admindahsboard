@@ -55,7 +55,7 @@ export const SIDEBAR_ROUTES = [
         items: [
           {
             title: "Notifications", 
-            url: "notification",
+            url: "/shop-notification",
           },
         ],
       },

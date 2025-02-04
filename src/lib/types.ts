@@ -95,3 +95,13 @@ export interface Order {
    id: string
    value: number
  }
+
+ export interface NoificationType {
+   id: string;
+   type: string;
+   shop_id: string;
+   description: string;
+   created_at: string
+   is_read: boolean
+   order_id: string
+ }
