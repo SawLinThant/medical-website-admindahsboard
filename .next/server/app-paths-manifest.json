@@ -1,6 +1,0 @@
-{
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/login/page": "app/login/page.js",
-  "/product-management/product/product-list/page": "app/product-management/product/product-list/page.js",
-  "/shop-notification/page": "app/shop-notification/page.js"
-}
