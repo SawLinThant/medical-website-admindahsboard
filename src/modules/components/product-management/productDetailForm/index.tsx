@@ -50,6 +50,7 @@ export interface ProductInfo {
   usage?: string;
   storage?: string;
   category_id: string;
+  default_stock_level: number;
   category: {
     id: string;
     name: string;
@@ -85,6 +86,7 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
     usage: "",
     storage: "",
     category_id: "",
+    default_stock_level: 0,
     category: {
       id: "",
       name: "",

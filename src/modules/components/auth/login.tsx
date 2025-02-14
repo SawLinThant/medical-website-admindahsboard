@@ -1,19 +1,22 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { SIGN_IN_MUTATION } from "@/lib/apolloClient/mutation/signinMutation";
 import { useAccount } from "@/lib/context/account-context";
 import { getRoleFromToken } from "@/lib/utils";
 import CustomInput from "@/modules/common/components/custom-input";
 import { useMutation } from "@apollo/client";
-import { Loader2 } from "lucide-react";
+import { Loader } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 const LoginForm = () => {
   const { register, handleSubmit } = useForm();
   const {setRole, setIsLogin, setUserId} = useAccount()
   const router = useRouter();
+  const[loading,setLoading] = useState<boolean>(false)
   const [userLogin, { loading: loginLoading }] = useMutation(SIGN_IN_MUTATION, {
     onCompleted: (data) => {
       console.log("login success");
@@ -43,6 +46,7 @@ const LoginForm = () => {
   });
   const onSubmit = handleSubmit(async (data) => {
     try {
+      setLoading(true)
       await userLogin({
         variables: {
           email: data.email,
@@ -50,10 +54,13 @@ const LoginForm = () => {
         },
       });
     } catch (error) {
+      setLoading(false)
       console.log(error);
       toast({
         description: "Unable to login",
       });
+    }finally{
+      setLoading(false)
     }
   });
   return (
@@ -94,21 +101,21 @@ const LoginForm = () => {
                 register={register}
                 placeHolder="Enter your password"
               />
-              <span className="w-full text-right text-sm text-inputlabel">
+              <span onClick={() => router.push("/forgotpassword")} className="w-full text-right text-sm text-inputlabel hover:cursor-pointer">
                 Forgot password
               </span>
             </div>
-            <button
+            <Button
               type="submit"
-              disabled={loginLoading}
+              disabled={loginLoading || loading}
               className="border min-h-[2.25rem] rounded-md bg-inputlabel text-white flex items-center justify-center"
             >
               {loginLoading ? (
-                <Loader2 className="animate-spin" size={20} />
+                <Loader className="animate-spin" size={20} />
               ) : (
                 "Login"
               )}
-            </button>
+            </Button>
           </form>
           <span className="text-inputlabel text-sm w-full text-center pb-4">
             Account Setting

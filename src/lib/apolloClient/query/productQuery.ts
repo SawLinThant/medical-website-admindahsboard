@@ -36,6 +36,7 @@ export const GET_PRODUCTS_BY_ID = gql`
       dosage
       usage
       storage
+      default_stock_level
       category_id
       category{
         id
@@ -52,6 +53,7 @@ export const GET_FILTERED_PRODUCTS = gql`
       name
       price
       quantity
+      default_stock_level
       shop_id
       category {
         id
@@ -66,6 +68,9 @@ export const GET_FILTERED_PRODUCTS = gql`
           name
         }
       }
+        stock_histories{
+         created_at
+        }
     }
     products_aggregate(where: $where) {
       aggregate {
@@ -74,5 +79,17 @@ export const GET_FILTERED_PRODUCTS = gql`
     }
   }
 `;
+
+export const GET_FILTERED_PRODUCTS_DROPDOWN = gql`
+  query getFilteredProducts($where: products_bool_exp) {
+    products(where: $where, order_by: { created_at: desc }) {
+      id
+      name
+    }
+  }
+`;
+
+
+
 
 

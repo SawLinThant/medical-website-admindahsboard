@@ -1,7 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { GET_TAGS, GET_TAGS_BY_PRODUCT_ID } from "../apolloClient/query/tagQuery";
 import { GET_CATEGORY, GET_SHOP_CATEGORY } from "../apolloClient/query/categoryQuery";
-import { GET_FILTERED_PRODUCTS, GET_PRODUCTS, GET_PRODUCTS_BY_ID } from "../apolloClient/query/productQuery";
+import { GET_FILTERED_PRODUCTS, GET_FILTERED_PRODUCTS_DROPDOWN, GET_PRODUCTS, GET_PRODUCTS_BY_ID } from "../apolloClient/query/productQuery";
 import { useMemo, useState } from "react";
 import { GET_PRICE_RANGE } from "../apolloClient/query/priceRangeQuery";
 import { GET_IMAGES_BY_PRODUCT_ID } from "../apolloClient/query/productImageQuery";
@@ -40,6 +40,9 @@ export const useGetProducts = () => {
     shop_id?: string;
     name?: string;
     category?: string;
+    stock_level?: string;
+    stock_status?: string;
+    product_category?: string;
     priceRange?: { start_price: number; end_price: number };
   }>({});
   const [page, setPage] = useState<number>(1);
@@ -58,6 +61,15 @@ export const useGetProducts = () => {
     if (filters.category) {
       conditions.category = { id: { _eq: filters.category } };
     }
+    if (filters.product_category) {
+      conditions.product_category = { name: { _eq: filters.product_category } };
+    }
+    if(filters.stock_level){
+      conditions.stock_level =  {_eq: filters.stock_level};
+    }
+    if(filters.stock_status){
+      conditions.stock_status =  {_eq: filters.stock_status};
+    }
     if (filters.priceRange) {
       conditions.price = {
         _gte: filters.priceRange.start_price,
@@ -68,6 +80,7 @@ export const useGetProducts = () => {
 
     return Object.keys(conditions).length > 0 ? conditions : undefined;
   }, [filters]);
+
 
   const { data, loading, error } = useQuery(GET_FILTERED_PRODUCTS, {
     variables: {
@@ -93,6 +106,45 @@ export const useGetProducts = () => {
     setTake,
     totalCount,
   };
+};
+
+export const useGetDropdownProducts = () => {
+  const [filters, setFilters] = useState<{
+    shop_id?: string;
+    name?: string;
+    category?: string;
+    priceRange?: { start_price: number; end_price: number };
+  }>({});
+
+  const where = useMemo(() => {
+    const conditions: any = {};
+    if (filters.shop_id) {
+      conditions.shop_id = { _eq: filters.shop_id };
+    }
+    if (filters.name) {
+      conditions.name = { _ilike: `%${filters.name}%` };
+    }
+    if (filters.category) {
+      conditions.category = { id: { _eq: filters.category } };
+    }
+    if (filters.priceRange) {
+      conditions.price = {
+        _gte: filters.priceRange.start_price,
+        _lte: filters.priceRange.end_price,
+      };
+    }
+
+    return Object.keys(conditions).length > 0 ? conditions : undefined;
+  }, [filters]);
+  const { data, loading, error } = useQuery(GET_FILTERED_PRODUCTS_DROPDOWN, {
+    variables: {
+      where,
+    },
+    fetchPolicy: "network-only",
+  });
+  const products = data?.products || [];
+
+  return { filters, setFilters, where, products };
 };
 
 export const useGetRanges = () => {
@@ -126,6 +178,7 @@ interface Product {
   quantity: number;
   description?: string;
   category_id: string;
+  default_stock_level: number;
   category: Category
 }
 

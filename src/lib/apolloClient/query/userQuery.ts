@@ -12,6 +12,17 @@ export const GET_USER_BY_SHOP_ID = gql`
   }
 `;
 
+export const GET_USER_BY_PHONE = gql`
+  query getUsersByShopId($phone: String!) {
+    users(where: { phone: { _eq: $phone } }) {
+      id
+      username
+      email
+      phone
+    }
+  }
+`;
+
 export const GET_USER_BY_ID = gql`
   query getUsersByShopId($id: uuid!) {
     users(where: { id: { _eq: $id } }) {

@@ -1,4 +1,4 @@
-import { UPDATE_PRODUCT } from "@/lib/apolloClient/mutation/productMutation";
+import { UPDATE_PRODUCT, UPDATE_PRODUCT_QUANTITY } from "@/lib/apolloClient/mutation/productMutation";
 import { useMutation } from "@apollo/client";
 
 interface UpdateProductVariables {
@@ -49,3 +49,26 @@ interface UpdateProductVariables {
     return { updateProduct, loadingUpdateProduct, errorUpdateProduct };
   };
   
+  export const useUpdateProductQuantity = () => {
+    const [updateProduct, { loading, error, data }] = useMutation<UpdateProductResponse>(UPDATE_PRODUCT_QUANTITY);
+  
+    const handleUpdateProduct = async (id: string, defaultStock: number, quantity: any) => {
+      try {
+        const response = await updateProduct({
+          variables: {
+            id: id,
+            input: { 
+              quantity: quantity,
+              default_stock_level: defaultStock
+             },
+          },
+        });
+        return response.data?.update_products_by_pk;
+      } catch (err) {
+        console.error("Error updating product:", err);
+        throw err;
+      }
+    };
+  
+    return { handleUpdateProduct, loading, error, data };
+  };

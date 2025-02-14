@@ -134,3 +134,22 @@ export const DELETE_PRODUCT_BY_ID = gql`
     }
   }
 `;
+
+export const UPDATE_PRODUCT_QUANTITY = gql`
+  mutation updateProduct($id: uuid!, $input: products_set_input!) {
+    update_products_by_pk(pk_columns: { id: $id }, _set: $input) {
+      id
+      name
+      category_id
+      price
+      bulk_price
+      quantity
+      description
+      dosage
+      usage
+      storage
+      updated_at
+    }
+  }
+`;
+

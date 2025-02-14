@@ -16,6 +16,8 @@ import { MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import ActionButton from "../column-button";
+import clsx from "clsx";
+import DetaiRouteButton from "../column-detail-button";
 
 export type Payment = {
   id: string;
@@ -28,7 +30,9 @@ export type ProductCategory = {
   id: string;
   name: string;
   price: number;
-  quanitity: number;
+  quantity: number;
+  default_stock_level: number;
+  stock_histories: StockHistories[];
   category: {
     id: string;
     name: string;
@@ -50,6 +54,11 @@ interface Shop {
     id: string;
     name: string;
   };
+}
+
+interface StockHistories {
+  id: string;
+  created_at: string
 }
 
 export const productcolumns: ColumnDef<ProductCategory>[] = [
@@ -167,6 +176,79 @@ export const productcolumns: ColumnDef<ProductCategory>[] = [
             <DropdownMenuItem>Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      );
+    },
+  },
+];
+
+export const ProductStockColumns: ColumnDef<ProductCategory>[] = [
+  {
+    accessorKey: "name",
+    header: () => <div className="text-left">Product Name</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="text-secondary_color">
+          {row.original.name}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "quantity",
+    header: () => <div className="text-left">Stock</div>,
+    cell: ({ row }) => {
+      return (
+        <span className={clsx("",{
+          "text-yellow-600": (row.original.quantity < row.original.default_stock_level),
+          "text-secondary_color": !(row.original.quantity < row.original.default_stock_level)
+        })}>
+          {row.original.quantity ? row.original.quantity : 0} 
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "default_stock_level",
+    header: "Default Level",
+    cell: ({ row }) => {
+      return (
+        <span className="text-secondary_color">
+          {row.original.default_stock_level}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "category",
+    header: () => <div className="text-left">Category</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="text-secondary_color">
+          {row.original.category.name}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "stock_histories",
+    header: () => <div className="text-left">Last Updated</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="text-secondary_color">
+          {new Date(row.original.stock_histories?.[0].created_at).toLocaleString()}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "id",
+    header: () => <div className="text-center">Action</div>,
+    cell: ({ row }) => {
+      return (
+        <DetaiRouteButton
+          route="/inventory-management/stock-level-management"
+          id={row.getValue("id")}
+        />
       );
     },
   },
