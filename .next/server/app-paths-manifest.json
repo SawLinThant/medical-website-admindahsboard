@@ -1,0 +1,19 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/forgotpassword/page": "app/forgotpassword/page.js",
+  "/login/page": "app/login/page.js",
+  "/page": "app/page.js",
+  "/inventory-management/stock-monitoring/page": "app/inventory-management/stock-monitoring/page.js",
+  "/inventory-management/stock-level-management/page": "app/inventory-management/stock-level-management/page.js",
+  "/product-management/product/product-list/page": "app/product-management/product/product-list/page.js",
+  "/home/page": "app/home/page.js",
+  "/product-management/product/product-detail/[productId]/page": "app/product-management/product/product-detail/[productId]/page.js",
+  "/shop/shop-detail/[shopId]/page": "app/shop/shop-detail/[shopId]/page.js",
+  "/order/list/page": "app/order/list/page.js",
+  "/order/detail/[orderId]/page": "app/order/detail/[orderId]/page.js",
+  "/shop/shop-list/page": "app/shop/shop-list/page.js",
+  "/product-management/product/create-product/page": "app/product-management/product/create-product/page.js",
+  "/shop-notification/page": "app/shop-notification/page.js",
+  "/shop/shop-create/page": "app/shop/shop-create/page.js"
+}

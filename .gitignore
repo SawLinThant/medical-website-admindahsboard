@@ -18,7 +18,7 @@
 
 # production
 /build
-.next
+.next/cache
 
 # misc
 .DS_Store
