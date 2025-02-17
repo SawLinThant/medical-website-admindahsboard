@@ -57,6 +57,7 @@ const ProductList: React.FC = () => {
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
+
   return (
     <div className="w-full h-full flex flex-col gap-4 p-4">
       <h2 className="font-bold text-xl">Products</h2>

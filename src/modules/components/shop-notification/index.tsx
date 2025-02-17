@@ -7,7 +7,6 @@ interface NotificationProps {
 }
 
 const Notification: React.FC<NotificationProps> = ({ shop_id }) => {
-  console.log("notification shop id:", shop_id);
   const { notifications, loadingNotifications, error } =
     useGetNotificationsByShop(shop_id);
   if (loadingNotifications) return <p>Loading notifications...</p>;

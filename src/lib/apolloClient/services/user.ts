@@ -11,7 +11,7 @@ export interface FindAccountResponse {
 }
 
 export const FindAccount = async (
-    client: ApolloClient<Object>,
+    client: ApolloClient<object>,
     input: FindAccountInput
   ): Promise<FindAccountResponse> => {
     try {

@@ -34,7 +34,7 @@ const ProductEditForm: React.FC<ProducEditFormProps> = () => {
   const [updateLoading, setUpdateLoading] = useState<boolean>(false);
   const { userId } = useAccount();
   const searchParams = useSearchParams();
-const productID = searchParams.get('productID');
+  const productID = searchParams.get("productID");
   const { handleUpdateProduct } = useUpdateProductQuantity();
   const [adjustmentOption, setAdjustmentOption] = useState<string>("add");
   const [adjustedQuantity, setAdjustedQuantity] = useState<number | null>(0);
@@ -48,7 +48,10 @@ const productID = searchParams.get('productID');
   const user = userInfo ? userInfo.users?.[0] : [];
   const { products, setFilters } = useGetDropdownProducts();
   const [reason, setReason] = useState<string>("");
-  const {stockHistories, refetchStock} = useGetStockHistories(user?.shop_id,productId)
+  const { stockHistories, refetchStock } = useGetStockHistories(
+    user?.shop_id,
+    productId
+  );
   const [productInfo, setProductInfo] = useState<ProductInfo>({
     id: "",
     name: "",
@@ -68,10 +71,10 @@ const productID = searchParams.get('productID');
   });
 
   useEffect(() => {
-    if(productID){
-      setProductId(productID)
+    if (productID) {
+      setProductId(productID);
     }
-  },[productID])
+  }, [productID]);
 
   // useEffect(() => {
   //   if (product && product.product) {
@@ -79,13 +82,13 @@ const productID = searchParams.get('productID');
   //     setProductInfo(product.product);
   //   }
   // },[productId,product]);
-  console.log(productID)
+  console.log(productID);
   useEffect(() => {
     if (product?.product && product.product.id !== productInfo.id) {
       console.log("Setting productInfo:", product.product);
       setProductInfo(product.product);
     }
-  }, [product]); 
+  }, [product]);
 
   useEffect(() => {
     setFilters({
@@ -113,9 +116,16 @@ const productID = searchParams.get('productID');
     }
     try {
       setUpdateLoading(true);
-      const updatedQuantity = adjustmentOption === "add"? (productInfo.quantity + (adjustedQuantity || 0)) : (productInfo.quantity - (adjustedQuantity || 0))
+      const updatedQuantity =
+        adjustmentOption === "add"
+          ? productInfo.quantity + (adjustedQuantity || 0)
+          : productInfo.quantity - (adjustedQuantity || 0);
       const defaultStock = productInfo.default_stock_level;
-      const repsone = await handleUpdateProduct(productId, defaultStock ,updatedQuantity);
+      const repsone = await handleUpdateProduct(
+        productId,
+        defaultStock,
+        updatedQuantity
+      );
       if (repsone) {
         const newHistory = await handleCreateStockHistory({
           reason: reason,
@@ -123,13 +133,13 @@ const productID = searchParams.get('productID');
           product_id: productId,
           shop_id: user.shop_id || "",
           stock_available: productInfo.quantity || 0,
-          adjusted_quantity: adjustedQuantity || 0
+          adjusted_quantity: adjustedQuantity || 0,
         });
         if (newHistory) {
           toast({
             description: "Stock Updated",
           });
-          refetchStock()
+          refetchStock();
         }
       }
     } catch (err) {
@@ -291,51 +301,63 @@ const productID = searchParams.get('productID');
             <div className="w-full min-h-20 flex flex-col gap-2">
               <h2 className="font-bold text-lg text-headercolor">History</h2>
               <div className="w-full min-h-20 border border-gray-300 rounded-md flex flex-col gap-6 px-8 max-h-[72vh] overflow-y-auto scrollbar-thin">
-                {stockHistories && stockHistories.map((history:any,index:number) => (
-                  <div key={index} className="w-full py-8 flex flex-col gap-4 border-b">
-                  <h2 className={clsx("font-semibold",{
-                    "text-muted-foreground":history.type === "add",
-                    "text-red-500":history.type === "reduce",
-                  })}>{history.type === "add"?"Add Stock":"Reduce Stock"}</h2>
-                  <div className="w-full flex flex-col text-sm gap-2">
-                    <div className="grid grid-cols-2">
-                      <div className="w-full text-muted-foreground">
-                        <span>Date</span>
-                      </div>
-                      <div className="w-full font-semibold">
-                        <span>{new Date(history.created_at).toLocaleString()}</span>
+                {stockHistories &&
+                  stockHistories.map((history: any, index: number) => (
+                    <div
+                      key={index}
+                      className="w-full py-8 flex flex-col gap-4 border-b"
+                    >
+                      <h2
+                        className={clsx("font-semibold", {
+                          "text-muted-foreground": history.type === "add",
+                          "text-red-500": history.type === "reduce",
+                        })}
+                      >
+                        {history.type === "add" ? "Add Stock" : "Reduce Stock"}
+                      </h2>
+                      <div className="w-full flex flex-col text-sm gap-2">
+                        <div className="grid grid-cols-2">
+                          <div className="w-full text-muted-foreground">
+                            <span>Date</span>
+                          </div>
+                          <div className="w-full font-semibold">
+                            <span>
+                              {new Date(history.created_at).toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2">
+                          <div className="w-full text-muted-foreground">
+                            <span>Reason/Note</span>
+                          </div>
+                          <div className="w-full font-semibold">
+                            <span>{history.reason}</span>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2">
+                          <div className="w-full text-muted-foreground">
+                            <span>Stock Available</span>
+                          </div>
+                          <div className="w-full font-semibold">
+                            <span>{history.stock_available}</span>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2">
+                          <div className="w-full text-muted-foreground">
+                            <span>Adjustment Quantity</span>
+                          </div>
+                          <div className="w-full font-semibold">
+                            <span>{history.adjusted_quantity}</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="grid grid-cols-2">
-                      <div className="w-full text-muted-foreground">
-                        <span>Reason/Note</span>
-                      </div>
-                      <div className="w-full font-semibold">
-                        <span>{history.reason}</span>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2">
-                      <div className="w-full text-muted-foreground">
-                        <span>Stock Available</span>
-                      </div>
-                      <div className="w-full font-semibold">
-                        <span>{history.stock_available}</span>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2">
-                      <div className="w-full text-muted-foreground">
-                        <span>Adjustment Quantity</span>
-                      </div>
-                      <div className="w-full font-semibold">
-                        <span>{history.adjusted_quantity}</span>
-                      </div>
-                    </div>
+                  ))}
+                {!stockHistories || stockHistories.length < 1 ? (
+                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                    Select product first to the stock add/reduce history here
                   </div>
-                </div>
-                ))}
-                {!stockHistories || stockHistories.length < 1?(
-                  <div className="w-full h-full flex items-center justify-center text-muted-foreground">Select product first to the stock add/reduce history here</div>
-                ):null}
+                ) : null}
               </div>
             </div>
           </div>

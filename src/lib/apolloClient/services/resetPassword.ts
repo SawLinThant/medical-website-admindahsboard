@@ -12,7 +12,7 @@ interface ResetPasswordResponse {
 }
 
 export const resetPassword = async (
-  client: ApolloClient<Object>,
+  client: ApolloClient<object>,
   input: ResetPasswordInput
 ): Promise<ResetPasswordResponse> => {
   try {
