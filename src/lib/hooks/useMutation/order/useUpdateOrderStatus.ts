@@ -6,6 +6,7 @@ interface UpdateOrderItemsVariables {
   order_id: string;
   shop_id: string;
   status: string;
+  updated_at: string | null
 }
 
 interface UpdateOrderItemsResponse {

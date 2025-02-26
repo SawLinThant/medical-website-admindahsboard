@@ -5,12 +5,14 @@ import { GET_FILTERED_PRODUCTS, GET_FILTERED_PRODUCTS_DROPDOWN, GET_PRODUCTS, GE
 import { useMemo, useState } from "react";
 import { GET_PRICE_RANGE } from "../apolloClient/query/priceRangeQuery";
 import { GET_IMAGES_BY_PRODUCT_ID } from "../apolloClient/query/productImageQuery";
-import { InputTagOptionType, Order, OrderItem, ShopOrders, Tax } from "../types";
-import { GET_FILTERED_SHOPS, GET_SHOP_BY_ID } from "../apolloClient/query/shopQuery";
+import { Advertisements, InputTagOptionType, Order, OrderItem, ShopOrders, Tax } from "../types";
+import { GET_FILTERED_SHOPS, GET_SHOP_BY_ID, GET_SHOPS } from "../apolloClient/query/shopQuery";
 import { GET_USER_BY_SHOP_ID } from "../apolloClient/query/userQuery";
 import { GET_IMAGES_BY_SHOP_ID } from "../apolloClient/query/shopImageQuery";
 import { GET_ORDER_BY_ID, GET_ORDER_ITEMS_BY_ORDER_ID, GET_SHOP_ORDERS } from "../apolloClient/query/orderQuery";
 import { GET_TAXES } from "../apolloClient/query/taxQuery";
+import { optionType } from "@/modules/common/components/dropdown";
+import { GET_ADVERTISEMENT_BY_ID, GET_FILTERED_ADVERTISEMENT } from "../apolloClient/query/advertisementQuery";
 
 export const useGetTags = () => {
   const { data, loading: loadingTags, error } = useQuery(GET_TAGS);
@@ -313,8 +315,19 @@ interface GetShopByIdResponse {
   shops_by_pk: Shop | null;
 }
 
+interface GetShopResponse {
+  shops: optionType[] | null;
+}
+
 interface UseGetShopByIdReturn {
   shop: Shop | null;
+  loadingShop: boolean;
+  errorShop: Error | undefined;
+  refetchShop: any;
+}
+
+interface UseGetShopReturn {
+  shop: optionType[] | null;
   loadingShop: boolean;
   errorShop: Error | undefined;
   refetchShop: any;
@@ -330,6 +343,16 @@ export const useGetShopById = (id: string): UseGetShopByIdReturn => {
   );
 
   const shop = data?.shops_by_pk || null;
+
+  return { shop, loadingShop, errorShop, refetchShop };
+};
+
+export const useGetShop = (): UseGetShopReturn => {
+  const { data, loading: loadingShop, error: errorShop, refetch: refetchShop } = useQuery<GetShopResponse>(
+    GET_SHOPS
+  );
+
+  const shop = data?.shops || [];
 
   return { shop, loadingShop, errorShop, refetchShop };
 };
@@ -547,3 +570,96 @@ export const useGetTax = ():UseGetTaxReturn => {
 
   return {tax,loadingTax,error}
 }
+
+export const useGetAdvertisements = () => {
+  const [filters, setFilters] = useState<{
+    shop_id?: string;
+    name?: string;
+    status?: string;
+    budgetRange?: { min_budget: number; max_budget: number };
+    start_date?: string;
+    end_date?: string;
+  }>({});
+  const [page, setPage] = useState<number>(1);
+  const [take, setTake] = useState<number>(10);
+
+  const skip = useMemo(() => (page - 1) * take, [page, take]);
+
+  const where = useMemo(() => {
+    const conditions: any = {};
+    if (filters.shop_id) {
+      conditions.shop_id = { _eq: filters.shop_id };
+    }
+    if (filters.name) {
+      conditions.name = { _ilike: `%${filters.name}%` };
+    }
+    if (filters.status) {
+      conditions.status = { _eq: filters.status };
+    }
+    if (filters.budgetRange) {
+      conditions.budget = {
+        _gte: filters.budgetRange.min_budget,
+        _lte: filters.budgetRange.max_budget,
+      };
+    }
+    if (filters.start_date) {
+      conditions.start_date = { _gte: filters.start_date };
+    }
+    if (filters.end_date) {
+      conditions.end_date = { _lte: filters.end_date };
+    }
+
+    return Object.keys(conditions).length > 0 ? conditions : undefined;
+  }, [filters]);
+
+  const { data, loading, error } = useQuery(GET_FILTERED_ADVERTISEMENT, {
+    variables: {
+      where,
+      offset: skip,
+      limit: take,
+    },
+    fetchPolicy: "network-only",
+  });
+
+  const advertisements = data?.advertisements || [];
+  const totalCount = data?.advertisements_aggregate?.aggregate?.count || 1;
+
+  return {
+    advertisements,
+    loading,
+    error,
+    filters,
+    setFilters,
+    page,
+    setPage,
+    take,
+    setTake,
+    totalCount,
+  };
+};
+
+
+interface GetAdvertisementByIdResponse {
+  advertisements: Advertisements[];
+}
+
+interface UseGetAdvertisementByIdReturn {
+  advertisement: Advertisements | null;
+  loadingAdvertisement: boolean;
+  error: Error | undefined;
+  refetchAdvertisement: any;
+}
+
+export const useGetAdvertisementById = (id: string): UseGetAdvertisementByIdReturn => {
+  const { data, loading: loadingAdvertisement, error, refetch: refetchAdvertisement } = useQuery<GetAdvertisementByIdResponse>(
+    GET_ADVERTISEMENT_BY_ID,
+    {
+      variables: { id },
+      skip: !id,
+    }
+  );
+
+  const advertisement = data?.advertisements?.[0] || null;
+
+  return { advertisement, loadingAdvertisement, error, refetchAdvertisement };
+};

@@ -22,7 +22,7 @@ export default {
   				foreground: 'hsl(var(--popover-foreground))'
   			},
   			primary: {
-  				DEFAULT: '#796f6f',
+  				DEFAULT: '#39AF9D',
   				foreground: 'hsl(var(--primary-foreground))'
   			},
   			secondary: {
@@ -63,7 +63,7 @@ export default {
   			},
 			headercolor: "#1d1e18",
 			inputlabel: "#796f6f",
-			secondary_color: "#796f6f"
+			secondary_color: "#39AF9D"
   		},
   		borderRadius: {
   			lg: 'var(--radius)',

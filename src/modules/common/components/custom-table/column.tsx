@@ -9,7 +9,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { OrderItem, ProductImageype, ShopOrders } from "@/lib/types";
+import { Advertisements, OrderItem, ProductImageype, ShopOrders } from "@/lib/types";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
@@ -509,3 +509,44 @@ export const OrderItemColumns: ColumnDef<OrderItem>[] = [
     },
   },
 ];
+
+export const AdColumns: ColumnDef<Advertisements>[] = [
+  {
+    accessorKey: "name",
+    header: () => <div className="text-left">Name</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="font-semibold">
+          {row.original.name}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "category",
+    header: () => <div className="text-left">Status</div>,
+    cell: ({ row }) => {
+      return (
+        <div className={clsx("px-3 py-2 rounded-md w-[100px] text-center",{
+          "bg-[#39AF9D1A] text-secondary_color": row.original.status === "Active",
+          "bg-[#FF313B1A] text-muted-foreground": row.original.status === "Scheduled",
+          "bg-[#F3F3F3] text-red-400": row.original.status === "Inactive",
+        })}>
+          {row.original.status}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "id",
+    header: () => <div className="text-center">Action</div>,
+    cell: ({ row }) => {
+      return (
+        <ActionButton
+          route="/advertisement/ad-detail/"
+          id={row.getValue("id")}
+        />
+      );
+    },
+  },
+]

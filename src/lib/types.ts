@@ -61,6 +61,7 @@ export interface User {
   name: string;
   email: string;
   phone: string;
+  delivery_addresses: DeliveryAddress[];
 }
 
 export interface Order {
@@ -76,6 +77,13 @@ export interface Order {
   user: User;
 }
 
+export interface DeliveryAddress {
+  firstname: string;
+  lastname: string;
+  phone: string;
+  email: string;
+}
+
 export interface ShopOrders {
   order_id: string;
   user_id: string;
@@ -84,6 +92,7 @@ export interface ShopOrders {
   order_status: string;
   total_price: number;
   billing_address: string;
+  delivery_address: string;
   shipping_address: string;
   billing_phone_no: string;
   total_items: number;
@@ -112,12 +121,45 @@ export interface StockHistory {
   type: string;
   product_id: string;
   shop_id: string;
-  created_at: string
+  created_at: string;
 }
-
 
 export type IconProps = {
   color?: string;
   height?: string | number;
   width?: string | number;
 } & React.SVGAttributes<SVGElement>;
+
+type BasicShopInfo = {
+  id:string;
+  name: string
+}
+
+type BasicPorductInfo = {
+  id:string;
+  name: string
+}
+
+export type Advertisements = {
+  id: string;
+  name: string;
+  status: string;
+  budget: string;
+  start_date: string;
+  end_date: string;
+  duration: string;
+  shop_id: string;
+  product_id: string;
+  certification: string;
+  approval_number: string;
+  disclaimer: string;
+  shop?: BasicShopInfo
+  product?: BasicPorductInfo
+  ad_images?: AdImages[]
+};
+
+export type AdImages = {
+  id: string;
+  ad_id: string;
+  url: string
+}

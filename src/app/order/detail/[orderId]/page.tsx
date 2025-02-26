@@ -36,7 +36,8 @@ const OrderDetail: React.FC = () => {
   const deliveryFees = 0;
   const calculatedTax = tax? tax.value/100 : 0;
   const subTotal = shopOrders && shopOrders.length > 0? shopOrders?.[0].shop_total_price:0;
-  const totalPrice = deliveryFees + subTotal + (subTotal*calculatedTax)
+  //const totalPrice = deliveryFees + subTotal + (subTotal*calculatedTax)
+  const totalPrice = (subTotal+(subTotal*calculatedTax))  
   const { data: userInfo } = useQuery(GET_USER_BY_ID, {
     variables: {
       id: userId,
@@ -52,9 +53,9 @@ const OrderDetail: React.FC = () => {
 
   useEffect(() => {
     if (order) {
-      setOrderStatus(shopOrders[0].order_status);
+      setOrderStatus(shopOrders[0]?.order_status || "");
     }
-  }, [setOrderStatus, refetchOrder]);
+  }, [orderStatus, refetchOrder]);
 
   const handleUpdateOrder = async (value: string) => {
     setOrderStatus(value);
@@ -63,6 +64,7 @@ const OrderDetail: React.FC = () => {
         order_id: orderId,
         shop_id: user.shop_id || "",
         status: value,
+        updated_at: new Date(Date.now()).toISOString()
       });
       if (response) {
         refetchOrder();
@@ -86,6 +88,7 @@ const OrderDetail: React.FC = () => {
         order_id: orderId,
         shop_id: user.shop_id || "",
         status: "Cancelled",
+        updated_at: null
       });
       if (response) {
         refetchOrder();
@@ -101,7 +104,7 @@ const OrderDetail: React.FC = () => {
       });
     }
   };
-
+console.log(order?.user?.delivery_addresses?.[0]?.email)
   return (
     <section className="w-full flex flex-col gap-4">
       <div className="w-full min-h-20 flex flex-row items-center gap-2">
@@ -190,17 +193,17 @@ const OrderDetail: React.FC = () => {
             <h3 className="font-semibold">Contact Info</h3>
             <div className="flex flex-row gap-4 text-sm mt-3 break-words">
               <Mail size={17} />
-              {order?.user.email}
+              {order?.user?.delivery_addresses?.[0].email}
             </div>
             <div className="flex flex-row items-center gap-4 text-sm">
               <Phone size={17} />
-              {order?.user.phone}
+              {order?.user?.phone}
             </div>
           </div>
           <Separator className="my-2" />
           <div className="flex flex-col items-start gap-2">
             <h3 className="font-semibold">Shipping address</h3>
-            <span className="text-sm">{shopOrders[0]?.shipping_address}</span>
+            <span className="text-sm">{shopOrders[0]?.delivery_address}</span>
           </div>
           <Separator className="my-2" />
           <div className="flex flex-col items-start gap-2">

@@ -15,14 +15,14 @@ export const SIDEBAR_ROUTES = [
           title: "Product", 
           url: "/product-management/product/product-list",
         },
-        {
-          title: "Category", 
-          url: "products/category",
-        },
-        {
-          title: "Stocks", 
-          url: "products/stock",
-        },
+        // {
+        //   title: "Category", 
+        //   url: "products/category",
+        // },
+        // {
+        //   title: "Stocks", 
+        //   url: "products/stock",
+        // },
       ],
     },
     {
@@ -53,34 +53,34 @@ export const SIDEBAR_ROUTES = [
           },
         ],
       },
-      {
-        title: "Noticfication",
-        url: "#",
-        icon: MessageSquareDot,
-        isActive: false,
-        items: [
-          {
-            title: "Notifications", 
-            url: "/shop-notification",
-          },
-        ],
-      },
-      {
-        title: "Analytic and Reports",
-        url: "#",
-        icon: ChartLine,
-        isActive: false,
-        items: [
-          {
-            title: "Report", 
-            url: "reports",
-          },
-          {
-            title: "Chart", 
-            url: "chart",
-          },
-        ],
-      },
+      // {
+      //   title: "Noticfication",
+      //   url: "#",
+      //   icon: MessageSquareDot,
+      //   isActive: false,
+      //   items: [
+      //     {
+      //       title: "Notifications", 
+      //       url: "/shop-notification",
+      //     },
+      //   ],
+      // },
+      // {
+      //   title: "Analytic and Reports",
+      //   url: "#",
+      //   icon: ChartLine,
+      //   isActive: false,
+      //   items: [
+      //     {
+      //       title: "Report", 
+      //       url: "reports",
+      //     },
+      //     {
+      //       title: "Chart", 
+      //       url: "chart",
+      //     },
+      //   ],
+      // },
   ];
 
   export const ADMIN_SIDEBAR_ROUTES = [
@@ -94,10 +94,26 @@ export const SIDEBAR_ROUTES = [
           title: "Shop", 
           url: "/shop/shop-list",
         },
+        // {
+        //   title: "Category", 
+        //   url: "products/category",
+        // },
+      ],
+    },
+    {
+      title: "Advertisement Management",
+      url: "#",
+      icon: LayoutList,
+      isActive: false,
+      items: [
         {
-          title: "Category", 
-          url: "products/category",
+          title: "Advertisement", 
+          url: "/advertisement/ad-list",
         },
+        // {
+        //   title: "Category", 
+        //   url: "products/category",
+        // },
       ],
     },
   ];

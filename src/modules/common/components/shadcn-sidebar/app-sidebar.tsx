@@ -34,7 +34,7 @@ const AppSidebar = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
       <SidebarHeader>
         <div className="w-full min-h-32 p-4 flex items-center justify-center">
           <div className="w-full h-full rounded flex items-center justify-center">
-             <Image className="object-contain" width={50} height={25} src="/images/logo.png" alt="logo"/>
+             <Image className="object-cover" width={100} height={100} src="/images/logo.png" alt="logo"/>
           </div>
         </div>
       </SidebarHeader>

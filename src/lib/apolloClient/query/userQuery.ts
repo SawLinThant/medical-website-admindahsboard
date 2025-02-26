@@ -32,6 +32,13 @@ export const GET_USER_BY_ID = gql`
       phone
       role
       shop_id
+      delivery_addresses{
+        firstname
+        lastname
+           address
+           phone
+           email
+        }
     }
   }
 `;

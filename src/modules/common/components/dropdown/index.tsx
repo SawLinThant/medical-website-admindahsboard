@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/popover"
 import clsx from "clsx"
 
-type optionType = {
+export type optionType = {
     id: string
     name: string
 }

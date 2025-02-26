@@ -108,7 +108,7 @@ const LoginForm = () => {
             <Button
               type="submit"
               disabled={loginLoading || loading}
-              className="border min-h-[2.25rem] rounded-md bg-inputlabel text-white flex items-center justify-center"
+              className="border min-h-[2.25rem] rounded-md bg-secondary_color text-white flex items-center justify-center"
             >
               {loginLoading ? (
                 <Loader className="animate-spin" size={20} />
@@ -117,9 +117,9 @@ const LoginForm = () => {
               )}
             </Button>
           </form>
-          <span className="text-inputlabel text-sm w-full text-center pb-4">
+          {/* <span className="text-inputlabel text-sm w-full text-center pb-4">
             Account Setting
-          </span>
+          </span> */}
         </div>
       </div>
     </div>

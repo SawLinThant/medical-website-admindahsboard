@@ -17,6 +17,7 @@
 
 
 # production
+/.next
 /build
 .next/cache
 

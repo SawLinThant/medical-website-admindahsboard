@@ -10,6 +10,7 @@ export const GET_SHOP_ORDERS = gql`
       order_status
       total_price
       billing_address
+      delivery_address
       billing_phone_no
       total_items
       shop_total_price
@@ -39,10 +40,11 @@ export const GET_ORDER_BY_ID = gql`
         email
         phone
         delivery_addresses{
-        fistname
+        firstname
         lastname
            address
            phone
+           email
         }
       }
     }

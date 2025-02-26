@@ -75,6 +75,18 @@ export const CREATE_IMAGE = gql`
   }
 `;
 
+export const CREATE_AD_IMAGE = gql`
+  mutation createAdImage($ad_id: uuid, $url: String) {
+    insert_ad_images_one(
+      object: { ad_id: $ad_id, url: $url }
+    ) {
+      id
+      ad_id
+      url
+    }
+  }
+`;
+
 export const DELETE_IMAGE = gql`
   mutation deleteImage($id: uuid!) {
     delete_images_by_pk(id: $id) {
