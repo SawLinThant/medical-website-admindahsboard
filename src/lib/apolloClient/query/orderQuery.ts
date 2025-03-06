@@ -31,7 +31,7 @@ export const GET_ORDER_BY_ID = gql`
       user_id
       status
       created_date
-      updated_date
+      updated_at
       total_price
       payment_id
       user {
