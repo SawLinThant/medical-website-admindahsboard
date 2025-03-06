@@ -17,7 +17,6 @@ const ProductList: React.FC = () => {
     advertisements,
     setTake,
     setFilters,
-    filters,
     page,
     setPage,
     totalCount,

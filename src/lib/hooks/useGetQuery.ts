@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { GET_PRICE_RANGE } from "../apolloClient/query/priceRangeQuery";
 import { GET_IMAGES_BY_PRODUCT_ID } from "../apolloClient/query/productImageQuery";
 import { Advertisements, InputTagOptionType, Order, OrderItem, ShopOrders, Tax } from "../types";
-import { GET_FILTERED_SHOPS, GET_SHOP_BY_ID, GET_SHOPS } from "../apolloClient/query/shopQuery";
+import { GET_FILTERED_SHOPS, GET_NESTED_FILTERED_SHOPS, GET_SHOP_BY_ID, GET_SHOPS } from "../apolloClient/query/shopQuery";
 import { GET_USER_BY_SHOP_ID } from "../apolloClient/query/userQuery";
 import { GET_IMAGES_BY_SHOP_ID } from "../apolloClient/query/shopImageQuery";
 import { GET_ORDER_BY_ID, GET_ORDER_ITEMS_BY_ORDER_ID, GET_SHOP_ORDERS } from "../apolloClient/query/orderQuery";
@@ -393,6 +393,7 @@ export const useGetUsersByShopId = (shop_id: string): UseGetUsersByShopIdReturn 
 type ShopFilter = {
   name?: string;
   shop_category?: string;
+  shopIds?: string[];
 };
 
 export const useGetShops = () => {
@@ -438,6 +439,102 @@ export const useGetShops = () => {
     take,
     setTake,
     totalCount
+  };
+};
+
+export const useGetNestedShops = (dateRange: string, selectedShopIds: string[] = []) => {
+  const [filters, setFilters] = useState<ShopFilter>({});
+  const [page, setPage] = useState<number>(1);
+  const [take, setTake] = useState<number>(10);
+
+  const skip = useMemo(() => (page - 1) * take, [page, take]);
+
+  const where = useMemo(() => {
+    const conditions: any = {};
+
+    if (filters.name) {
+      conditions.name = { _ilike: `%${filters.name}%` };
+    }
+    if (filters.shop_category) {
+      conditions.shop_category = { id: { _eq: filters.shop_category } };
+    }
+    if (selectedShopIds.length > 0) {
+      conditions.id = { _in: selectedShopIds }; 
+    }
+
+    return Object.keys(conditions).length > 0 ? conditions : undefined;
+  }, [filters, selectedShopIds]);
+
+  const getDateRangeFilter = (dateRange: string): any => {
+    const now = new Date();
+    let startDate, endDate;
+
+    switch (dateRange) {
+      case "thisWeek":
+        startDate = new Date(now.setDate(now.getDate() - now.getDay()));
+        endDate = new Date();
+        break;
+      case "thisMonth":
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        endDate = new Date();
+        break;
+      case "thisYear":
+        startDate = new Date(now.getFullYear(), 0, 1);
+        endDate = new Date();
+        break;
+      case "lastWeek":
+        const lastWeekEnd = new Date(now.setDate(now.getDate() - now.getDay() - 1));
+        startDate = new Date(lastWeekEnd.setDate(lastWeekEnd.getDate() - 6));
+        endDate = lastWeekEnd;
+        break;
+      case "lastMonth":
+        startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        endDate = new Date(now.getFullYear(), now.getMonth(), 0);
+        break;
+      case "lastYear":
+        startDate = new Date(now.getFullYear() - 1, 0, 1);
+        endDate = new Date(now.getFullYear() - 1, 11, 31);
+        break;
+      default:
+        startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        endDate = new Date();
+    }
+
+    return {
+      created_at: {
+        _gte: startDate.toISOString(),
+        _lte: endDate.toISOString(),
+      },
+      status: { _eq: "Completed" },
+    };
+  };
+
+  const orderItemWhere = useMemo(() => getDateRangeFilter(dateRange), [dateRange]);
+
+  const { data, loading, error } = useQuery(GET_FILTERED_SHOPS, {
+    variables: {
+      where,
+      orderItemWhere,
+      offset: skip,
+      limit: take,
+    },
+    fetchPolicy: "network-only",
+  });
+
+  const shops = data?.shops || [];
+  const totalCount = data?.shops_aggregate?.aggregate?.count || 1;
+
+  return {
+    shops,
+    loading,
+    error,
+    filters,
+    setFilters,
+    page,
+    setPage,
+    take,
+    setTake,
+    totalCount,
   };
 };
 
@@ -532,6 +629,7 @@ export const useGetOrderById = (orderId: string): UseGetOrderByIdReturn => {
   return {order,loadingOrder,error,refetchOrder}
 }
 
+
 interface GetOrderItemsByIdResponse {
   order_items: OrderItem[]
 }
@@ -542,17 +640,21 @@ interface UseGetOrderItemByOrderIdReturn {
   error: Error | undefined;
 }
 
-export const useGetOrderItemByOrderId = (orderId: string): UseGetOrderItemByOrderIdReturn => {
-  const { data, loading: loadingOrder, error } = useQuery<GetOrderItemsByIdResponse>(GET_ORDER_ITEMS_BY_ORDER_ID,
-    {
-      variables:{order_id: orderId},
-      skip: !orderId
-    }
-  )
-  const orderItems = data? data.order_items : undefined;
+export const useGetOrderItemByOrderId = (
+  orderId: string
+): UseGetOrderItemByOrderIdReturn => {
+  const { data, loading, error } = useQuery<
+    GetOrderItemsByIdResponse,
+    { order_id: string }
+  >(GET_ORDER_ITEMS_BY_ORDER_ID, {
+    variables: { order_id: orderId },
+    skip: !orderId,
+  });
 
-  return {orderItems,loadingOrder,error}
-}
+  const orderItems = data?.order_items; 
+
+  return { orderItems, loadingOrder: loading, error };
+};
 
 interface GetTaxResponse {
   taxes: Tax[]

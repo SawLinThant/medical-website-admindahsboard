@@ -116,6 +116,22 @@ export const SIDEBAR_ROUTES = [
         // },
       ],
     },
+    {
+      title: "Analytics and Reports",
+      url: "#",
+      icon: LayoutList,
+      isActive: false,
+      items: [
+        {
+          title: "Sale Report for shops", 
+          url: "/analytics-and-report/sale-report",
+        },
+        {
+          title: "Sale and Comparison", 
+          url: "/analytics-and-report/sale-comparison",
+        },
+      ],
+    },
   ];
 
   export const options = [

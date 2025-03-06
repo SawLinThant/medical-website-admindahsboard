@@ -21,6 +21,17 @@ export type PriceRangeType = {
   end_price: number;
 };
 
+export interface Products {
+  id: string;
+  name: string;
+  price: number;
+  bulk_price: number;
+  quantity: number;
+  description: string;
+  images: ProductImageype[];
+  //order_items: OrderItem[]
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -29,6 +40,7 @@ export interface Product {
   quantity: number;
   description: string;
   images: ProductImageype[];
+  order_items: OrderItem[]
 }
 
 export interface Shop {
@@ -42,6 +54,11 @@ export interface Shop {
   created_at: string;
   remark: string;
   shop_admin_name: string;
+  shop_category:{
+    id: string;
+    name: string;
+  }
+  products: Product[]
 }
 
 export interface OrderItem {
@@ -52,8 +69,9 @@ export interface OrderItem {
   price: number;
   status: string;
   subtotal?: number;
+  created_at?: string;
   shop_id: string;
-  product: Product;
+  product: Products;
 }
 
 export interface User {

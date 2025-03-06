@@ -8,20 +8,20 @@ import { useAccount } from "@/lib/context/account-context";
 import { useGetAllProducts, useGetProducts } from "@/lib/hooks/useGetQuery";
 import { DataTable } from "@/modules/common/components/custom-table";
 import { ProductStockColumns } from "@/modules/common/components/custom-table/column";
-import { NestedDropdown, NestedOption, SubOption } from "@/modules/common/components/nested-dropdown";
+import { NestedDropdown, SubOption } from "@/modules/common/components/nested-dropdown";
 import { PaginationControll } from "@/modules/common/components/pagination";
 import Alert from "@/modules/common/icons/alert";
 import Export from "@/modules/common/icons/export";
 import { useQuery } from "@apollo/client";
-import { Archive, CircleAlert, PackageSearch, Search } from "lucide-react";
+import { Archive, PackageSearch, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const StockMonitorList: React.FC = () => {
   const [searchName, setSearchName] = useState<string>("");
-  const { products, setTake, setFilters, filters, page, setPage, totalCount } =
+  const { products, setTake, setFilters, page, setPage, totalCount } =
     useGetProducts();
     const {products:LowStockProduct, setFilters:setLowStockFilter} = useGetProducts()
-    const {productCount,totalProducts} = useGetAllProducts();
+    const {totalProducts} = useGetAllProducts();
     const [totalInventory,setTotalInventory] = useState<number>(0);
     const [category,setCategory] = useState<null | SubOption>()
   const itemPerPage = 10;
@@ -40,7 +40,7 @@ const StockMonitorList: React.FC = () => {
   const user = userInfo ? userInfo.users?.[0] : [];
   useEffect(() => {
     if(totalProducts && totalProducts.length > 0){
-      const totalQuantity = totalProducts.reduce((sum:number, product:any) => sum + product.quantity, 0);
+      const totalQuantity = products.reduce((sum:number, product:any) => sum + product.quantity, 0);
       setTotalInventory(totalQuantity);
     }
   })
@@ -100,7 +100,7 @@ const StockMonitorList: React.FC = () => {
             </div>
             <h2 className="font-medium">Total Products</h2>
           </div>
-          <span className="text-xl font-bold">{productCount?productCount:"0"}</span>
+          <span className="text-xl font-bold">{products?products.length:"0"}</span>
         </div>
         <div className="w-full border shadow-md rounded-lg flex flex-col gap-3 justify-center text-center py-8">
           <div className="flex flex-row items-center justify-center gap-4">
@@ -116,7 +116,7 @@ const StockMonitorList: React.FC = () => {
             <div className="p-3 bg-secondary_color/20 rounded-full flex items-center justify-center">
               <Alert />
             </div>
-            <h2 className="font-medium">Total Products</h2>
+            <h2 className="font-medium">Stock Needs Attention</h2>
           </div>
           <span className="text-xl font-bold">
             {LowStockProduct? LowStockProduct.length : "0"}

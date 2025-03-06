@@ -9,7 +9,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Advertisements, OrderItem, ProductImageype, ShopOrders } from "@/lib/types";
+import { Advertisements, OrderItem, ProductImageype, Shop, ShopOrders } from "@/lib/types";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal } from "lucide-react";
@@ -40,21 +40,21 @@ export type ProductCategory = {
   images: ProductImageype[];
 };
 
-interface Shop {
-  id: string;
-  name: string;
-  logo: string;
-  description: string;
-  address: string;
-  phone: string;
-  category_id: string;
-  remark: string;
-  shop_admin_name: string;
-  shop_category: {
-    id: string;
-    name: string;
-  };
-}
+// interface Shop {
+//   id: string;
+//   name: string;
+//   logo: string;
+//   description: string;
+//   address: string;
+//   phone: string;
+//   category_id: string;
+//   remark: string;
+//   shop_admin_name: string;
+//   shop_category: {
+//     id: string;
+//     name: string;
+//   };
+// }
 
 interface StockHistories {
   id: string;
@@ -235,7 +235,7 @@ export const ProductStockColumns: ColumnDef<ProductCategory>[] = [
     cell: ({ row }) => {
       return (
         <span className="text-secondary_color">
-          {new Date(row.original.stock_histories?.[0].created_at).toLocaleString()}
+          {new Date(row.original.stock_histories?.[0]?.created_at || "").toLocaleString()}
         </span>
       );
     },
@@ -548,5 +548,319 @@ export const AdColumns: ColumnDef<Advertisements>[] = [
         />
       );
     },
+  },
+]
+
+const calculateTotalSales = (shop: Shop): number => {
+  let total = 0;
+  shop.products.forEach((product) => {
+    product.order_items.forEach((item) => {
+      if (item.status === "Completed") {
+        total += item.subtotal ?? item.quantity * item.price;
+      }
+    });
+  });
+  return total;
+};
+
+const calculateLastMonthSales = (shop: Shop, dateRange: string): number => {
+  const now = new Date();
+  let startDate: Date;
+  let endDate: Date = now;
+ // console.log("date range:",dateRange)
+  // switch (dateRange) {
+  //   case "thisWeek":
+  //     startDate = new Date(now.setDate(now.getDate() - now.getDay()));
+  //     break;
+  //   case "thisMonth":
+  //     startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+  //     break;
+  //   case "thisYear":
+  //     startDate = new Date(now.getFullYear(), 0, 1);
+  //     break;
+  //   case "lastWeek":
+  //     startDate = new Date(now.setDate(now.getDate() - 7 - now.getDay()));
+  //     endDate = new Date(now.setDate(now.getDate() - now.getDay() - 1));
+  //     break;
+  //   case "lastMonth":
+  //     startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  //     endDate = new Date(now.getFullYear(), now.getMonth(), 0);
+  //     break;
+  //   case "lastYear":
+  //     startDate = new Date(now.getFullYear() - 1, 0, 1);
+  //     endDate = new Date(now.getFullYear() - 1, 11, 31);
+  //     break;
+  //   default:
+  //     startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  // }
+
+  const getLastDayOfMonth = (year: number, month: number): Date => {
+    return new Date(Date.UTC(year, month + 1, 0, 23, 59, 59));
+  };
+  
+
+  switch (dateRange) {
+    case "thisWeek":
+      startDate = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate() - now.getUTCDay()
+        )
+      );
+      endDate = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate() + (6 - now.getUTCDay())
+        )
+      );
+      break;
+    case "thisMonth":
+      startDate = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)
+      );
+      endDate = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0)
+      );
+      break;
+    case "thisYear":
+      startDate = new Date(Date.UTC(now.getUTCFullYear(), 0, 1));
+      endDate = new Date(Date.UTC(now.getUTCFullYear(), 11, 31));
+      break;
+    case "lastWeek":
+      const lastWeekEnd = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate() - now.getUTCDay() - 1
+        )
+      );
+      startDate = new Date(
+        Date.UTC(
+          lastWeekEnd.getUTCFullYear(),
+          lastWeekEnd.getUTCMonth(),
+          lastWeekEnd.getUTCDate() - 6
+        )
+      );
+      endDate = lastWeekEnd;
+      break;
+    case "lastMonth":
+      startDate = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1)
+      );
+      endDate = getLastDayOfMonth(now.getUTCFullYear(), now.getUTCMonth() - 1);
+      console.log(
+        `Last Month Range: ${startDate.toISOString()} to ${endDate.toISOString()}`
+      );
+      break;
+    case "lastYear":
+      startDate = new Date(Date.UTC(now.getUTCFullYear() - 1, 0, 1)); // January 1, 2024
+      endDate = new Date(
+        Date.UTC(now.getUTCFullYear() - 1, 11, 31, 23, 59, 59)
+      ); // December 31, 2024, 23:59:59 UTC
+      console.log(
+        `Last Year Range: ${startDate.toISOString()} to ${endDate.toISOString()}`
+      );
+      break;
+    default:
+      startDate = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1)
+      );
+      endDate = new Date();
+  }
+
+  let total = 0;
+  shop.products.forEach((product) => {
+    product.order_items.forEach((item) => {
+      if (item.status === "Completed") {
+        const itemDate = new Date(item.created_at || "");
+        console.log("Calculate last month function itemDate:",itemDate)
+        console.log("Calculate last month function endDate:",endDate)
+        if (itemDate >= startDate && itemDate <= endDate) {
+          total += item.subtotal ?? item.quantity * item.price;
+        }
+      }
+    });
+  });
+  
+  return total;
+};
+
+const calculateTotalOrders = (shop: Shop): number => {
+  const orderIds = new Set<string>();
+  shop.products.forEach((product) => {
+    product.order_items.forEach((item) => {
+      orderIds.add(item.order_id);
+    });
+  });
+  return orderIds.size;
+};
+
+export const calculateBestSellingProduct = (shop: Shop): string | null => {
+  const productSales = new Map<string, number>();
+  shop.products.forEach((product) => {
+    let sales = 0;
+    product.order_items.forEach((item) => {
+      sales += item.subtotal ?? item.quantity * item.price;
+    });
+    productSales.set(product.id, sales);
+  });
+  const bestProduct = [...productSales.entries()].reduce((max, current) =>
+    current[1] > max[1] ? current : max, ["", -Infinity] // Changed [null, -Infinity] to ["", -Infinity]
+  );
+  return bestProduct[0] ? shop.products.find((p) => p.id === bestProduct[0])?.name || null : null;
+};
+
+const calculateGrowth = (shop: Shop, dateRange: string): string => {
+  const totalSales = calculateTotalSales(shop);
+  const lastMonthSales = calculateLastMonthSales(shop, dateRange);
+  if (lastMonthSales === 0) return "N/A";
+  const growth = ((totalSales - lastMonthSales) / lastMonthSales) * 100;
+  return `${growth.toFixed(1)}%`;
+};
+
+export const ReportColumns: ColumnDef<Shop>[] = [
+  {
+    accessorKey: "name",
+    enableSorting: false, 
+    header: () => <div className="text-left">Shop Name</div>,
+    cell: ({ row }) => (
+      <span className="font-semibold">{row.original.name}</span>
+    ),
+  },
+
+  {
+    accessorKey: "totalSales",
+    header: () => <div className="">Total Sales</div>,
+    cell: ({ row }) => (
+      <span>{calculateTotalSales(row.original).toLocaleString()}</span>
+    ),
+    enableSorting: false, 
+    sortingFn: (rowA, rowB, columnId) => {
+      const valueA = calculateTotalSales(rowA.original);
+      const valueB = calculateTotalSales(rowB.original);
+      return valueA - valueB; 
+    },
+  },
+
+  {
+    accessorKey: "lastMonthSales",
+    header: ({ table }) => (
+      <div className="">
+        {(table.options.meta as { dateRange?: string })?.dateRange || "Sales"}
+      </div>
+    ),
+    cell: ({ row, table }) => {
+      const dateRange = (table.options.meta as { dateRange?: string })?.dateRange || "thisMonth";
+      return <span>{calculateLastMonthSales(row.original, dateRange).toLocaleString()}</span>;
+    },
+    enableSorting: false,
+  },
+
+  {
+    accessorKey: "totalOrders",
+    header: () => <div className="">Total Orders</div>,
+    cell: ({ row }) => (
+      <span>{calculateTotalOrders(row.original)}</span>
+    ),
+    enableSorting: false, 
+  },
+
+  {
+    accessorKey: "bestSellingProduct",
+    enableSorting: false, 
+    header: () => <div className="">Best Selling Product</div>,
+    cell: ({ row }) => (
+      <span>{calculateBestSellingProduct(row.original) || "N/A"}</span>
+    ),
+  },
+
+  {
+    accessorKey: "growth",
+    header: () => <div className="">Growth</div>,
+    cell: ({ row, table }) => {
+      const dateRange = (table.options.meta as { dateRange?: string })?.dateRange || "thisMonth";
+      return (
+        <span
+          className={clsx(
+            "font-medium",
+            calculateGrowth(row.original, dateRange).includes("-") ? "text-red-500" : "text-green-500"
+          )}
+        >
+          {calculateGrowth(row.original, dateRange)}
+        </span>
+      );
+    },
+    enableSorting: false, 
+  },
+]
+
+export const ComparisonColumns: ColumnDef<Shop>[] = [
+  {
+    accessorKey: "name",
+    header: () => <div className="text-left">Shop Name</div>,
+    cell: ({ row }) => (
+      <span className="font-semibold">{row.original.name}</span>
+    ),
+  },
+
+  {
+    accessorKey: "totalSales",
+    header: () => <div className="">Total Sales</div>,
+    cell: ({ row }) => (
+      <span>{calculateTotalSales(row.original).toLocaleString()}</span>
+    ),
+    enableSorting: true, 
+    sortingFn: (rowA, rowB, columnId) => {
+      const valueA = calculateTotalSales(rowA.original);
+      const valueB = calculateTotalSales(rowB.original);
+      return valueA - valueB; 
+    },
+  },
+
+  {
+    accessorKey: "lastMonthSales",
+    header: ({table}) => <div className="">{(table.options.meta as { dateRange?: string })?.dateRange || "thisMonth"}</div>,
+    cell: ({ row, table }) => {
+      const dateRange = (table.options.meta as { dateRange?: string })?.dateRange || "thisMonth";
+      return <span>${calculateLastMonthSales(row.original, dateRange).toLocaleString()}</span>;
+    },
+    enableSorting: false, 
+  },
+
+  {
+    accessorKey: "totalOrders",
+    header: () => <div className="">Total Orders</div>,
+    cell: ({ row }) => (
+      <span>{calculateTotalOrders(row.original)}</span>
+    ),
+  },
+
+  {
+    accessorKey: "bestSellingProduct",
+    header: () => <div className="">Best Selling Product</div>,
+    cell: ({ row }) => (
+      <span>{calculateBestSellingProduct(row.original) || "N/A"}</span>
+    ),
+  },
+
+  {
+    accessorKey: "growth",
+    header: () => <div className="">Growth</div>,
+    cell: ({ row, table }) => {
+      const dateRange = (table.options.meta as { dateRange?: string })?.dateRange || "thisMonth";
+      return (
+        <span
+          className={clsx(
+            "font-medium",
+            calculateGrowth(row.original, dateRange).includes("-") ? "text-red-500" : "text-green-500"
+          )}
+        >
+          {calculateGrowth(row.original, dateRange)}
+        </span>
+      );
+    },
+    enableSorting: false, 
   },
 ]

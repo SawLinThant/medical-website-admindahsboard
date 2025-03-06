@@ -14,6 +14,7 @@ import {
 } from "@/lib/hooks/useGetQuery";
 import { useUpdateOrderItemsStatus } from "@/lib/hooks/useMutation/order/useUpdateOrderStatus";
 import { BackButton } from "@/modules/common/components/button";
+import OrderPopUp from "@/modules/common/components/custom-popup";
 import { DataTable } from "@/modules/common/components/custom-table";
 import { OrderItemColumns } from "@/modules/common/components/custom-table/column";
 import UpdateSelect from "@/modules/common/components/update-select";
@@ -25,6 +26,7 @@ import { useEffect, useState } from "react";
 
 const OrderDetail: React.FC = () => {
   const { userId } = useAccount();
+  const [isDialogOpen,setIsDialogOpen] = useState<boolean>(false)
   const { orderId } = useParams() as { orderId: string };
   const { shopOrders, setFilters } = useGetShopOrders();
   const [orderStatus, setOrderStatus] = useState<string>("");
@@ -68,9 +70,10 @@ const OrderDetail: React.FC = () => {
       });
       if (response) {
         refetchOrder();
-        toast({
-          description: "Order Updated",
-        });
+        // toast({
+        //   description: "Order Updated",
+        // });
+        setIsDialogOpen(true)
       }
     } catch {
       setOrderStatus(shopOrders[0].order_status || "");
@@ -92,9 +95,10 @@ const OrderDetail: React.FC = () => {
       });
       if (response) {
         refetchOrder();
-        toast({
-          description: "Order Updated",
-        });
+        // toast({
+        //   description: "Order Updated",
+        // });
+        setIsDialogOpen(true)
       }
     } catch {
       setOrderStatus(shopOrders[0].order_status || "");
@@ -210,6 +214,7 @@ console.log(order?.user?.delivery_addresses?.[0]?.email)
             <h3 className="font-semibold">Billing address</h3>
             <span className="text-sm">{shopOrders[0]?.billing_address}</span>
           </div>
+          <OrderPopUp setIsDialogOpen={setIsDialogOpen} isDialogOpen={isDialogOpen}/>
         </div>
       </div>
     </section>

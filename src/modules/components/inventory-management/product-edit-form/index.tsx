@@ -24,6 +24,7 @@ import { useCreateStockHistory } from "@/lib/hooks/useMutation/stockHistory";
 import { useGetStockHistories } from "@/lib/hooks/useQuery/stockHistory";
 import clsx from "clsx";
 import { useSearchParams } from "next/navigation";
+import StockSuccessPopUp from "@/modules/common/components/inventory-popup/stock-suceess";
 
 type ProducEditFormProps = {
   id?: string;
@@ -32,6 +33,7 @@ type ProducEditFormProps = {
 const ProductEditForm: React.FC<ProducEditFormProps> = () => {
   const [productId, setProductId] = useState<string>("");
   const [updateLoading, setUpdateLoading] = useState<boolean>(false);
+  const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
   const { userId } = useAccount();
   const searchParams = useSearchParams();
   const productID = searchParams.get("productID");
@@ -136,9 +138,10 @@ const ProductEditForm: React.FC<ProducEditFormProps> = () => {
           adjusted_quantity: adjustedQuantity || 0,
         });
         if (newHistory) {
-          toast({
-            description: "Stock Updated",
-          });
+          // toast({
+          //   description: "Stock Updated",
+          // });
+          setIsOpenDialog(true)
           refetchStock();
         }
       }
@@ -158,6 +161,7 @@ const ProductEditForm: React.FC<ProducEditFormProps> = () => {
       <div className="w-full min-h-20 flex flex-row items-center gap-2">
         <div className="h-11 w-11">
           <BackButton />
+          <StockSuccessPopUp isDialogOpen={isOpenDialog} setIsDialogOpen={setIsOpenDialog} product={productInfo.name} quantity={adjustedQuantity || 0} adjustmentOption={adjustmentOption}/>
         </div>
         <div className="flex flex-col gap-2">
           {/* <div className="text-sm text-muted-foreground">
