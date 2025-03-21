@@ -94,10 +94,10 @@ export const SIDEBAR_ROUTES = [
           title: "Shop", 
           url: "/shop/shop-list",
         },
-        // {
-        //   title: "Category", 
-        //   url: "products/category",
-        // },
+        {
+          title: "Monitor Shop Activities", 
+          url: "/shop-activities",
+        },
       ],
     },
     {

@@ -13,6 +13,7 @@ import {
   useGetTax,
 } from "@/lib/hooks/useGetQuery";
 import { useUpdateOrderItemsStatus } from "@/lib/hooks/useMutation/order/useUpdateOrderStatus";
+import { useCreateShopActivity } from "@/lib/hooks/useMutation/shop-activities/useCreateShopActivities";
 import { BackButton } from "@/modules/common/components/button";
 import OrderPopUp from "@/modules/common/components/custom-popup";
 import { DataTable } from "@/modules/common/components/custom-table";
@@ -34,6 +35,7 @@ const OrderDetail: React.FC = () => {
   const { toast } = useToast();
   const { orderItems } = useGetOrderItemByOrderId(orderId);
   const { updateOrderItemsStatus } = useUpdateOrderItemsStatus();
+  const { createShopActivity } = useCreateShopActivity();
   const { tax } = useGetTax();
   const deliveryFees = 0;
   const calculatedTax = tax? tax.value/100 : 0;
@@ -69,11 +71,17 @@ const OrderDetail: React.FC = () => {
         updated_at: new Date(Date.now()).toISOString()
       });
       if (response) {
-        refetchOrder();
-        // toast({
-        //   description: "Order Updated",
-        // });
-        setIsDialogOpen(true)
+        const shopActivity = await createShopActivity({
+          shop_id: user.shop_id || "",
+          activity: "Order Status Updated",
+          order_id: orderId,
+          status: value,
+          note: "Order Status Updated",
+        });
+        if(shopActivity){
+          refetchOrder();
+          setIsDialogOpen(true)
+        }
       }
     } catch {
       setOrderStatus(shopOrders[0].order_status || "");

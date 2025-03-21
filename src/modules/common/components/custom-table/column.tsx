@@ -40,6 +40,16 @@ export type ProductCategory = {
   images: ProductImageype[];
 };
 
+export type ShopActivity = {
+  id: string;
+  activity: string;
+  note: string;
+  status: string;
+  order_id: string;
+  shop: {
+    name: string;
+  };
+};
 // interface Shop {
 //   id: string;
 //   name: string;
@@ -198,11 +208,11 @@ export const ProductStockColumns: ColumnDef<ProductCategory>[] = [
     header: () => <div className="text-left">Stock</div>,
     cell: ({ row }) => {
       return (
-        <span className={clsx("",{
+        <span className={clsx("", {
           "text-yellow-600": (row.original.quantity < row.original.default_stock_level),
           "text-secondary_color": !(row.original.quantity < row.original.default_stock_level)
         })}>
-          {row.original.quantity ? row.original.quantity : 0} 
+          {row.original.quantity ? row.original.quantity : 0}
         </span>
       );
     },
@@ -249,6 +259,64 @@ export const ProductStockColumns: ColumnDef<ProductCategory>[] = [
           route="/inventory-management/stock-level-management"
           id={row.getValue("id")}
         />
+      );
+    },
+  },
+];
+
+export const ShopActivityColumns: ColumnDef<ShopActivity>[] = [
+  {
+    accessorKey: "name",
+    header: () => <div className="text-left">Shop</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="text-secondary_color">
+          {row.original.shop.name}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "activity",
+    header: () => <div className="text-left">Activity</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="text-secondary_color">
+          {row.original.activity}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "note",
+    header: () => <div className="text-left">Note</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="text-secondary_color">
+          {row.original.note}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "order_id",
+    header: () => <div className="text-left">Order ID</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="text-secondary_color">
+          {row.original.order_id}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "status",
+    header: () => <div className="text-left">Status</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="text-secondary_color">
+          {row.original.status}
+        </span>
       );
     },
   },
@@ -482,7 +550,7 @@ export const OrderItemColumns: ColumnDef<OrderItem>[] = [
             <div className=" flex flex-row items-center">
               <span>{row.original.product.name}</span>
             </div>
-            <div  className="flex flex-row gap-2">
+            <div className="flex flex-row gap-2">
               <span className="text-sm text-muted-foreground">Brand:</span>
               <span className="text-sm">No Brand</span>
             </div>
@@ -527,7 +595,7 @@ export const AdColumns: ColumnDef<Advertisements>[] = [
     header: () => <div className="text-left">Status</div>,
     cell: ({ row }) => {
       return (
-        <div className={clsx("px-3 py-2 rounded-md w-[100px] text-center",{
+        <div className={clsx("px-3 py-2 rounded-md w-[100px] text-center", {
           "bg-[#39AF9D1A] text-secondary_color": row.original.status === "Active",
           "bg-[#FF313B1A] text-muted-foreground": row.original.status === "Scheduled",
           "bg-[#F3F3F3] text-red-400": row.original.status === "Inactive",
@@ -567,7 +635,7 @@ const calculateLastMonthSales = (shop: Shop, dateRange: string): number => {
   const now = new Date();
   let startDate: Date;
   let endDate: Date = now;
- // console.log("date range:",dateRange)
+  // console.log("date range:",dateRange)
   // switch (dateRange) {
   //   case "thisWeek":
   //     startDate = new Date(now.setDate(now.getDate() - now.getDay()));
@@ -597,7 +665,7 @@ const calculateLastMonthSales = (shop: Shop, dateRange: string): number => {
   const getLastDayOfMonth = (year: number, month: number): Date => {
     return new Date(Date.UTC(year, month + 1, 0, 23, 59, 59));
   };
-  
+
 
   switch (dateRange) {
     case "thisWeek":
@@ -675,15 +743,15 @@ const calculateLastMonthSales = (shop: Shop, dateRange: string): number => {
     product.order_items.forEach((item) => {
       if (item.status === "Completed") {
         const itemDate = new Date(item.created_at || "");
-        console.log("Calculate last month function itemDate:",itemDate)
-        console.log("Calculate last month function endDate:",endDate)
+        console.log("Calculate last month function itemDate:", itemDate)
+        console.log("Calculate last month function endDate:", endDate)
         if (itemDate >= startDate && itemDate <= endDate) {
           total += item.subtotal ?? item.quantity * item.price;
         }
       }
     });
   });
-  
+
   return total;
 };
 
@@ -723,7 +791,7 @@ const calculateGrowth = (shop: Shop, dateRange: string): string => {
 export const ReportColumns: ColumnDef<Shop>[] = [
   {
     accessorKey: "name",
-    enableSorting: false, 
+    enableSorting: false,
     header: () => <div className="text-left">Shop Name</div>,
     cell: ({ row }) => (
       <span className="font-semibold">{row.original.name}</span>
@@ -736,11 +804,11 @@ export const ReportColumns: ColumnDef<Shop>[] = [
     cell: ({ row }) => (
       <span>{calculateTotalSales(row.original).toLocaleString()}</span>
     ),
-    enableSorting: false, 
+    enableSorting: false,
     sortingFn: (rowA, rowB, columnId) => {
       const valueA = calculateTotalSales(rowA.original);
       const valueB = calculateTotalSales(rowB.original);
-      return valueA - valueB; 
+      return valueA - valueB;
     },
   },
 
@@ -764,12 +832,12 @@ export const ReportColumns: ColumnDef<Shop>[] = [
     cell: ({ row }) => (
       <span>{calculateTotalOrders(row.original)}</span>
     ),
-    enableSorting: false, 
+    enableSorting: false,
   },
 
   {
     accessorKey: "bestSellingProduct",
-    enableSorting: false, 
+    enableSorting: false,
     header: () => <div className="">Best Selling Product</div>,
     cell: ({ row }) => (
       <span>{calculateBestSellingProduct(row.original) || "N/A"}</span>
@@ -792,7 +860,7 @@ export const ReportColumns: ColumnDef<Shop>[] = [
         </span>
       );
     },
-    enableSorting: false, 
+    enableSorting: false,
   },
 ]
 
@@ -811,22 +879,22 @@ export const ComparisonColumns: ColumnDef<Shop>[] = [
     cell: ({ row }) => (
       <span>{calculateTotalSales(row.original).toLocaleString()}</span>
     ),
-    enableSorting: true, 
+    enableSorting: true,
     sortingFn: (rowA, rowB, columnId) => {
       const valueA = calculateTotalSales(rowA.original);
       const valueB = calculateTotalSales(rowB.original);
-      return valueA - valueB; 
+      return valueA - valueB;
     },
   },
 
   {
     accessorKey: "lastMonthSales",
-    header: ({table}) => <div className="">{(table.options.meta as { dateRange?: string })?.dateRange || "thisMonth"}</div>,
+    header: ({ table }) => <div className="">{(table.options.meta as { dateRange?: string })?.dateRange || "thisMonth"}</div>,
     cell: ({ row, table }) => {
       const dateRange = (table.options.meta as { dateRange?: string })?.dateRange || "thisMonth";
       return <span>${calculateLastMonthSales(row.original, dateRange).toLocaleString()}</span>;
     },
-    enableSorting: false, 
+    enableSorting: false,
   },
 
   {
@@ -861,6 +929,6 @@ export const ComparisonColumns: ColumnDef<Shop>[] = [
         </span>
       );
     },
-    enableSorting: false, 
+    enableSorting: false,
   },
 ]

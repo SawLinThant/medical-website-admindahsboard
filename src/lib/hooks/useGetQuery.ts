@@ -13,6 +13,7 @@ import { GET_ORDER_BY_ID, GET_ORDER_ITEMS_BY_ORDER_ID, GET_SHOP_ORDERS } from ".
 import { GET_TAXES } from "../apolloClient/query/taxQuery";
 import { optionType } from "@/modules/common/components/dropdown";
 import { GET_ADVERTISEMENT_BY_ID, GET_FILTERED_ADVERTISEMENT } from "../apolloClient/query/advertisementQuery";
+import { GET_FILTERED_SHOP_ACTIVITIES } from "../apolloClient/query/shopactivitiesQuery";
 
 export const useGetTags = () => {
   const { data, loading: loadingTags, error } = useQuery(GET_TAGS);
@@ -764,4 +765,94 @@ export const useGetAdvertisementById = (id: string): UseGetAdvertisementByIdRetu
   const advertisement = data?.advertisements?.[0] || null;
 
   return { advertisement, loadingAdvertisement, error, refetchAdvertisement };
+};
+
+export const useGetShopActivities = () => {
+  const [filters, setFilters] = useState<{
+    shop_id?: string | string[];
+    dateRange?: string; 
+  }>({});
+  const [page, setPage] = useState<number>(1);
+  const [take, setTake] = useState<number>(10);
+
+  const skip = useMemo(() => (page - 1) * take, [page, take]);
+
+  const where = useMemo(() => {
+    const conditions: any = {};
+
+    if (filters.shop_id) {
+      if (Array.isArray(filters.shop_id)) {
+        conditions.shop_id = { _in: filters.shop_id };
+      } else {
+        conditions.shop_id = { _eq: filters.shop_id };
+      }
+    }
+
+    if(filters.dateRange === "all"){
+      return;
+    }
+    if (filters.dateRange) {
+      const now = new Date();
+      let startDate: Date;
+      let endDate: Date = now;
+
+      switch (filters.dateRange.toLowerCase()) {
+        case 'lastweek':
+          startDate = new Date(now.setDate(now.getDate() - 7));
+          endDate = new Date(now.setDate(now.getDate() - 7));
+          break;
+        case 'thisweek':
+          startDate = new Date(now.setDate(now.getDate() - now.getDay()));
+          break;
+        case 'lastmonth':
+          startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+          endDate = new Date(now.getFullYear(), now.getMonth(), 0);
+          break;
+        case 'thismonth':
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          break;
+        case 'lastyear':
+          startDate = new Date(now.getFullYear() - 1, 0, 1);
+          endDate = new Date(now.getFullYear() - 1, 11, 31);
+          break;
+        case 'thisyear':
+          startDate = new Date(now.getFullYear(), 0, 1);
+          break;
+        default:
+          startDate = now;
+      }
+
+      conditions.created_at = {
+        _gte: startDate.toISOString(),
+        _lte: endDate.toISOString()
+      };
+    }
+
+    return Object.keys(conditions).length > 0 ? conditions : undefined;
+  }, [filters]);
+
+  const { data, loading, error } = useQuery(GET_FILTERED_SHOP_ACTIVITIES, {
+    variables: {
+      where,
+      offset: skip,
+      limit: take,
+    },
+    fetchPolicy: "network-only",
+  });
+
+  const shopActivities = data?.shop_activities || [];
+  const totalCount = data?.shop_activities_aggregate?.aggregate?.count || 1;
+
+  return {
+    shopActivities,
+    loading,
+    error,
+    filters,
+    setFilters,
+    page,
+    setPage,
+    take,
+    setTake,
+    totalCount,
+  };
 };

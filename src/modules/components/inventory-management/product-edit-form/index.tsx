@@ -25,6 +25,7 @@ import { useGetStockHistories } from "@/lib/hooks/useQuery/stockHistory";
 import clsx from "clsx";
 import { useSearchParams } from "next/navigation";
 import StockSuccessPopUp from "@/modules/common/components/inventory-popup/stock-suceess";
+import { useCreateShopActivity } from "@/lib/hooks/useMutation/shop-activities/useCreateShopActivities";
 
 type ProducEditFormProps = {
   id?: string;
@@ -39,6 +40,7 @@ const ProductEditForm: React.FC<ProducEditFormProps> = () => {
   const productID = searchParams.get("productID");
   const { handleUpdateProduct } = useUpdateProductQuantity();
   const [adjustmentOption, setAdjustmentOption] = useState<string>("add");
+  const { createShopActivity } = useCreateShopActivity();
   const [adjustedQuantity, setAdjustedQuantity] = useState<number | null>(0);
   const { handleCreateStockHistory } = useCreateStockHistory();
   const { data: userInfo } = useQuery(GET_USER_BY_ID, {
@@ -138,11 +140,16 @@ const ProductEditForm: React.FC<ProducEditFormProps> = () => {
           adjusted_quantity: adjustedQuantity || 0,
         });
         if (newHistory) {
-          // toast({
-          //   description: "Stock Updated",
-          // });
-          setIsOpenDialog(true)
-          refetchStock();
+          const shopActivity = await createShopActivity({
+            shop_id: user.shop_id || "",
+            activity: "Stock Level Updated",
+            status: "-",
+            note: `Stock Level Updated from ${productInfo.quantity} to ${updatedQuantity}`,
+          });
+          if(shopActivity){
+            setIsOpenDialog(true)
+            refetchStock();
+          }
         }
       }
     } catch (err) {
