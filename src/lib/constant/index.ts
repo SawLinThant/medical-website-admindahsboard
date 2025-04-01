@@ -2,13 +2,44 @@
 
 import { NestedOption } from "@/modules/common/components/nested-dropdown";
 import { RadioType } from "@/modules/common/components/radio-button";
-import { ChartLine, FileSpreadsheet, LayoutList, MessageSquareDot, SquareTerminal } from "lucide-react";
+import ProductOverview from "@/modules/common/icons/product-overview";
+import Inventory from "@/modules/common/icons/inventory";
+import Cart from "@/modules/common/icons/cart";
+import Alert from "@/modules/common/icons/alert";
+import Growth from "@/modules/common/icons/growth";
+import { LucideIcon } from "lucide-react";
+import { IconProps } from "@/lib/types";
+import { FC } from "react";
+import ShopManagement from "@/modules/common/icons/shop-management";
+import Ads from "@/modules/common/icons/ads";
+import Analysis from "@/modules/common/icons/analysis";
+import Support from "@/modules/common/icons/support";
+import Notification from "@/modules/common/icons/notification";
 
-export const SIDEBAR_ROUTES = [
+interface CustomIconProps {
+  height: string;
+  width: string;
+  color?: string;
+}
+
+type SidebarIcon = LucideIcon | FC<IconProps> | FC<CustomIconProps>;
+
+interface SidebarRoute {
+  title: string;
+  url: string;
+  icon?: SidebarIcon;
+  isActive?: boolean;
+  items?: {
+    title: string;
+    url: string;
+  }[];
+}
+
+export const SIDEBAR_ROUTES: SidebarRoute[] = [
     {
       title: "Product Management",
       url: "#",
-      icon: LayoutList,
+      icon: ProductOverview,
       isActive: false,
       items: [
         {
@@ -28,9 +59,13 @@ export const SIDEBAR_ROUTES = [
     {
       title: "Inventory Management",
       url: "#",
-      icon: SquareTerminal,
+      icon: Inventory,
       isActive: false,
       items: [
+        {
+          title: "Products", 
+          url: "/inventory-management/product",
+        },
         {
           title: "Stock Level Management", 
           url: "/inventory-management/stock-level-management",
@@ -44,12 +79,36 @@ export const SIDEBAR_ROUTES = [
     {
         title: "Order Management",
         url: "#",
-        icon: FileSpreadsheet,
+        icon: Cart,
         isActive: false,
         items: [
           {
             title: "Orders", 
             url: "/order/list",
+          },
+        ],
+      },
+      {
+        title: "Notification",
+        url: "#",
+        icon: Notification,
+        isActive: false,
+        items: [
+          {
+            title: "Notification", 
+            url: "/shop-notification",
+          },
+        ],
+      },
+      {
+        title: "Analytics and Reports",
+        url: "#",
+        icon: Analysis,
+        isActive: false,
+        items: [
+          {
+            title: "Sale Report", 
+            url: "/analytics-and-report/shop-report",
           },
         ],
       },
@@ -87,7 +146,7 @@ export const SIDEBAR_ROUTES = [
     {
       title: "Shop Management",
       url: "#",
-      icon: LayoutList,
+      icon: ShopManagement,
       isActive: false,
       items: [
         {
@@ -101,9 +160,61 @@ export const SIDEBAR_ROUTES = [
       ],
     },
     {
+      title: "Product Overview",
+      url: "#",
+      icon: ProductOverview,
+      isActive: false,
+      items: [
+        {
+          title: "Product", 
+          url: "/product-management/product/product-overview",
+        },
+        {
+          title: "Monitor Shop Activities", 
+          url: "/shop-activities",
+        },
+      ],
+    },
+    {
+      title: "Categories",
+      url: "#",
+      icon: ProductOverview,
+      isActive: false,
+      items: [
+        {
+          title: "Shop Categories", 
+          url: "/categories/shop-categories/create-shop-category",
+        },
+        {
+          title: "Product Categories", 
+          url: "/categories/product-categories/create-product-category",
+        },
+        {
+          title: "Product Tags", 
+          url: "/categories/product-tags/create-product-tag",
+        },
+      ],
+    },
+    {
+      title: "Inventory Management",
+      url: "#",
+      icon: Inventory,
+      isActive: false,
+      items: [
+        {
+          title: "Stock Level Management", 
+          url: "/inventory-management/stock-level-management",
+        },
+        {
+          title: "Stock Monitoring", 
+          url: "/inventory-management/stock-monitoring",
+        },
+      ],
+    },
+    {
       title: "Advertisement Management",
       url: "#",
-      icon: LayoutList,
+      icon: Ads,
       isActive: false,
       items: [
         {
@@ -119,7 +230,7 @@ export const SIDEBAR_ROUTES = [
     {
       title: "Analytics and Reports",
       url: "#",
-      icon: LayoutList,
+      icon: Analysis,
       isActive: false,
       items: [
         {
@@ -129,6 +240,22 @@ export const SIDEBAR_ROUTES = [
         {
           title: "Sale and Comparison", 
           url: "/analytics-and-report/sale-comparison",
+        },
+      ],
+    },
+    {
+      title: "Support and Feedback",
+      url: "#",
+      icon: Support,
+      isActive: false,
+      items: [
+        {
+          title: "Annoucement", 
+          url: "/announcement/announcement-list",
+        },
+        {
+          title: "Individual Annoucement", 
+          url: "/announcement/create-individual-announcement",
         },
       ],
     },

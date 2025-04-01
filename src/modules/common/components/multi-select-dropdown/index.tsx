@@ -27,26 +27,25 @@ const MultiShopSelectDropdown: React.FC<MultiShopSelectDropdownProps> = ({
   const [selectedShops, setSelectedShops] = useState<string[]>([]);
 
   const shopOptions: ShopOption[] = [
-    { label: "All Shops", value: "all" },
+    { label: `All ${label}`, value: "all" },
     ...shops.map((shop) => ({ label: shop.name, value: shop.id })),
   ];
 
   const handleSelectChange = (value: string) => {
     if (value === "all") {
       setSelectedShops([]);
-      onShopChange([]); // Clear all filters
+      onShopChange([]); 
     } else {
       const newSelectedShops = selectedShops.includes(value)
         ? selectedShops.filter((id) => id !== value)
         : [...selectedShops, value];
       setSelectedShops(newSelectedShops);
-      onShopChange(newSelectedShops); // Update parent with selected shop IDs
+      onShopChange(newSelectedShops);
     }
   };
 
   return (
     <div>
-      {/* <label className="block text-sm font-medium text-gray-700">{label}</label> */}
       <Select onValueChange={handleSelectChange} value={selectedShops.join(",") || "all"}>
         <SelectTrigger className="w-[200px]">
           <SelectValue placeholder="Select Shops" />

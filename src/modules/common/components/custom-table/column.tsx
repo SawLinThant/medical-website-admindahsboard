@@ -32,12 +32,17 @@ export type ProductCategory = {
   price: number;
   quantity: number;
   default_stock_level: number;
+  created_at: string;
   stock_histories: StockHistories[];
   category: {
     id: string;
     name: string;
   };
   images: ProductImageype[];
+  shop: {
+    id: string;
+    name: string;
+  };
 };
 
 export type ShopActivity = {
@@ -49,6 +54,14 @@ export type ShopActivity = {
   shop: {
     name: string;
   };
+};
+
+export type Announcement = {
+  subject: string;
+  shops: string[];
+  created_date: Date;
+  attachment: string;
+  urgent: boolean;
 };
 // interface Shop {
 //   id: string;
@@ -150,6 +163,114 @@ export const productcolumns: ColumnDef<ProductCategory>[] = [
       }).format(amount);
 
       return <div className="text-left font-medium">{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: "id",
+    header: () => <div className="text-center">Action</div>,
+    cell: ({ row }) => {
+      return (
+        <ActionButton
+          route="/product-management/product/product-detail/"
+          id={row.getValue("id")}
+        />
+      );
+    },
+  },
+  {
+    id: "actions",
+    enableHiding: false,
+    cell: () => {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="h-8 w-8 p-0 border border-gray-300"
+            >
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>View product</DropdownMenuItem>
+            <DropdownMenuItem>Delete</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
+];
+
+export const ProductOverviewColumns: ColumnDef<ProductCategory>[] = [
+  {
+    accessorKey: "name",
+    header: () => <div className="text-left">Product Name</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="">
+          {row.original.name}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "category",
+    header: () => <div className="text-left">Category</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="px-3 py-2 rounded-md bg-white">
+          {row.original.category.name}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "shopId",
+    header: () => <div className="text-left">Shop</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="">
+          {row.original.shop.name}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "quantity",
+    header: () => <div className="text-left">Stock Level</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="p">
+          {row.original.quantity}
+        </span>
+      );
+    },
+  },
+  {
+    accessorKey: "price",
+    header: () => <div className="text-left">Price</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("price"));
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "MMK",
+      }).format(amount);
+
+      return <div className="text-left font-medium">{formatted}</div>;
+    },
+  },  
+  {
+    accessorKey: "created_at",
+    header: () => <div className="text-left">Status</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="text-secondary_color">
+          {new Date(row.original.created_at).toLocaleString()<= new Date().toLocaleString() ? "Active" : "Inactive"}
+        </span>
+      );
     },
   },
   {

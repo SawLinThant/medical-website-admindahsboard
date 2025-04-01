@@ -1,18 +1,48 @@
 import { useQuery } from "@apollo/client";
-import { GET_TAGS, GET_TAGS_BY_PRODUCT_ID } from "../apolloClient/query/tagQuery";
-import { GET_CATEGORY, GET_SHOP_CATEGORY } from "../apolloClient/query/categoryQuery";
-import { GET_FILTERED_PRODUCTS, GET_FILTERED_PRODUCTS_DROPDOWN, GET_PRODUCTS, GET_PRODUCTS_BY_ID } from "../apolloClient/query/productQuery";
+import {
+  GET_TAGS,
+  GET_TAGS_BY_PRODUCT_ID,
+} from "../apolloClient/query/tagQuery";
+import {
+  GET_CATEGORY,
+  GET_SHOP_CATEGORY,
+} from "../apolloClient/query/categoryQuery";
+import {
+  GET_FILTERED_PRODUCTS,
+  GET_FILTERED_PRODUCTS_DROPDOWN,
+  GET_PRODUCTS,
+  GET_PRODUCTS_BY_ID,
+} from "../apolloClient/query/productQuery";
 import { useMemo, useState } from "react";
 import { GET_PRICE_RANGE } from "../apolloClient/query/priceRangeQuery";
 import { GET_IMAGES_BY_PRODUCT_ID } from "../apolloClient/query/productImageQuery";
-import { Advertisements, InputTagOptionType, Order, OrderItem, ShopOrders, Tax } from "../types";
-import { GET_FILTERED_SHOPS, GET_NESTED_FILTERED_SHOPS, GET_SHOP_BY_ID, GET_SHOPS } from "../apolloClient/query/shopQuery";
+import {
+  Advertisements,
+  InputTagOptionType,
+  Order,
+  OrderItem,
+  ShopOrders,
+  Tax,
+} from "../types";
+import {
+  GET_FILTERED_SHOPS,
+  GET_NESTED_FILTERED_SHOPS,
+  GET_SHOP_BY_ID,
+  GET_SHOPS,
+} from "../apolloClient/query/shopQuery";
 import { GET_USER_BY_SHOP_ID } from "../apolloClient/query/userQuery";
 import { GET_IMAGES_BY_SHOP_ID } from "../apolloClient/query/shopImageQuery";
-import { GET_ORDER_BY_ID, GET_ORDER_ITEMS_BY_ORDER_ID, GET_SHOP_ORDERS } from "../apolloClient/query/orderQuery";
+import {
+  GET_ORDER_BY_ID,
+  GET_ORDER_ITEMS_BY_ORDER_ID,
+  GET_SHOP_ORDERS,
+} from "../apolloClient/query/orderQuery";
 import { GET_TAXES } from "../apolloClient/query/taxQuery";
 import { optionType } from "@/modules/common/components/dropdown";
-import { GET_ADVERTISEMENT_BY_ID, GET_FILTERED_ADVERTISEMENT } from "../apolloClient/query/advertisementQuery";
+import {
+  GET_ADVERTISEMENT_BY_ID,
+  GET_FILTERED_ADVERTISEMENT,
+} from "../apolloClient/query/advertisementQuery";
 import { GET_FILTERED_SHOP_ACTIVITIES } from "../apolloClient/query/shopactivitiesQuery";
 
 export const useGetTags = () => {
@@ -30,22 +60,28 @@ export const useGetCategories = () => {
 export const useGetAllProducts = () => {
   const {
     data,
-    loading:loadingTotalProduct,
+    loading: loadingTotalProduct,
     error: fetchTotalProductError,
   } = useQuery(GET_PRODUCTS);
   const totalProducts = data?.products || [];
   const productCount = totalProducts.length;
-  return {totalProducts,loadingTotalProduct,fetchTotalProductError,productCount}
+  return {
+    totalProducts,
+    loadingTotalProduct,
+    fetchTotalProductError,
+    productCount,
+  };
 };
 
 export const useGetProducts = () => {
   const [filters, setFilters] = useState<{
-    shop_id?: string;
+    shop_id?: string | string[];
     name?: string;
-    category?: string;
+    category?: string | string[];
     stock_level?: string;
     stock_status?: string;
     product_category?: string;
+    status?: string;
     priceRange?: { start_price: number; end_price: number };
   }>({});
   const [page, setPage] = useState<number>(1);
@@ -55,23 +91,31 @@ export const useGetProducts = () => {
 
   const where = useMemo(() => {
     const conditions: any = {};
-    if(filters.shop_id){
-      conditions.shop_id =  {_eq: filters.shop_id};
+    if (filters.shop_id) {
+      if (Array.isArray(filters.shop_id)) {
+        conditions.shop_id = { _in: filters.shop_id };
+      } else {
+        conditions.shop_id = { _eq: filters.shop_id };
+      }
     }
     if (filters.name) {
       conditions.name = { _ilike: `%${filters.name}%` };
     }
     if (filters.category) {
-      conditions.category = { id: { _eq: filters.category } };
+      if (Array.isArray(filters.category)) {
+        conditions.category = { id: { _in: filters.category } };
+      } else {
+        conditions.category = { id: { _eq: filters.category } };
+      }
     }
-    if (filters.product_category) {
-      conditions.product_category = { name: { _eq: filters.product_category } };
+    if (filters.stock_level) {
+      conditions.stock_level = { _eq: filters.stock_level };
     }
-    if(filters.stock_level){
-      conditions.stock_level =  {_eq: filters.stock_level};
+    if (filters.stock_status) {
+      conditions.stock_status = { _eq: filters.stock_status };
     }
-    if(filters.stock_status){
-      conditions.stock_status =  {_eq: filters.stock_status};
+    if (filters.status) {
+      conditions.status = { _eq: filters.status };
     }
     if (filters.priceRange) {
       conditions.price = {
@@ -80,10 +124,8 @@ export const useGetProducts = () => {
       };
     }
 
-
     return Object.keys(conditions).length > 0 ? conditions : undefined;
   }, [filters]);
-
 
   const { data, loading, error } = useQuery(GET_FILTERED_PRODUCTS, {
     variables: {
@@ -102,7 +144,7 @@ export const useGetProducts = () => {
     loading,
     error,
     filters,
-    setFilters, 
+    setFilters,
     page,
     setPage,
     take,
@@ -153,24 +195,27 @@ export const useGetDropdownProducts = () => {
 export const useGetRanges = () => {
   const { data, loading: loadingPriceRange, error } = useQuery(GET_PRICE_RANGE);
   const priceRanges = data?.price_ranges || [];
-  return { priceRanges , loadingPriceRange, error };
+  return { priceRanges, loadingPriceRange, error };
 };
 
-
-interface ShopCategoryResponse{
+interface ShopCategoryResponse {
   id: string;
-  name: string
+  name: string;
 }
 
 export const useGetShopCategories = () => {
-  const { data, loading: loadingShopCategories, error } = useQuery<{ shop_categories: ShopCategoryResponse[] }>(GET_SHOP_CATEGORY);
+  const {
+    data,
+    loading: loadingShopCategories,
+    error,
+  } = useQuery<{ shop_categories: ShopCategoryResponse[] }>(GET_SHOP_CATEGORY);
   const shopCategories = data?.shop_categories || [];
   return { shopCategories, loadingShopCategories, error };
 };
 
 interface Category {
-  id: string
-  name: string
+  id: string;
+  name: string;
 }
 
 interface Product {
@@ -182,7 +227,7 @@ interface Product {
   description?: string;
   category_id: string;
   default_stock_level: number;
-  category: Category
+  category: Category;
 }
 
 interface GetProductsByIdResponse {
@@ -193,17 +238,19 @@ interface UseGetProductByIdReturn {
   product: Product | null;
   loadingProduct: boolean;
   error: Error | undefined;
-  refetchProduct: any
+  refetchProduct: any;
 }
 
 export const useGetProductById = (id: string): UseGetProductByIdReturn => {
-  const { data, loading: loadingProduct, error, refetch: refetchProduct } = useQuery<GetProductsByIdResponse>(
-    GET_PRODUCTS_BY_ID,
-    {
-      variables: { id },
-      skip: !id,
-    }
-  );
+  const {
+    data,
+    loading: loadingProduct,
+    error,
+    refetch: refetchProduct,
+  } = useQuery<GetProductsByIdResponse>(GET_PRODUCTS_BY_ID, {
+    variables: { id },
+    skip: !id,
+  });
 
   const product = data?.products?.[0] || null;
 
@@ -214,9 +261,9 @@ interface Tag {
   id: string;
   tag_id: string;
   tag: {
-    id: string
-    name: string
-  }
+    id: string;
+    name: string;
+  };
 }
 
 interface GetTagsByProductIdResponse {
@@ -224,26 +271,30 @@ interface GetTagsByProductIdResponse {
 }
 
 interface UseGetTagsByProductIdReturn {
-  productTagsById: Tag[]
+  productTagsById: Tag[];
   tagsById: InputTagOptionType[];
   loadingTags: boolean;
   error: Error | undefined;
 }
 
-export const useGetTagsByProductId = (productId: string): UseGetTagsByProductIdReturn => {
-  const { data, loading: loadingTags, error } = useQuery<GetTagsByProductIdResponse>(
-    GET_TAGS_BY_PRODUCT_ID,
-    {
-      variables: { product_id: productId },
-      skip: !productId,
-    }
-  );
+export const useGetTagsByProductId = (
+  productId: string
+): UseGetTagsByProductIdReturn => {
+  const {
+    data,
+    loading: loadingTags,
+    error,
+  } = useQuery<GetTagsByProductIdResponse>(GET_TAGS_BY_PRODUCT_ID, {
+    variables: { product_id: productId },
+    skip: !productId,
+  });
 
   const productTagsById = data?.product_tags || [];
-  const tagsById: InputTagOptionType[] = data?.product_tags.map(tag => ({
-    id: tag.tag.id,
-    name: tag.tag.name,
-  })) || [];
+  const tagsById: InputTagOptionType[] =
+    data?.product_tags.map((tag) => ({
+      id: tag.tag.id,
+      name: tag.tag.name,
+    })) || [];
 
   return { productTagsById, tagsById, loadingTags, error };
 };
@@ -265,31 +316,39 @@ interface UseGetImagesByProductIdReturn {
   images: Image[];
   loadingImages: boolean;
   error: Error | undefined;
-  refetchImage: any
+  refetchImage: any;
 }
 
-export const useGetImagesByProductId = (productId: string): UseGetImagesByProductIdReturn => {
-  const { data, loading: loadingImages, error, refetch: refetchImage } = useQuery<GetImagesByProductIdResponse>(
-    GET_IMAGES_BY_PRODUCT_ID,
-    {
-      variables: { product_id: productId },
-      skip: !productId, 
-    }
-  );
+export const useGetImagesByProductId = (
+  productId: string
+): UseGetImagesByProductIdReturn => {
+  const {
+    data,
+    loading: loadingImages,
+    error,
+    refetch: refetchImage,
+  } = useQuery<GetImagesByProductIdResponse>(GET_IMAGES_BY_PRODUCT_ID, {
+    variables: { product_id: productId },
+    skip: !productId,
+  });
 
   const images = data?.images || [];
 
   return { images, loadingImages, error, refetchImage };
 };
 
-export const useGetImagesByShopId = (shopId: string): UseGetImagesByProductIdReturn => {
-  const { data, loading: loadingImages, error, refetch: refetchImage } = useQuery<GetShopImagesByShoptIdResponse>(
-    GET_IMAGES_BY_SHOP_ID,
-    {
-      variables: { shop_id: shopId },
-      skip: !shopId, 
-    }
-  );
+export const useGetImagesByShopId = (
+  shopId: string
+): UseGetImagesByProductIdReturn => {
+  const {
+    data,
+    loading: loadingImages,
+    error,
+    refetch: refetchImage,
+  } = useQuery<GetShopImagesByShoptIdResponse>(GET_IMAGES_BY_SHOP_ID, {
+    variables: { shop_id: shopId },
+    skip: !shopId,
+  });
 
   const images = data?.shop_images || [];
 
@@ -307,9 +366,9 @@ interface Shop {
   remark: string;
   shop_admin_name: string;
   shop_category: {
-    id: string
-    name: string
-  }
+    id: string;
+    name: string;
+  };
 }
 
 interface GetShopByIdResponse {
@@ -335,13 +394,15 @@ interface UseGetShopReturn {
 }
 
 export const useGetShopById = (id: string): UseGetShopByIdReturn => {
-  const { data, loading: loadingShop, error: errorShop, refetch: refetchShop } = useQuery<GetShopByIdResponse>(
-    GET_SHOP_BY_ID,
-    {
-      variables: { id },
-      skip: !id,
-    }
-  );
+  const {
+    data,
+    loading: loadingShop,
+    error: errorShop,
+    refetch: refetchShop,
+  } = useQuery<GetShopByIdResponse>(GET_SHOP_BY_ID, {
+    variables: { id },
+    skip: !id,
+  });
 
   const shop = data?.shops_by_pk || null;
 
@@ -349,9 +410,12 @@ export const useGetShopById = (id: string): UseGetShopByIdReturn => {
 };
 
 export const useGetShop = (): UseGetShopReturn => {
-  const { data, loading: loadingShop, error: errorShop, refetch: refetchShop } = useQuery<GetShopResponse>(
-    GET_SHOPS
-  );
+  const {
+    data,
+    loading: loadingShop,
+    error: errorShop,
+    refetch: refetchShop,
+  } = useQuery<GetShopResponse>(GET_SHOPS);
 
   const shop = data?.shops || [];
 
@@ -377,14 +441,18 @@ interface UseGetUsersByShopIdReturn {
   refetchUser: any;
 }
 
-export const useGetUsersByShopId = (shop_id: string): UseGetUsersByShopIdReturn => {
-  const { data, loading: loadingUser, error: errorUser, refetch: refetchUser } = useQuery<GetUsersByShopIdResponse>(
-    GET_USER_BY_SHOP_ID,
-    {
-      variables: { shop_id: shop_id },
-      skip: !shop_id,
-    }
-  );
+export const useGetUsersByShopId = (
+  shop_id: string
+): UseGetUsersByShopIdReturn => {
+  const {
+    data,
+    loading: loadingUser,
+    error: errorUser,
+    refetch: refetchUser,
+  } = useQuery<GetUsersByShopIdResponse>(GET_USER_BY_SHOP_ID, {
+    variables: { shop_id: shop_id },
+    skip: !shop_id,
+  });
 
   const user = data?.users?.[0] || null;
 
@@ -439,11 +507,14 @@ export const useGetShops = () => {
     setPage,
     take,
     setTake,
-    totalCount
+    totalCount,
   };
 };
 
-export const useGetNestedShops = (dateRange: string, selectedShopIds: string[] = []) => {
+export const useGetNestedShops = (
+  dateRange: string,
+  selectedShopIds: string[] = []
+) => {
   const [filters, setFilters] = useState<ShopFilter>({});
   const [page, setPage] = useState<number>(1);
   const [take, setTake] = useState<number>(10);
@@ -460,7 +531,7 @@ export const useGetNestedShops = (dateRange: string, selectedShopIds: string[] =
       conditions.shop_category = { id: { _eq: filters.shop_category } };
     }
     if (selectedShopIds.length > 0) {
-      conditions.id = { _in: selectedShopIds }; 
+      conditions.id = { _in: selectedShopIds };
     }
 
     return Object.keys(conditions).length > 0 ? conditions : undefined;
@@ -484,7 +555,9 @@ export const useGetNestedShops = (dateRange: string, selectedShopIds: string[] =
         endDate = new Date();
         break;
       case "lastWeek":
-        const lastWeekEnd = new Date(now.setDate(now.getDate() - now.getDay() - 1));
+        const lastWeekEnd = new Date(
+          now.setDate(now.getDate() - now.getDay() - 1)
+        );
         startDate = new Date(lastWeekEnd.setDate(lastWeekEnd.getDate() - 6));
         endDate = lastWeekEnd;
         break;
@@ -510,7 +583,10 @@ export const useGetNestedShops = (dateRange: string, selectedShopIds: string[] =
     };
   };
 
-  const orderItemWhere = useMemo(() => getDateRangeFilter(dateRange), [dateRange]);
+  const orderItemWhere = useMemo(
+    () => getDateRangeFilter(dateRange),
+    [dateRange]
+  );
 
   const { data, loading, error } = useQuery(GET_FILTERED_SHOPS, {
     variables: {
@@ -606,37 +682,38 @@ export const useGetShopOrders = () => {
   };
 };
 
-
 interface GetOrderssByIdResponse {
-  orders: Order[]
+  orders: Order[];
 }
 
 interface UseGetOrderByIdReturn {
-  order: Order | undefined
+  order: Order | undefined;
   loadingOrder: boolean;
   error: Error | undefined;
-  refetchOrder: any
+  refetchOrder: any;
 }
 
 export const useGetOrderById = (orderId: string): UseGetOrderByIdReturn => {
-  const { data, loading: loadingOrder, error, refetch:refetchOrder } = useQuery<GetOrderssByIdResponse>(GET_ORDER_BY_ID,
-    {
-      variables:{id: orderId},
-      skip: !orderId
-    }
-  )
-  const order = data? data.orders?.[0] : undefined;
+  const {
+    data,
+    loading: loadingOrder,
+    error,
+    refetch: refetchOrder,
+  } = useQuery<GetOrderssByIdResponse>(GET_ORDER_BY_ID, {
+    variables: { id: orderId },
+    skip: !orderId,
+  });
+  const order = data ? data.orders?.[0] : undefined;
 
-  return {order,loadingOrder,error,refetchOrder}
-}
-
+  return { order, loadingOrder, error, refetchOrder };
+};
 
 interface GetOrderItemsByIdResponse {
-  order_items: OrderItem[]
+  order_items: OrderItem[];
 }
 
 interface UseGetOrderItemByOrderIdReturn {
-  orderItems: OrderItem[] | undefined
+  orderItems: OrderItem[] | undefined;
   loadingOrder: boolean;
   error: Error | undefined;
 }
@@ -652,27 +729,31 @@ export const useGetOrderItemByOrderId = (
     skip: !orderId,
   });
 
-  const orderItems = data?.order_items; 
+  const orderItems = data?.order_items;
 
   return { orderItems, loadingOrder: loading, error };
 };
 
 interface GetTaxResponse {
-  taxes: Tax[]
+  taxes: Tax[];
 }
 
 interface UseGetTaxReturn {
-  tax: Tax | undefined
+  tax: Tax | undefined;
   loadingTax: boolean;
   error: Error | undefined;
 }
 
-export const useGetTax = ():UseGetTaxReturn => {
-  const { data, loading: loadingTax, error } = useQuery<GetTaxResponse>(GET_TAXES)
-  const tax = data? data.taxes[0] : undefined;
+export const useGetTax = (): UseGetTaxReturn => {
+  const {
+    data,
+    loading: loadingTax,
+    error,
+  } = useQuery<GetTaxResponse>(GET_TAXES);
+  const tax = data ? data.taxes[0] : undefined;
 
-  return {tax,loadingTax,error}
-}
+  return { tax, loadingTax, error };
+};
 
 export const useGetAdvertisements = () => {
   const [filters, setFilters] = useState<{
@@ -741,7 +822,6 @@ export const useGetAdvertisements = () => {
   };
 };
 
-
 interface GetAdvertisementByIdResponse {
   advertisements: Advertisements[];
 }
@@ -753,14 +833,18 @@ interface UseGetAdvertisementByIdReturn {
   refetchAdvertisement: any;
 }
 
-export const useGetAdvertisementById = (id: string): UseGetAdvertisementByIdReturn => {
-  const { data, loading: loadingAdvertisement, error, refetch: refetchAdvertisement } = useQuery<GetAdvertisementByIdResponse>(
-    GET_ADVERTISEMENT_BY_ID,
-    {
-      variables: { id },
-      skip: !id,
-    }
-  );
+export const useGetAdvertisementById = (
+  id: string
+): UseGetAdvertisementByIdReturn => {
+  const {
+    data,
+    loading: loadingAdvertisement,
+    error,
+    refetch: refetchAdvertisement,
+  } = useQuery<GetAdvertisementByIdResponse>(GET_ADVERTISEMENT_BY_ID, {
+    variables: { id },
+    skip: !id,
+  });
 
   const advertisement = data?.advertisements?.[0] || null;
 
@@ -770,7 +854,7 @@ export const useGetAdvertisementById = (id: string): UseGetAdvertisementByIdRetu
 export const useGetShopActivities = () => {
   const [filters, setFilters] = useState<{
     shop_id?: string | string[];
-    dateRange?: string; 
+    dateRange?: string;
   }>({});
   const [page, setPage] = useState<number>(1);
   const [take, setTake] = useState<number>(10);
@@ -788,7 +872,7 @@ export const useGetShopActivities = () => {
       }
     }
 
-    if(filters.dateRange === "all"){
+    if (filters.dateRange === "all") {
       return;
     }
     if (filters.dateRange) {
@@ -797,25 +881,25 @@ export const useGetShopActivities = () => {
       let endDate: Date = now;
 
       switch (filters.dateRange.toLowerCase()) {
-        case 'lastweek':
+        case "lastweek":
           startDate = new Date(now.setDate(now.getDate() - 7));
           endDate = new Date(now.setDate(now.getDate() - 7));
           break;
-        case 'thisweek':
+        case "thisweek":
           startDate = new Date(now.setDate(now.getDate() - now.getDay()));
           break;
-        case 'lastmonth':
+        case "lastmonth":
           startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
           endDate = new Date(now.getFullYear(), now.getMonth(), 0);
           break;
-        case 'thismonth':
+        case "thismonth":
           startDate = new Date(now.getFullYear(), now.getMonth(), 1);
           break;
-        case 'lastyear':
+        case "lastyear":
           startDate = new Date(now.getFullYear() - 1, 0, 1);
           endDate = new Date(now.getFullYear() - 1, 11, 31);
           break;
-        case 'thisyear':
+        case "thisyear":
           startDate = new Date(now.getFullYear(), 0, 1);
           break;
         default:
@@ -824,7 +908,7 @@ export const useGetShopActivities = () => {
 
       conditions.created_at = {
         _gte: startDate.toISOString(),
-        _lte: endDate.toISOString()
+        _lte: endDate.toISOString(),
       };
     }
 

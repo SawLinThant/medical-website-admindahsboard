@@ -86,7 +86,7 @@ const ShopForm: React.FC = () => {
         });
       }
     }
-    console.log("Uploaded image URLs:", uploadedUrls);
+   // console.log("Uploaded image URLs:", uploadedUrls);
   };
 
   const handleCreateUser = async (variables: CreateUserVariables) => {

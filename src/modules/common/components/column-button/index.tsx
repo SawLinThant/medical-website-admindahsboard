@@ -4,9 +4,10 @@ import { useRouter } from "next/navigation";
 interface ActionButtonProps {
     id: string
     route: string
+    label?: string
 }
 
-const ActionButton = ({id,route}:ActionButtonProps) => {
+const ActionButton = ({id,route, label = "Edit"}:ActionButtonProps) => {
   const router = useRouter();
 
   const handleEdit = () => {
@@ -19,7 +20,7 @@ const ActionButton = ({id,route}:ActionButtonProps) => {
         onClick={handleEdit}
         className="bg-inputlabel/85 text-white rounded-md"
       >
-        Edit
+        {label}
       </Button>
     </div>
   );

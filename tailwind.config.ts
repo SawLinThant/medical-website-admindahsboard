@@ -62,7 +62,7 @@ export default {
   				ring: 'hsl(var(--sidebar-ring))'
   			},
 			headercolor: "#1d1e18",
-			inputlabel: "#796f6f",
+			inputlabel: "#39AF9D",
 			secondary_color: "#39AF9D"
   		},
   		borderRadius: {

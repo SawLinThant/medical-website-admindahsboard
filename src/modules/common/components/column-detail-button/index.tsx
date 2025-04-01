@@ -4,9 +4,10 @@ import { useRouter } from "next/navigation";
 interface ActionButtonProps {
     id: string
     route: string
+    label?:string
 }
 
-const DetaiRouteButton = ({id,route}:ActionButtonProps) => {
+const DetaiRouteButton = ({id,route, label = "View Detail"}:ActionButtonProps) => {
   const router = useRouter();
 
   const handleEdit = () => {
@@ -20,7 +21,7 @@ const DetaiRouteButton = ({id,route}:ActionButtonProps) => {
         onClick={handleEdit}
         className="border-none text-secondary_color bg-transparent underline hover:bg-transparent hover:text-blue-500"
       >
-        View Details
+        {label}
       </Button>
     </div>
   );

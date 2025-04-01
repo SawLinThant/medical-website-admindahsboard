@@ -131,6 +131,9 @@ export interface NoificationType {
   created_at: string;
   is_read: boolean;
   order_id: string;
+  sender: string;
+  title: string;
+  annoucement_id: string;
 }
 
 export interface StockHistory {

@@ -38,7 +38,7 @@ export const GET_PRODUCTS_BY_ID = gql`
       storage
       default_stock_level
       category_id
-      category{
+      category {
         id
         name
       }
@@ -47,14 +47,39 @@ export const GET_PRODUCTS_BY_ID = gql`
 `;
 
 export const GET_FILTERED_PRODUCTS = gql`
-  query getFilteredProducts($where: products_bool_exp, $offset: Int, $limit: Int) {
-    products(where: $where, order_by: { created_at: desc }, offset: $offset, limit: $limit) {
+  query getFilteredProducts(
+    $where: products_bool_exp
+    $offset: Int
+    $limit: Int
+  ) {
+    products(
+      where: $where
+      order_by: { created_at: desc }
+      offset: $offset
+      limit: $limit
+    ) {
       id
       name
       price
       quantity
       default_stock_level
+      created_at
+      stock_status
+      stock_level
+      bulk_price
       shop_id
+      status
+      shop {
+        id
+        name
+      }
+      order_items {
+        id
+        quantity
+        price
+        created_at
+        status
+      }
       category {
         id
         name
@@ -68,9 +93,9 @@ export const GET_FILTERED_PRODUCTS = gql`
           name
         }
       }
-        stock_histories{
-         created_at
-        }
+      stock_histories {
+        created_at
+      }
     }
     products_aggregate(where: $where) {
       aggregate {
@@ -88,8 +113,3 @@ export const GET_FILTERED_PRODUCTS_DROPDOWN = gql`
     }
   }
 `;
-
-
-
-
-

@@ -51,7 +51,6 @@ const ShopActivitiesList: React.FC = () => {
       dateRange: dateRange || undefined,
     });
   }, [selectedShopIds, dateRange]);
-
   
 
   const handlePageChange = (newPage: number) => {
@@ -140,6 +139,7 @@ const ShopActivitiesList: React.FC = () => {
               <MultiShopSelectDropdown
                 shops={shopOptions}
                 onShopChange={setSelectedShopIds}
+                label="Shop"
               />
               <SelectDropdown
                 setOption={setDateRange}

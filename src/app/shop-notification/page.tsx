@@ -14,8 +14,8 @@ const ShopNotification : React.FC = () => {
         })
         const user = userInfo? userInfo.users?.[0] : [];
     return(
-        <div className="">
-            {/* <Notification shop_id={user.shop_id}/> */}
+        <div className="w-full h-full">
+            <Notification shop_id={user.shop_id}/>
         </div>
     )
 }
