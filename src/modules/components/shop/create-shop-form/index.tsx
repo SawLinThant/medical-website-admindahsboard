@@ -43,7 +43,6 @@ const ShopForm: React.FC = () => {
   const { toast } = useToast();
   const [createImage] = useMutation(CREATE_SHOP_IMAGES);
 
-  console.log(shopCategory);
 
   const handleFileUpload = (files: FileList) => {
     setFile((prev) => [...prev, ...Array.from(files)]);
@@ -301,7 +300,7 @@ const ShopForm: React.FC = () => {
           <div className="w-[30rem] h-full flex flex-col gap-8">
             <div className="w-full min-h-20 flex flex-col gap-2">
               <h2 className="font-bold text-lg text-headercolor">
-                Shop Images
+                Shop Banner Images
               </h2>
               <div className="w-full min-h-20 border border-gray-300 rounded-md flex flex-wrap items-center justify-center gap-6 p-8">
                 <FileuploadField
@@ -330,7 +329,7 @@ const ShopForm: React.FC = () => {
             </div>
             <div className="w-full min-h-20 flex flex-col gap-2">
               <h2 className="font-bold text-lg text-headercolor">
-                Shop Banner Image
+                Shop Logo Image
               </h2>
               <div className="w-full min-h-20 border border-gray-300 rounded-md flex flex-wrap items-center justify-center gap-6 p-8">
                 {bannerImage.length < 1 ? (

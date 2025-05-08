@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
+import { useVerifyOtp } from "@/lib/hooks/useMutation/otp/useOTP";
 import OTPInput from "@/modules/common/components/otp-input";
-import { MoveLeft } from "lucide-react";
+import { Loader, MoveLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -13,21 +14,57 @@ interface OTPFormProps {
 const OTPForm: React.FC<OTPFormProps> = ({ setCurrentPage }) => {
   const [value, setValue] = useState<any>();
   const router = useRouter();
-    const handleSubmit = () => {
-       const otpValue = value.toString();
-       if (otpValue.length === 6) {
-         if (otpValue === "239827") {
-           setCurrentPage("New Password")
-         } else {
-           toast({
-             description: "Invalid OTP !",
-           });
-         }
-       } else {
-         toast({
-           description: "please fill all fields",
-         });
-       }
+    // const handleSubmit = () => {
+    //    const otpValue = value.toString();
+    //    if (otpValue.length === 6) {
+    //      if (otpValue === "239827") {
+    //        setCurrentPage("New Password")
+    //      } else {
+    //        toast({
+    //          description: "Invalid OTP !",
+    //        });
+    //      }
+    //    } else {
+    //      toast({
+    //        description: "please fill all fields",
+    //      });
+    //    }
+    // }
+    const { verifyOtp, loading, error } = useVerifyOtp();
+    const handleSubmit = async () => {
+      const otpValue = value?.toString();
+      if (!otpValue || otpValue.length !== 6) {
+        toast({
+          variant: "destructive",
+          description: "Please enter a 6-digit OTP",
+        });
+        return;
+      }
+      const phone = localStorage.getItem("resetphone") || "";
+      try {
+        const result = await verifyOtp(phone, otpValue);
+        if (result) {
+          localStorage.removeItem("resetphone");
+          setCurrentPage("New Password")
+        } else {
+          toast({
+            variant: "destructive",
+            description: "Invalid OTP",
+          });
+        }
+      } catch (err) {
+        console.error("Error verifying OTP:", err);
+        toast({
+          variant: "destructive",
+          description: "Failed to verify OTP",
+        });
+      }
+    };
+    if (error) {
+      toast({
+        variant: "destructive",
+        description: error.message || "An error occurred while verifying OTP",
+      });
     }
   return (
     <div className="flex flex-col w-full h-full gap-4 p-4 border rounded-md">
@@ -47,8 +84,8 @@ const OTPForm: React.FC<OTPFormProps> = ({ setCurrentPage }) => {
         className="flex flex-col gap-2 items-center mt-4"
       >
         <OTPInput setValue={setValue} />
-        <Button onClick={handleSubmit} type="button" className="mt-5 h-9 w-full">
-          Reset Password
+        <Button disabled = {loading} onClick={handleSubmit} type="button" className="mt-5 h-9 w-full">
+          {loading ? <Loader className="animate-spin"/> : "Submit"}
         </Button>
         <div
           onClick={() => router.push("/login")}

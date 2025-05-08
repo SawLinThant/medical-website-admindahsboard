@@ -128,7 +128,8 @@ const ProductForm: React.FC<ProductFormProps> = ({shop_id}) => {
           description: data.description,
           dosage:  data.dosage,
           usage:  data.usage,
-           storage:  data.storage,
+          storage:  data.storage,
+          age_group:  data.age_group,
           created_at: new Date(selectedDate || Date.now()).toISOString(),
           shop_id: shop_id,
           category_id: category,
@@ -223,6 +224,15 @@ const ProductForm: React.FC<ProductFormProps> = ({shop_id}) => {
                     name="storage"
                     label="Storage"
                     placeHolder="Enter Storage"
+                    type="text"
+                    register={register}
+                  />
+                </div>
+                <div className="w-full">
+                  <CustomInput
+                    name="age_group"
+                    label="Age Group"
+                    placeHolder="Enter Age Group"
                     type="text"
                     register={register}
                   />

@@ -11,6 +11,7 @@ export const CREATE_PRODUCT = gql`
     $usage: String
     $storage: String
     $shop_id: uuid
+    $age_group: String
     $category_id: uuid
     $created_at: timestamptz
   ) {
@@ -27,6 +28,7 @@ export const CREATE_PRODUCT = gql`
         shop_id: $shop_id
         category_id: $category_id
         created_at: $created_at
+        age_group: $age_group
       }
     ) {
       id

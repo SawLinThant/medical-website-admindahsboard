@@ -407,7 +407,7 @@ const ShopDetailForm: React.FC<ShopDetailFormPops> = ({
           <div className="w-[30rem] h-full flex flex-col gap-8">
             <div className="w-full min-h-20 flex flex-col gap-2">
               <h2 className="font-bold text-lg text-headercolor">
-                Shop Images
+                Shop Banner Images
               </h2>
               <div className="w-full min-h-20 border border-gray-300 rounded-md flex flex-wrap items-center justify-center gap-6 p-8">
                 <FileuploadField
@@ -462,7 +462,7 @@ const ShopDetailForm: React.FC<ShopDetailFormPops> = ({
             </div>
             <div className="w-full min-h-20 flex flex-col gap-2">
               <h2 className="font-bold text-lg text-headercolor">
-                Shop Banner Image
+                Shop Logo Image
               </h2>
               <div className="w-full min-h-20 border border-gray-300 rounded-md flex flex-wrap items-center justify-center gap-6 p-8">
                 {bannerImage.length < 1 && shopInfo.logo === "" ? (

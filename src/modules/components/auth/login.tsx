@@ -45,6 +45,10 @@ const LoginForm = () => {
     },
   });
   const onSubmit = handleSubmit(async (data) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      localStorage.removeItem("token");
+    }
     try {
       setLoading(true)
       await userLogin({

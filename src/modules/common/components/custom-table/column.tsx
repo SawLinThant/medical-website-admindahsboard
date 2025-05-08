@@ -468,18 +468,18 @@ export const shopcolumns: ColumnDef<Shop>[] = [
   },
   {
     accessorKey: "logo",
-    header: "Product Detail",
+    header: "Shop",
     cell: ({ row }) => {
       const image_url = row.original.logo ? row.original.logo : null;
       return (
         <div className="flex flex-row gap-6">
-          <div className="p-2 rounded-md bg-slate-400">
+          <div className="p-2 rounded-md border">
             <Image
               width={100}
               height={100}
-              className="max-h-[70px] h-[70px] object-cover"
+              className="max-h-[70px] h-[70px] object-contain"
               src={image_url ? image_url : "/images/image_placeholder.jpg"}
-              alt="product"
+              alt="shop"
             />
           </div>
         </div>

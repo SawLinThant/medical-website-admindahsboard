@@ -7,6 +7,7 @@ import { Loader, MoveLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+
 interface NewFormProps {
     setIsCurrentPage: (value: string) => void;
     resetPhone: string
@@ -22,6 +23,46 @@ interface NewFormProps {
     const [confirmPassword, setConfirmPassword] = useState<string>("");
     const [resetPasswordLoading, setResetPasswordLoading] = useState<boolean>(false);
     
+    // const handleSubmit = async () => {
+    //   if (newPassword !== confirmPassword) {
+    //     toast({
+    //       variant: "destructive",
+    //       description: "Passwords do not match",
+    //     });
+    //     return;
+    //   }
+  
+    //   try {
+    //     setResetPasswordLoading(true);
+  
+    //     const result = await resetPassword(apolloClient, {
+    //       password: newPassword,
+    //       phone: resetPhone,
+    //     });
+  
+    //     if (result.success) {
+    //         toast({
+    //             description: result.message,
+    //           });
+    //        router.push("/login")
+    //       setIsCurrentPage("Enter Phone");
+    //     } else {
+    //       toast({
+    //         variant: "destructive",
+    //         description: result.message,
+    //       });
+    //     }
+    //   } catch (error) {
+    //     console.error("Error resetting password:", error);
+    //     toast({
+    //       variant: "destructive",
+    //       description: "Reset Failed",
+    //     });
+    //   } finally {
+    //     setResetPasswordLoading(false);
+    //   }
+    // };
+
     const handleSubmit = async () => {
       if (newPassword !== confirmPassword) {
         toast({
@@ -40,11 +81,7 @@ interface NewFormProps {
         });
   
         if (result.success) {
-            toast({
-                description: result.message,
-              });
-           router.push("/login")
-         // setIsCurrentPage("Enter Phone");
+          router.push("/login")
         } else {
           toast({
             variant: "destructive",
