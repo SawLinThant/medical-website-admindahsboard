@@ -12,9 +12,10 @@ import {
 interface ScheduleButtonProps{
     setSelectedDate: (date: Date | undefined) => void,
     loading: boolean
+    label?: string
 }
 
-export function ScheduleButton({setSelectedDate,loading = false}:ScheduleButtonProps) {
+export function ScheduleButton({setSelectedDate,loading = false, label="Shcedule"}:ScheduleButtonProps) {
   const [date, setDate] = React.useState<Date>();
   const handleDateSelect = (selectedDate: Date | undefined) => {
     setDate(selectedDate); // Update the local state
@@ -25,7 +26,7 @@ export function ScheduleButton({setSelectedDate,loading = false}:ScheduleButtonP
     <Popover>
       <PopoverTrigger asChild>
         <Button disabled={loading} className="bg-slate-200 text-inputlabel rounded-md min-w-[7rem] hover:text-white">
-          Shcedule
+          {label}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">

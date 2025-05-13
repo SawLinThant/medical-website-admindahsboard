@@ -49,6 +49,8 @@ export interface ProductInfo {
   dosage?: string;
   usage?: string;
   storage?: string;
+  unit_price?: string;
+  age_group?: string;
   category_id: string;
   default_stock_level: number;
   category: {
@@ -84,6 +86,8 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
     description: "",
     dosage: "",
     usage: "",
+    unit_price: "",
+    age_group: "",
     storage: "",
     category_id: "",
     default_stock_level: 0,
@@ -194,6 +198,8 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
         description: productInfo.description,
         dosage: productInfo.dosage,
         usage: productInfo.usage,
+        unit_price: productInfo.unit_price,
+        age_group: productInfo.age_group,
         storage: productInfo.storage,
         updated_at: new Date(Date.now()).toISOString(),
         category_id: category === "" ? productInfo.category_id : category,
@@ -306,6 +312,36 @@ const ProductDetailForm: React.FC<ProductDetailFormProps> = ({
                     placeHolder={productInfo.storage || ""}
                     type="text"
                     value={productInfo.storage || ""}
+                    onChange={(e) =>
+                      setProductInfo((prev) => ({
+                        ...prev,
+                        [e.target.name]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="w-full">
+                  <CustomUpdateInput
+                    name="unit_price"
+                    label="Unit"
+                    placeHolder={productInfo.unit_price || ""}
+                    type="text"
+                    value={productInfo.unit_price || ""}
+                    onChange={(e) =>
+                      setProductInfo((prev) => ({
+                        ...prev,
+                        [e.target.name]: e.target.value,
+                      }))
+                    }
+                  />
+                </div>
+                <div className="w-full">
+                  <CustomUpdateInput
+                    name="age_group"
+                    label="Age Group"
+                    placeHolder={productInfo.age_group || ""}
+                    type="text"
+                    value={productInfo.age_group || ""}
                     onChange={(e) =>
                       setProductInfo((prev) => ({
                         ...prev,

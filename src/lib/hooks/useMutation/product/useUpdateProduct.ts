@@ -9,6 +9,8 @@ interface UpdateProductVariables {
     quantity?: number;
     description?: string;
     dosage?: string;
+    unit_price?: string;
+    age_group?: string;
     usage?: string;
     storage?: string;
     category_id?: string;
@@ -21,6 +23,10 @@ interface UpdateProductVariables {
       name: string;
       price: number;
       bulk_price: number;
+      default_stock_level: number;
+      stock_level: string;
+      age_group: string;
+      unit_price: string;
       quantity: number;
       description: string;
       category_id: string;

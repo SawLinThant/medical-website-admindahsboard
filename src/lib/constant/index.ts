@@ -175,6 +175,18 @@ export const SIDEBAR_ROUTES: SidebarRoute[] = [
         },
       ],
     },
+     {
+      title: "Cupon",
+      url: "#",
+      icon: ProductOverview,
+      isActive: false,
+      items: [
+        {
+          title: "create cupon", 
+          url: "/cupon/create",
+        },
+      ],
+    },
     {
       title: "Categories",
       url: "#",

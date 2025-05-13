@@ -36,6 +36,8 @@ export const GET_PRODUCTS_BY_ID = gql`
       dosage
       usage
       storage
+      unit_price
+      age_group
       default_stock_level
       category_id
       category {

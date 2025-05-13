@@ -124,6 +124,7 @@ const ProductForm: React.FC<ProductFormProps> = ({shop_id}) => {
           name: data.name,
           price: data.price,
           bulk_price: data.bulk_price,
+          unit_price: data.unit_price,
           quantity: 1,
           description: data.description,
           dosage:  data.dosage,
@@ -203,6 +204,15 @@ const ProductForm: React.FC<ProductFormProps> = ({shop_id}) => {
                 />
                 <div className="w-full">
                   <CustomInput
+                    name="unit_price"
+                    label="Unit"
+                    placeHolder="eg. package, bottle, etc."
+                    type="text"
+                    register={register}
+                  />
+                </div>
+                <div className="w-full">
+                  <CustomInput
                     name="dosage"
                     label="Dosage"
                     placeHolder="Enter Dosage"
@@ -232,7 +242,7 @@ const ProductForm: React.FC<ProductFormProps> = ({shop_id}) => {
                   <CustomInput
                     name="age_group"
                     label="Age Group"
-                    placeHolder="Enter Age Group"
+                    placeHolder="e.g. 10+"
                     type="text"
                     register={register}
                   />

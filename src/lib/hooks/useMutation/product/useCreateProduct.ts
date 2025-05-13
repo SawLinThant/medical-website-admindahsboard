@@ -7,6 +7,7 @@ interface CreateProductVariables {
     bulk_price: number;
     quantity: number;
     description: string;
+    unit_price: string;
     shop_id: string;
     category_id: string;
     created_at: string;
@@ -21,6 +22,7 @@ interface CreateProductVariables {
       quantity: number;
       description: string;
       shop_id: string;
+      unit_price: string;
       category_id: string;
       created_at: string;
     };

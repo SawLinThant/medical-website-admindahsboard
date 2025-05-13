@@ -12,6 +12,7 @@ export const CREATE_PRODUCT = gql`
     $storage: String
     $shop_id: uuid
     $age_group: String
+    $unit_price: String
     $category_id: uuid
     $created_at: timestamptz
   ) {
@@ -26,6 +27,7 @@ export const CREATE_PRODUCT = gql`
         usage: $usage
         storage: $storage
         shop_id: $shop_id
+        unit_price: $unit_price
         category_id: $category_id
         created_at: $created_at
         age_group: $age_group
@@ -37,6 +39,8 @@ export const CREATE_PRODUCT = gql`
       price
       bulk_price
       quantity
+      unit_price
+      age_group
       description
       created_at
     }
@@ -111,6 +115,8 @@ export const UPDATE_PRODUCT = gql`
     $usage: String
     $storage: String
     $category_id: uuid
+    $unit_price: String
+    $age_group: String
     $updated_at: timestamptz
   ) {
     update_products_by_pk(
@@ -123,6 +129,8 @@ export const UPDATE_PRODUCT = gql`
         description: $description
         dosage: $dosage
         usage: $usage
+        unit_price: $unit_price
+        age_group: $age_group
         storage: $storage
         category_id: $category_id
         updated_at: $updated_at
