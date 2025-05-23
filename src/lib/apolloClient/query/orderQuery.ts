@@ -39,12 +39,25 @@ export const GET_ORDER_BY_ID = gql`
         username
         email
         phone
-        delivery_addresses{
-        firstname
-        lastname
-           address
-           phone
-           email
+        delivery_addresses {
+          firstname
+          lastname
+          address
+          phone
+          email
+        }
+      }
+      order_items {
+        quantity
+        product {
+          name
+          images {
+            image_url
+          }
+        }
+        shop {
+          name
+          phone
         }
       }
     }
@@ -69,11 +82,10 @@ export const GET_ORDER_ITEMS_BY_ORDER_ID = gql`
         bulk_price
         quantity
         description
-        images{
+        images {
           id
           image_url
           product_id
-
         }
       }
     }

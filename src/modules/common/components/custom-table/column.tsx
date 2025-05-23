@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import ActionButton from "../column-button";
 import clsx from "clsx";
 import DetaiRouteButton from "../column-detail-button";
+import { Order } from "@/lib/hooks/useQuery/order/useGetOrders";
 
 export type Payment = {
   id: string;
@@ -621,6 +622,91 @@ export const OrderColumns: ColumnDef<ShopOrders>[] = [
     cell: ({ row }) => {
       return (
         <ActionButton route="/order/detail/" id={row.getValue("order_id")} />
+      );
+    },
+  },
+];
+
+export const DeliveryOrderColumns: ColumnDef<Order>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: "id",
+    header: "Order ID",
+    cell: ({ row }) => {
+      const value: string = row.getValue("id");
+      return value.length > 10 ? `${value.slice(0, 15)}...` : value;
+    },
+  },
+  // {
+  //   accessorKey: "username",
+  //   header: "Customer",
+  // },
+  {
+    accessorKey: "total_price",
+    header: () => <div className="text-left">Total Price</div>,
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("total_price"));
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "MMK",
+      }).format(amount);
+
+      return <div className="text-left font-medium">{formatted}</div>;
+    },
+  },
+  {
+    accessorKey: "created_date",
+    header: () => <div className="text-left">Created Date</div>,
+    cell: ({ row }) => {
+      const data: string = row.getValue("created_date");
+      const date = new Date(data);
+      return (
+        <div className="text-left font-medium">{date.toLocaleString()}</div>
+      );
+    },
+  },
+  {
+    accessorKey: "status",
+    header: () => <div className="text-left">Status</div>,
+    cell: ({ row }) => {
+      return (
+        <span className="px-3 py-2 rounded-md bg-white">
+          {row.getValue("status")}
+        </span>
+      );
+    },
+  },
+  // {
+  //   accessorKey: "payment",
+  //   header: "Payment",
+  // },
+  {
+    accessorKey: "id",
+    header: () => <div className="text-center">Action</div>,
+    cell: ({ row }) => {
+      return (
+        <ActionButton route="/delivery-onboard/order-assign/detail/" id={row.getValue("id")} />
       );
     },
   },

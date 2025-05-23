@@ -1,13 +1,14 @@
-import { useQuery } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import { useMemo, useState } from "react";
 import {
   GET_SHOP_ORDERS,
   GET_ORDER_BY_ID,
   GET_ORDER_ITEMS_BY_ORDER_ID,
 } from "@/lib/apolloClient/query/orderQuery";
+import { GET_ORDERS_STREAMING_HISTORY_SUBSCRIPTION, GET_ORDERS_STREAMING_SUBSCRIPTION, SUBSCRIBE_ORDERS, SUBSCRIBE_SHOP_ORDERS } from "@/lib/apolloClient/subscription/order";
 
-interface Order {
-  order_id: string;
+export interface Order {
+  id: string;
   user_id: string;
   username: string;
   created_date: string;
@@ -19,6 +20,7 @@ interface Order {
   total_items: number;
   shop_total_price: number;
   payment: string;
+  status: string;
 }
 
 interface OrderItem {
@@ -170,3 +172,85 @@ export const useGetOrderItemsByOrderId = (orderId: string) => {
     error,
   };
 }; 
+
+interface SubscribeShopOrdersResponse {
+  shop_orders: Order[];
+}
+
+export const useSubscribeShopOrders = () => {
+  const { data, loading, error } = useSubscription<SubscribeShopOrdersResponse>(SUBSCRIBE_SHOP_ORDERS, {
+    fetchPolicy: "network-only",
+  });
+
+  const orders = data?.shop_orders || [];
+
+  return {
+    orders,
+    loading,
+    error,
+  };
+};
+
+interface SubscribeOrdersResponse {
+  orders: Order[];
+}
+
+export const useSubscribeOrders = () => {
+  const { data, loading, error } = useSubscription<SubscribeOrdersResponse>(SUBSCRIBE_ORDERS, {
+    fetchPolicy: "network-only",
+  });
+
+  const orders = data?.orders || [];
+  console.log("hook orders", data);
+  return {
+    orders,
+    loading,
+    error,
+  };
+};
+
+interface GetOrdersStreamingResponse {
+  orders: Order[];
+}
+
+interface GetOrdersStreamingVariables {
+  delivery_user_id: string;
+}
+
+export const useGetOrdersStreaming = (delivery_user_id: string) => {
+  const { data, loading, error } = useSubscription<
+    GetOrdersStreamingResponse,
+    GetOrdersStreamingVariables
+  >(GET_ORDERS_STREAMING_SUBSCRIPTION, {
+    variables: { delivery_user_id },
+    fetchPolicy: "network-only",
+    skip: !delivery_user_id,
+  });
+
+  const orders = useMemo(() => data?.orders || [], [data?.orders]);
+
+  return {
+    orders,
+    loading,
+    error,
+  };
+};
+
+export const useGetOrdersHistoryStreaming = (delivery_user_id: string) => {
+  const { data, loading, error } = useSubscription<
+    GetOrdersStreamingResponse,
+    GetOrdersStreamingVariables
+  >(GET_ORDERS_STREAMING_HISTORY_SUBSCRIPTION, {
+    variables: { delivery_user_id },
+    fetchPolicy: "network-only",
+    skip: !delivery_user_id,
+  });
+
+  const orders = useMemo(() => data?.orders || [], [data?.orders]);
+
+  return {
+    orders,
+    loading,
+    error,
+  };
+};

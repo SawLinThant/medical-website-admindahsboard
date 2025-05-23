@@ -704,6 +704,7 @@ export const useGetOrderById = (orderId: string): UseGetOrderByIdReturn => {
     skip: !orderId,
   });
   const order = data ? data.orders?.[0] : undefined;
+  console.log("hook order", data);
 
   return { order, loadingOrder, error, refetchOrder };
 };

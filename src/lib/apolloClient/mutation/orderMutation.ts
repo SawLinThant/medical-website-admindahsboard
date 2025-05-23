@@ -10,3 +10,30 @@ mutation UpdateOrderItemsStatusForShop($order_id: uuid!, $shop_id: uuid!, $statu
   }
 }
 `
+
+
+export const UPDATE_ORDER_DELIVERY_USER = gql`
+  mutation UpdateOrderDeliveryUser($id: uuid!, $delivery_user_id: uuid!) {
+    update_orders_by_pk(pk_columns: { id: $id }, _set: { delivery_user_id: $delivery_user_id }) {
+      id
+      user_id
+      status
+      payment_id
+      payment_proof
+      total_price
+      created_date
+      updated_at
+      shipping_address
+      delivery_user_id
+    }
+  }
+`;
+
+export const UPDATE_ORDER_STATUS = gql`
+  mutation UpdateOrderStatus($id: uuid!, $status: String!) {
+    update_orders_by_pk(pk_columns: { id: $id }, _set: { status: $status }) {
+      id
+      status
+    }
+  }
+`;

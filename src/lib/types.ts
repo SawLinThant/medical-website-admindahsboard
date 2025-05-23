@@ -43,6 +43,24 @@ export interface Product {
   order_items: OrderItem[]
 }
 
+export interface ShopType {
+  id: string;
+  name: string;
+  logo: string;
+  description: string;
+  address: string;
+  phone: string;
+  category_id: string;
+  created_at: string;
+  remark: string;
+  shop_admin_name: string;
+  shop_category:{
+    id: string;
+    name: string;
+  }
+ // products: Product[]
+}
+
 export interface Shop {
   id: string;
   name: string;
@@ -72,11 +90,12 @@ export interface OrderItem {
   created_at?: string;
   shop_id: string;
   product: Products;
+  shop: ShopType;
 }
 
 export interface User {
   id: string;
-  name: string;
+  username: string;
   email: string;
   phone: string;
   delivery_addresses: DeliveryAddress[];
@@ -93,6 +112,7 @@ export interface Order {
   billing_phone_no: string;
   payment_id: string;
   user: User;
+  order_items: OrderItem[];
 }
 
 export interface DeliveryAddress {
@@ -100,6 +120,7 @@ export interface DeliveryAddress {
   lastname: string;
   phone: string;
   email: string;
+  address: string;
 }
 
 export interface ShopOrders {
