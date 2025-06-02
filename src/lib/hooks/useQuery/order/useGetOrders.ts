@@ -223,11 +223,12 @@ export const useGetOrdersStreaming = (delivery_user_id: string) => {
     GetOrdersStreamingVariables
   >(GET_ORDERS_STREAMING_SUBSCRIPTION, {
     variables: { delivery_user_id },
-    fetchPolicy: "network-only",
+    fetchPolicy: "no-cache",
     skip: !delivery_user_id,
   });
 
   const orders = useMemo(() => data?.orders || [], [data?.orders]);
+  console.log("error", error);
 
   return {
     orders,

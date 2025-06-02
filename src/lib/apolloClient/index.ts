@@ -11,8 +11,24 @@ import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
 const httpLink = new HttpLink({
-  uri: "https://api.natsay.com.mm/v1/graphql", //add hasura cloud url
+  uri: "https://api.natsay.com.mm/v1/graphql", 
 });
+
+// const wsLink = new GraphQLWsLink(
+//   createClient({
+//     url:
+//       process.env.NEXT_PUBLIC_GRAPHQL_WS_ENDPOINT ||
+//       "wss://api.natsay.com.mm/v1/graphql",
+//     connectionParams: () => {
+//       const token = localStorage.getItem("token"); 
+//       return {
+//         headers: {
+//           Authorization: token ? `Bearer ${token}` : "",
+//         },
+//       };
+//     },
+//   })
+// );
 
 const wsLink = new GraphQLWsLink(
   createClient({
@@ -20,10 +36,10 @@ const wsLink = new GraphQLWsLink(
       process.env.NEXT_PUBLIC_GRAPHQL_WS_ENDPOINT ||
       "wss://api.natsay.com.mm/v1/graphql",
     connectionParams: () => {
-      const token = localStorage.getItem("token"); // Get token from localStorage
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
       return {
         headers: {
-          Authorization: token ? `Bearer ${token}` : "",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
       };
     },

@@ -13,8 +13,8 @@ const DeliveryOrderDetail: React.FC = () => {
   const { orders, loading: ordersLoading, error: ordersError } = useGetOrdersStreaming(
     deliveryUser?.id || ""
   );
-
-  console.log("Orders: ", orders);
+  console.log("user", deliveryUser);
+  console.log("orders", orders);
 
   const getStatusVariant = (status: string) => {
     switch (status.toLowerCase()) {
